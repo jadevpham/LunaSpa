@@ -4,8 +4,10 @@ import axios from "axios";
 import { format } from "date-fns";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
+import { useNavigate } from "react-router-dom";
 
 const Header: React.FC = () => {
+	const navigate = useNavigate();
 	// For Services
 	const [isOpenServices, setIsOpenServices] = useState(false);
 	const [selectedServices, setSelectedServices] = useState("All services");
@@ -164,7 +166,10 @@ const Header: React.FC = () => {
 						</div>
 						{/* Nút */}
 						<div className="flex space-x-4">
-							<button className="px-6 py-2 border-1.75 border-gray-400 rounded-full ml-2">
+							<button
+								className="px-6 py-2 border-1.75 border-gray-400 rounded-full ml-2"
+								onClick={() => navigate("auth")}
+							>
 								Login
 							</button>
 						</div>
