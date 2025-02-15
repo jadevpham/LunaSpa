@@ -10,6 +10,10 @@ export default {
 				1: "#f2f2f2",
 				2: "#0d1619",
 				3: "#757676",
+				4: "#bfbfbf",
+			},
+			borderWidth: {
+				1.75: "1.75px",
 			},
 		},
 	},

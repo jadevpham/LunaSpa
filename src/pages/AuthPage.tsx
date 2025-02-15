@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const AuthPage = () => {
+	const navigate = useNavigate();
 	const [isSignUp, setIsSignUp] = useState(false);
 	const [showPassword, setShowPassword] = useState(false);
 	const [formData, setFormData] = useState({
@@ -58,6 +60,13 @@ const AuthPage = () => {
 		<div className="grid grid-cols-1 lg:grid-cols-3">
 			{/* Form */}
 			<div className="flex items-center justify-center h-screen bg-gray-100 col-span-2">
+				<button
+					className="absolute top-5 left-5 text-2xl text-gray-500"
+					onClick={() => navigate("/")}
+				>
+					<i className="fa-solid fa-arrow-left"></i>
+				</button>
+
 				<div
 					className={`relative w-[768px] max-w-full min-h-[500px] bg-white shadow-2xl rounded-lg overflow-hidden transition-all duration-500 ${isSignUp ? "right-panel-active" : ""}`}
 				>
