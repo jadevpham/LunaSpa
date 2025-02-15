@@ -6,6 +6,11 @@ export default {
 			spacing: {
 				reset: "0", // Thêm reset spacing nếu cần
 			},
+			colors: {
+				1: "#f2f2f2",
+				2: "#0d1619",
+				3: "#757676"
+			},
 		},
 	},
 	plugins: [],
