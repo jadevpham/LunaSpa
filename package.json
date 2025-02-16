@@ -13,16 +13,20 @@
     "start-all": "concurrently \"npm run format\" \"npm run dev\" \"npm start\""
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^2.5.1",
     "axios": "^1.7.9",
     "date-fns": "^4.1.0",
     "lunaspa": "file:",
     "react": "^19.0.0",
     "react-day-picker": "^9.5.1",
     "react-dom": "^19.0.0",
+    "react-redux": "^9.2.0",
     "react-router-dom": "^7.1.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@types/jest": "^29.5.14",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
     "@vitejs/plugin-react": "^4.3.4",
