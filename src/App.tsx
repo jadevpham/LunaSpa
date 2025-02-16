@@ -9,6 +9,7 @@ import ProductsList from "./components/ProductsList";
 // Cấu hình Redux
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
+import Statistics from "./components/Statistics";
 
 const App = () => {
 	const FooterWrapper = () => {
@@ -33,7 +34,9 @@ const App = () => {
 
 	const ProductsWrapper = () => {
 		const location = useLocation();
-		return !location.pathname.includes("/auth") && <ProductsList />;
+		return (
+			!location.pathname.includes("/auth") && <ProductsList />
+		);
 	};
 
 	return (
@@ -46,7 +49,7 @@ const App = () => {
 				<Routes>
 					<Route
 						path="/"
-						element={<h1 className="text-red-500">Hello, React!</h1>}
+						element={<Statistics />}
 					/>
 					<Route path="/auth/*" element={<AuthPage />} />
 				</Routes>
