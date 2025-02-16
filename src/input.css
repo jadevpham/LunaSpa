@@ -6,3 +6,11 @@ body {
     @apply m-0 p-0 box-border text-2;
     font-family: "Nunito", serif;
 }
+
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
