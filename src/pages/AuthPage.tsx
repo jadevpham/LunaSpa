@@ -115,10 +115,16 @@ const AuthPage = () => {
 						>
 							<h1 className="font-bold text-xl">Sign In</h1>
 							<div className="flex gap-3 my-4">
-								<a href="#" className="border p-3 w-16 rounded-full">
+								<a
+									href="#"
+									className="border border-gray-600 p-3 w-16 rounded-full hover:bg-gray-300"
+								>
 									<i className="fab fa-facebook-f"></i>
 								</a>
-								<a href="#" className="border p-3 w-16 rounded-full">
+								<a
+									href="#"
+									className="border border-gray-600 p-3 w-16 rounded-full hover:bg-gray-300"
+								>
 									<i
 										className="fab fa-google-plus-g"
 										onClick={handleGoogleSignIn}
@@ -189,10 +195,16 @@ const AuthPage = () => {
 						>
 							<h1 className="font-bold text-xl">Create Account</h1>
 							<div className="flex gap-3 my-4">
-								<a href="#" className="border p-3 w-16 rounded-full">
+								<a
+									href="#"
+									className="border border-gray-600 p-3 w-16 rounded-full hover:bg-gray-300"
+								>
 									<i className="fab fa-facebook-f"></i>
 								</a>
-								<a href="#" className="border p-3 w-16 rounded-full">
+								<a
+									href="#"
+									className="border border-gray-600 p-3 w-16 rounded-full hover:bg-gray-300"
+								>
 									<i className="fab fa-google-plus-g"></i>
 								</a>
 							</div>
@@ -301,7 +313,7 @@ const AuthPage = () => {
 								</p>
 								<button
 									onClick={() => setIsSignUp(false)}
-									className="px-6 py-3 border border-gray-400 text-black rounded-full"
+									className="px-6 py-3 border border-gray-400 text-black rounded-full hover:bg-gray-300"
 								>
 									Sign In
 								</button>
@@ -314,7 +326,7 @@ const AuthPage = () => {
 								</p>
 								<button
 									onClick={() => setIsSignUp(true)}
-									className="px-6 py-3 border border-gray-400 text-black rounded-full"
+									className="px-6 py-3 border border-gray-400 text-black rounded-full hover:bg-gray-300"
 								>
 									Sign Up
 								</button>
