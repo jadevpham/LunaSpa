@@ -4,6 +4,7 @@ import AuthPage from "./pages/AuthPage";
 import Header from "./components/Header";
 import BranchesList from "./components/BranchesList";
 import ServicesList from "./components/ServicesList";
+import ProductsList from "./components/ProductsList";
 
 // Cấu hình Redux
 import { Provider } from "react-redux";
@@ -30,12 +31,18 @@ const App = () => {
 		return !location.pathname.includes("/auth") && <ServicesList />;
 	};
 
+	const ProductsWrapper = () => {
+		const location = useLocation();
+		return !location.pathname.includes("/auth") && <ProductsList />;
+	};
+
 	return (
 		<BrowserRouter>
 			<Provider store={store}>
 				<HeaderWrapper />
 				<ServicesWrapper />
 				<BranchesWrapper />
+				<ProductsWrapper />
 				<Routes>
 					<Route
 						path="/"
