@@ -13,13 +13,15 @@
     "start-all": "concurrently \"npm run format\" \"npm run dev\" \"npm start\""
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.66.0",
     "axios": "^1.7.9",
     "date-fns": "^4.1.0",
     "lunaspa": "file:",
     "react": "^19.0.0",
     "react-day-picker": "^9.5.1",
     "react-dom": "^19.0.0",
-    "react-router-dom": "^7.1.5"
+    "react-router-dom": "^7.1.5",
+    "react-spinners": "^0.15.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",

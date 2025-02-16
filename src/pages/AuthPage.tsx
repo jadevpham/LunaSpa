@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { useSignIn, useSignUp } from "../services/authService.tsx";
 const AuthPage = () => {
 	const navigate = useNavigate();
 	const [isSignUp, setIsSignUp] = useState(false);
 	const [showPassword, setShowPassword] = useState(false);
+
 	const [formData, setFormData] = useState({
 		name: "",
 		email: "",
@@ -19,7 +20,7 @@ const AuthPage = () => {
 		!formData.confirmPassword ||
 		!passwordMatch;
 
-	const isSiginDisabled = !formData.email || !formData.password;
+	const isSigninDisabled = !formData.email || !formData.password;
 	const togglePasswordVisibility = () => {
 		setShowPassword((prev) => !prev);
 	};
@@ -39,37 +40,71 @@ const AuthPage = () => {
 		}
 	};
 
+	const { mutate: login, isPending, isError, error } = useSignIn();
+
 	const handleSignIn = (e: React.FormEvent) => {
 		e.preventDefault();
-		console.log("signin", {
+
+		login(
+			{ email: formData.email, password: formData.password },
+			{
+				onSuccess: (data) => {
+					const { accessToken, refreshToken, userData } = data.data;
+
+					localStorage.setItem("accessToken", accessToken);
+					localStorage.setItem("refreshToken", refreshToken);
+					localStorage.setItem("role", userData.role);
+
+					navigate("/");
+				},
+				onError: (err) => {
+					console.error("Login failed:", err);
+				},
+			},
+		);
+	};
+
+	const {
+		mutate: register,
+		isPending: isSigningUp,
+		isError: signUpError,
+		error: signUpErrorMessage,
+	} = useSignUp();
+	const handleSignUp = async (e: React.FormEvent) => {
+		e.preventDefault();
+
+		const userData = {
+			name: formData.name,
 			email: formData.email,
 			password: formData.password,
+		};
+		register(userData, {
+			onSuccess: (data) => {
+				console.log("Registration successful:", data);
+				setIsSignUp(false); // Chuyển sang trang đăng nhập
+			},
+			onError: (err) => {
+				console.error("Registration failed:", err);
+			},
 		});
 	};
 
-	const handleSignUp = (e: React.FormEvent) => {
-		e.preventDefault();
-		if (formData.password !== formData.confirmPassword) {
-			alert("Passwords do not match!");
-			return;
-		}
-		console.log("signup", formData);
+	const handleGoogleSignIn = () => {
+		window.location.href = `http://localhost:3200/api/auth/login/google?role=student&failRedirectURL=http://localhost:5173&successRedirectURL=http://localhost:5173/auth/google/callback`;
 	};
-
 	return (
 		<div className="grid grid-cols-1 lg:grid-cols-3">
 			{/* Form */}
 			<div className="flex items-center justify-center h-screen bg-gray-100 col-span-2">
-				<button
-					className="absolute top-5 left-5 text-2xl text-gray-500"
-					onClick={() => navigate("/")}
-				>
-					<i className="fa-solid fa-arrow-left"></i>
-				</button>
-
 				<div
 					className={`relative w-[768px] max-w-full min-h-[500px] bg-white shadow-2xl rounded-lg overflow-hidden transition-all duration-500 ${isSignUp ? "right-panel-active" : ""}`}
 				>
+					<button
+						className={`absolute top-5 left-5 text-2xl z-50 cursor-pointer text-gray-600 hover:text-gray-800`}
+						onClick={() => navigate("/")}
+					>
+						<i className="fa-solid fa-arrow-left"></i>
+					</button>
 					{/* Sign In Form */}
 					<div
 						className={`absolute top-0 left-0 w-1/2 h-full transition-all duration-500 ${isSignUp ? "translate-x-full opacity-0 z-0" : "translate-x-0 opacity-100 z-10"}`}
@@ -84,7 +119,10 @@ const AuthPage = () => {
 									<i className="fab fa-facebook-f"></i>
 								</a>
 								<a href="#" className="border p-3 w-16 rounded-full">
-									<i className="fab fa-google-plus-g"></i>
+									<i
+										className="fab fa-google-plus-g"
+										onClick={handleGoogleSignIn}
+									></i>
 								</a>
 							</div>
 							<span className="text-sm">or use your account</span>
@@ -124,15 +162,20 @@ const AuthPage = () => {
 							</a>
 							<button
 								type="submit"
+								disabled={isPending || isSigninDisabled}
 								className={`mt-4 px-6 py-3 text-white font-bold rounded-full ${
-									isSiginDisabled
+									isSigninDisabled
 										? "bg-gray-400 cursor-not-allowed"
 										: "bg-gradient-to-tr from-purple-400 to-pink-300"
 								}`}
-								disabled={isSiginDisabled}
 							>
-								Sign Up
+								{isPending ? "Signing In..." : "Sign In"}
 							</button>
+							{isError && (
+								<p className="text-red-500">
+									{error instanceof Error ? error.message : "An error occurred"}
+								</p>
+							)}
 						</form>
 					</div>
 
@@ -188,7 +231,7 @@ const AuthPage = () => {
 									aria-label="Toggle password visibility"
 								>
 									{showPassword ? (
-										<i className="fa-solid fa-eye-slash  "></i>
+										<i className="fa-solid fa-eye-slash"></i>
 									) : (
 										<i className="fa-solid fa-eye"></i>
 									)}
@@ -196,7 +239,7 @@ const AuthPage = () => {
 							</div>
 							{formData.password && (
 								<>
-									<div className="relative w-full pt-2">
+									<div className="relative w-full my-2">
 										<input
 											type={showPassword ? "text" : "password"}
 											name="confirmPassword"
@@ -212,7 +255,7 @@ const AuthPage = () => {
 											aria-label="Toggle password visibility"
 										>
 											{showPassword ? (
-												<i className="fa-solid fa-eye-slash  "></i>
+												<i className="fa-solid fa-eye-slash"></i>
 											) : (
 												<i className="fa-solid fa-eye"></i>
 											)}
@@ -227,21 +270,28 @@ const AuthPage = () => {
 							)}
 							<button
 								type="submit"
+								disabled={isSigningUp || isSignUpDisabled}
 								className={`mt-4 px-6 py-3 text-white font-bold rounded-full ${
 									isSignUpDisabled
 										? "bg-gray-400 cursor-not-allowed"
 										: "bg-gradient-to-tr from-purple-400 to-pink-300"
 								}`}
-								disabled={isSignUpDisabled}
 							>
-								Sign Up
+								{isSigningUp ? "Signing Up..." : "Sign Up"}
 							</button>
+							{signUpError && (
+								<p className="text-red-500">
+									{signUpErrorMessage instanceof Error
+										? signUpErrorMessage.message
+										: "An error occurred"}
+								</p>
+							)}
 						</form>
 					</div>
 
 					{/* Overlay */}
 					<div
-						className={`absolute top-0 left-1/2 w-1/2 h-full  text-white flex flex-col justify-center items-center transition-transform duration-500 ${isSignUp ? "-translate-x-full rounded-r-xl bg-gradient-to-bl from-purple-400 to-pink-300" : "translate-x-0 rounded-l-xl bg-gradient-to-bl from-pink-300 to-purple-400 "}`}
+						className={`absolute top-0 left-1/2 w-1/2 h-full  text-black flex flex-col justify-center items-center transition-transform duration-500 ${isSignUp ? "-translate-x-full rounded-r-xl bg-gradient-to-r from-white to-purple-100" : "translate-x-0 rounded-l-xl bg-gradient-to-r from-purple-100  to-white"}`}
 					>
 						{isSignUp ? (
 							<div className="text-center">
@@ -251,7 +301,7 @@ const AuthPage = () => {
 								</p>
 								<button
 									onClick={() => setIsSignUp(false)}
-									className="px-6 py-3 border border-white text-white rounded-full"
+									className="px-6 py-3 border border-gray-400 text-black rounded-full"
 								>
 									Sign In
 								</button>
@@ -264,7 +314,7 @@ const AuthPage = () => {
 								</p>
 								<button
 									onClick={() => setIsSignUp(true)}
-									className="px-6 py-3 border border-white text-white rounded-full"
+									className="px-6 py-3 border border-gray-400 text-black rounded-full"
 								>
 									Sign Up
 								</button>
@@ -277,7 +327,7 @@ const AuthPage = () => {
 			{/* image */}
 			<div className="hidden lg:block col-span-1">
 				<img
-					src="/auth-image.webp"
+					src="../../public/730500-spa-wallpaper.jpg"
 					alt="auth"
 					className="object-cover max-h-screen w-full h-full"
 				/>
