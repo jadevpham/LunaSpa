@@ -4,7 +4,7 @@ import React from "react";
 type CardProps<T> = {
 	data: T;
 	name: string;
-	address: string;
+	address: string | number; // với productItem thì thay address - string bằng price - number
 	img: string;
 	category: string;
 	star: number;
