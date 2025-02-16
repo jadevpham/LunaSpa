@@ -3,6 +3,7 @@ import Footer from "./components/Footer";
 import AuthPage from "./pages/AuthPage";
 import Header from "./components/Header";
 import BranchesList from "./components/BranchesList";
+import ServicesList from "./components/ServicesList";
 
 // Cấu hình Redux
 import { Provider } from "react-redux";
@@ -24,10 +25,16 @@ const App = () => {
 		return !location.pathname.includes("/auth") && <BranchesList />;
 	};
 
+	const ServicesWrapper = () => {
+		const location = useLocation();
+		return !location.pathname.includes("/auth") && <ServicesList />;
+	};
+
 	return (
 		<BrowserRouter>
 			<Provider store={store}>
 				<HeaderWrapper />
+				<ServicesWrapper />
 				<BranchesWrapper />
 				<Routes>
 					<Route
