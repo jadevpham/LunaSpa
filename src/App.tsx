@@ -1,10 +1,5 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import Footer from "./components/Footer";
 import AuthPage from "./pages/AuthPage";
-import Header from "./components/Header";
-import BranchesList from "./components/BranchesList";
-import ServicesList from "./components/ServicesList";
-import ProductsList from "./components/ProductsList";
 import _404Page from "./pages/_404Page";
 import TestAdmin from "./pages/testAdmin";
 import TestStudent from "./pages/testStudent";
@@ -15,44 +10,15 @@ import GoogleAuthRedirectHandler from "./auth-middlewares/GoogleAuthRedirectHand
 // Cấu hình Redux
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
-import Statistics from "./components/Statistics";
+import Home from "./pages/Home";
 
 const App = () => {
-	const FooterWrapper = () => {
-		const location = useLocation();
-		return !location.pathname.includes("/auth") && <Footer />;
-	};
-
-	const HeaderWrapper = () => {
-		const location = useLocation();
-		return !location.pathname.includes("/auth") && <Header />;
-	};
-
-	const BranchesWrapper = () => {
-		const location = useLocation();
-		return !location.pathname.includes("/auth") && <BranchesList />;
-	};
-
-	const ServicesWrapper = () => {
-		const location = useLocation();
-		return !location.pathname.includes("/auth") && <ServicesList />;
-	};
-
-	const ProductsWrapper = () => {
-		const location = useLocation();
-		return !location.pathname.includes("/auth") && <ProductsList />;
-	};
-
 	return (
 		<AuthProvider>
 			<BrowserRouter>
 				<Provider store={store}>
-					<HeaderWrapper />
-					<ServicesWrapper />
-					<BranchesWrapper />
-					<ProductsWrapper />
 					<Routes>
-						<Route path="/" element={<Statistics />} />
+						<Route path="/" element={<Home />} />
 						<Route path="/auth/*" element={<AuthPage />} />
 						<Route path="/unauthorized" element={<_404Page />} />
 
@@ -70,7 +36,6 @@ const App = () => {
 						/>
 						<Route path="*" element={<_404Page />} />
 					</Routes>
-					<FooterWrapper />
 				</Provider>
 			</BrowserRouter>
 		</AuthProvider>
