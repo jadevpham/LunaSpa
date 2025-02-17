@@ -81,7 +81,7 @@ const AuthPage = () => {
 		register(userData, {
 			onSuccess: (data) => {
 				console.log("Registration successful:", data);
-				setIsSignUp(false); // Chuyển sang trang đăng nhập
+				setIsSignUp(false);
 			},
 			onError: (err) => {
 				console.error("Registration failed:", err);
@@ -101,7 +101,7 @@ const AuthPage = () => {
 				>
 					<button
 						className={`absolute top-5 left-5 text-2xl z-50 cursor-pointer text-gray-600 hover:text-gray-800`}
-						onClick={() => navigate("/")}
+						onClick={() => navigate(-1)}
 					>
 						<i className="fa-solid fa-arrow-left"></i>
 					</button>
