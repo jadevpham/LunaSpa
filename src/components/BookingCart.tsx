@@ -1,32 +1,14 @@
 import React from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux/store";
 
-interface BookingCartProps {
-	shopName: string;
-	rating: number;
-	reviews: number;
-	location: string;
-	date: string;
-	time: string;
-	serviceName: string;
-	duration: string;
-	price: number;
-	total: number;
-	payNow: number;
-}
-
-const BookingCart: React.FC<BookingCartProps> = ({
-	shopName,
-	rating,
-	reviews,
-	location,
-	date,
-	time,
-	serviceName,
-	duration,
-	price,
-	total,
-	payNow,
-}) => {
+const BookingCart: React.FC = () => {
+	const {
+		selectedBranch,
+		selectedService,
+		selectedTime,
+		selectedPaymentMethod,
+	} = useSelector((state: RootState) => state.booking);
 	return (
 		<div className="p-6 rounded-lg shadow-md w-full max-w-md mx-auto">
 			{/* Shop Info */}
@@ -37,47 +19,50 @@ const BookingCart: React.FC<BookingCartProps> = ({
 					className="w-16 h-16 rounded-md object-cover"
 				/>
 				<div>
-					<h3 className="font-semibold text-lg">{shopName}</h3>
+					<h3 className="font-semibold text-lg">{"shopName"}</h3>
 					<p className="text-yellow-500">
-						{"⭐".repeat(Math.round(rating))} ({reviews})
+						{"⭐".repeat(Math.round(3))} ({4})
 					</p>
-					<p className="text-gray-500 text-sm">{location}</p>
+					<p className="text-gray-500 text-sm">{"location"}</p>
 				</div>
 			</div>
 
 			{/* Booking Details */}
 			<div className="mt-4 text-gray-700">
 				<p className="flex items-center space-x-2">
-					📅 <span>{date}</span>
+					📅 <span>{selectedTime?.ServiceBooking_Date}</span>
 				</p>
 				<p className="flex items-center space-x-2 mt-1">
-					⏰{" "}
+					⏰
 					<span>
-						{time} ({duration})
+						{selectedTime?.ServiceBooking_Time} (
+						{selectedService?.Service_Duration} mins duration)
 					</span>
 				</p>
 			</div>
 
 			{/* Service & Price */}
 			<div className="mt-4 border-t pt-4">
-				<p className="text-gray-700 font-medium">{serviceName}</p>
-				<p className="text-gray-500 text-sm">
-					{duration} with any professional
+				<p className="text-gray-700 font-medium">
+					{selectedService?.Service_Name}
 				</p>
-				<p className="font-semibold">HK${price}</p>
+
+				<p className="font-semibold">${selectedService?.Service_Price}</p>
 			</div>
 
 			{/* Payment Info */}
 			<div className="mt-4 border-t pt-4">
 				<div className="flex justify-between text-gray-700">
 					<span>Total</span>
-					<span className="font-semibold">from HK${total}</span>
+					<span className="font-semibold">
+						${selectedService?.Service_Price}
+					</span>
 				</div>
 				<div className="flex justify-between mt-1 text-green-600 font-medium">
-					<span>Pay now</span>
-					<span>HK${payNow}</span>
+					<span>{selectedPaymentMethod?.name}</span>
+					<span>${selectedService?.Service_Price}</span>
 				</div>
-				<p className="text-gray-500 text-sm">Pay at venue from HK${total}</p>
+				{/* <p className="text-gray-500 text-sm">Pay at venue from HK${100}</p> */}
 			</div>
 
 			{/* Confirm Button */}

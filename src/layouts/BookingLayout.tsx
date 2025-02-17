@@ -12,25 +12,13 @@ const BookingLayout = () => {
 			{/* Main container */}
 			<div className="flex flex-col lg:flex-row items-start justify-between mt-28 max-w-[1200px] mx-auto w-full px-4">
 				{/* Nội dung chính */}
-				<div className="w-full lg:w-1/2 p-4">
+				<div className="w-full lg:w-2/3 p-4">
 					<Outlet />
 				</div>
 
 				{/* BookingCart */}
 				<div className="w-full lg:w-1/3 lg:sticky top-36 mt-20 border border-gray-300">
-					<BookingCart
-						shopName="Luxury Spa"
-						rating={4.5}
-						reviews={120}
-						location="123 Beauty St, HK"
-						date="Feb 20, 2025"
-						time="10:00 AM"
-						serviceName="Relaxing Massage"
-						duration="60 min"
-						price={500}
-						total={500}
-						payNow={100}
-					/>
+					<BookingCart />
 				</div>
 			</div>
 		</div>

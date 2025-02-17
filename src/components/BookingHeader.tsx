@@ -3,7 +3,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 const breadcrumbs = [
 	{ label: "Services", path: "/book/services" },
-	{ label: "Professional", path: "/book/professional" },
 	{ label: "Time", path: "/book/time" },
 	{ label: "Confirm", path: "/book/confirm" },
 ];
@@ -29,6 +28,14 @@ const BookingHeader = () => {
 		}
 	};
 
+	const handleAbort = () => {
+		if (
+			window.confirm("Are you sure you want to cancel the booking process?")
+		) {
+			navigate("/");
+		}
+	};
+
 	return (
 		<div className="flex justify-between items-center p-5 bg-white shadow-md fixed top-0 left-0 w-full z-50">
 			<i
@@ -37,23 +44,33 @@ const BookingHeader = () => {
 			></i>
 
 			{/* Breadcrumbs */}
-			<div className="flex items-center space-x-2 text-gray-500">
+			<div className="flex items-center space-x-4 text-gray-500">
 				{breadcrumbs.map((crumb, index) => (
-					<span
-						key={crumb.path}
-						className={`cursor-pointer ${
-							index <= currentStepIndex
-								? "text-black font-semibold"
-								: "text-gray-400"
-						}`}
-						onClick={() => index <= currentStepIndex && navigate(crumb.path)}
-					>
-						{crumb.label} {index < breadcrumbs.length - 1 && ">"}
-					</span>
+					<React.Fragment key={crumb.path}>
+						<span
+							className={`cursor-pointer ${
+								index <= currentStepIndex
+									? "text-black font-semibold"
+									: "text-gray-400"
+							}`}
+							onClick={() => index <= currentStepIndex && navigate(crumb.path)}
+						>
+							{crumb.label}
+						</span>
+
+						{index < breadcrumbs.length - 1 && (
+							<span className=" text-gray-400">
+								<i className="fa-solid fa-greater-than text-sm"></i>
+							</span>
+						)}
+					</React.Fragment>
 				))}
 			</div>
 
-			<i className="fa-solid fa-x cursor-pointer text-xl mx-2"></i>
+			<i
+				className="fa-solid fa-x cursor-pointer text-xl mx-2"
+				onClick={handleAbort}
+			></i>
 
 			{/* Nút Tiếp Theo
 			<button

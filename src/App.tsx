@@ -1,54 +1,56 @@
-import React from "react";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import Footer from "./components/Footer";
-import Header from "./components/Header";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AuthPage from "./pages/AuthPage";
+import _404Page from "./pages/_404Page";
+import TestAdmin from "./pages/testAdmin";
+import TestStudent from "./pages/testStudent";
+import { AuthProvider } from "./auth-middlewares/authContext";
+import ProtectedRoute from "./auth-middlewares/protectedRoute";
+import GoogleAuthRedirectHandler from "./auth-middlewares/GoogleAuthRedirectHandler";
+
+// Cấu hình Redux
+import { Provider } from "react-redux";
+import { store } from "./redux/store";
+import Home from "./pages/Home";
+import BookingLayout from "./layouts/BookingLayout";
 import ServicesPage from "./pages/ServicesPage";
-import ProfessionalPage from "./pages/ProfessionalPage";
+
 import TimePage from "./pages/TimePage";
 import ConfirmPage from "./pages/ConfirmPage";
-import BookingLayout from "./layouts/BookingLayout";
+
 const App = () => {
-	const HIDDEN_PATHS = ["/auth", "/book"];
-
-	const FooterWrapper = () => {
-		const location = useLocation();
-		return (
-			!HIDDEN_PATHS.some((path) => location.pathname.startsWith(path)) && (
-				<Footer />
-			)
-		);
-	};
-
-	const HeaderWrapper = () => {
-		const location = useLocation();
-		return (
-			!HIDDEN_PATHS.some((path) => location.pathname.startsWith(path)) && (
-				<Header />
-			)
-		);
-	};
-
 	return (
-		<BrowserRouter>
-			<HeaderWrapper />
-			<Routes>
-				<Route
-					path="/"
-					element={<h1 className="text-red-500">Hello, React!</h1>}
-				/>
-				<Route path="/auth/*" element={<AuthPage />} />
+		<AuthProvider>
+			<BrowserRouter>
+				<Provider store={store}>
+					<Routes>
+						<Route path="/" element={<Home />} />
+						<Route path="/auth/*" element={<AuthPage />} />
+						<Route path="/unauthorized" element={<_404Page />} />
 
-				{/* Booking flow */}
-				<Route path="/book/*" element={<BookingLayout />}>
-					<Route path="services" element={<ServicesPage />} />
-					<Route path="professional" element={<ProfessionalPage />} />
-					<Route path="time" element={<TimePage />} />
-					<Route path="confirm" element={<ConfirmPage />} />
-				</Route>
-			</Routes>
-			<FooterWrapper />
-		</BrowserRouter>
+						<Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+							<Route path="/admin" element={<TestAdmin />} />
+						</Route>
+
+						<Route element={<ProtectedRoute allowedRoles={["student"]} />}>
+							<Route path="/student" element={<TestStudent />} />
+						</Route>
+
+						<Route path="/book/*" element={<BookingLayout />}>
+							<Route path="services" element={<ServicesPage />} />
+
+							<Route path="time" element={<TimePage />} />
+							<Route path="confirm" element={<ConfirmPage />} />
+						</Route>
+
+						<Route
+							path="/auth/google/callback"
+							element={<GoogleAuthRedirectHandler />}
+						/>
+						<Route path="*" element={<_404Page />} />
+					</Routes>
+				</Provider>
+			</BrowserRouter>
+		</AuthProvider>
 	);
 };
 
