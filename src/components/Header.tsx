@@ -5,22 +5,48 @@ import { format } from "date-fns";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { useNavigate } from "react-router-dom";
+import { RootState, AppDispatch } from "../redux/store";
+import { fetchServices } from "../redux/servicesSlice";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchBranches } from "../redux/branchesSlice";
 
 const Header: React.FC = () => {
 	const navigate = useNavigate();
 	// For Services
 	const [isOpenServices, setIsOpenServices] = useState(false);
 	const [selectedServices, setSelectedServices] = useState("All services");
-	const [categoriesServices, setCategoriesServices] = useState<
-		{ id: number; name: string }[]
-	>([]);
+	// const [categoriesServices, setCategoriesServices] = useState<
+	// 	{ id: number; name: string }[]
+	// >([]);
+
+	const dispatch = useDispatch<AppDispatch>(); // ✅ Khai báo dispatch kiểu AppDispatch
+
+	// ✅ Lấy dữ liệu từ Redux Store
+	const servicesList = useSelector(
+		(state: RootState) => state.services.servicesList,
+	);
+
+	// ✅ Gọi API của Services khi component mount
+	useEffect(() => {
+		dispatch(fetchServices());
+	}, [dispatch]);
 
 	// For Branches
 	const [selectedBranches, setSelectedBranches] = useState("Branches");
 	const [isOpenBranches, setIsOpenBranches] = useState(false);
-	const [categoriesBranches, setCategoriesBranches] = useState<
-		{ id: number; name: string }[]
-	>([]);
+	// const [categoriesBranches, setCategoriesBranches] = useState<
+	// 	{ id: number; name: string }[]
+	// >([]);
+
+	// ✅ Lấy dữ liệu từ Redux Store
+	const branchesList = useSelector(
+		(state: RootState) => state.branches.branchesList,
+	);
+
+	// ✅ Gọi API Branches khi component mount
+	useEffect(() => {
+		dispatch(fetchBranches());
+	}, [dispatch]);
 
 	// For Date
 	const [selectedDate, setSelectedDate] = useState<Date | undefined>();
@@ -35,36 +61,36 @@ const Header: React.FC = () => {
 	const dropdownRefTime = useRef<HTMLDivElement>(null);
 
 	// Gọi API để lấy danh mục Services từ backend
-	useEffect(() => {
-		const fetchCategoriesServices = async () => {
-			try {
-				const response = await axios.get(
-					"https://678511531ec630ca33a70f2e.mockapi.io/fgh/categoriesServices",
-				); // Thay bằng API BE
-				setCategoriesServices(response.data); // Giả sử API trả về [{ id: 1, name: "Hair & styling" }, { id: 2, name: "Massage" }]
-			} catch (error) {
-				console.error("Error fetching categories:", error);
-			}
-		};
+	// useEffect(() => {
+	// 	const fetchCategoriesServices = async () => {
+	// 		try {
+	// 			const response = await axios.get(
+	// 				"https://678511531ec630ca33a70f2e.mockapi.io/fgh/categoriesServices",
+	// 			); // Thay bằng API BE
+	// 			setCategoriesServices(response.data); // Giả sử API trả về [{ id: 1, name: "Hair & styling" }, { id: 2, name: "Massage" }]
+	// 		} catch (error) {
+	// 			console.error("Error fetching categories:", error);
+	// 		}
+	// 	};
 
-		fetchCategoriesServices();
-	}, []);
+	// 	fetchCategoriesServices();
+	// }, []);
 
 	// Gọi API để lấy danh mục Branches từ backend
-	useEffect(() => {
-		const fetchCategoriesBranches = async () => {
-			try {
-				const response = await axios.get(
-					"https://678511531ec630ca33a70f2e.mockapi.io/fgh/categoriesServices",
-				); // Thay bằng API BE
-				setCategoriesBranches(response.data); // Giả sử API trả về [{ id: 1, name: "Hair & styling" }, { id: 2, name: "Massage" }]
-			} catch (error) {
-				console.error("Error fetching categories:", error);
-			}
-		};
+	// useEffect(() => {
+	// 	const fetchCategoriesBranches = async () => {
+	// 		try {
+	// 			const response = await axios.get(
+	// 				"https://678511531ec630ca33a70f2e.mockapi.io/fgh/categoriesServices",
+	// 			); // Thay bằng API BE
+	// 			setCategoriesBranches(response.data); // Giả sử API trả về [{ id: 1, name: "Hair & styling" }, { id: 2, name: "Massage" }]
+	// 		} catch (error) {
+	// 			console.error("Error fetching categories:", error);
+	// 		}
+	// 	};
 
-		fetchCategoriesBranches();
-	}, []);
+	// 	fetchCategoriesBranches();
+	// }, []);
 
 	// Đóng dropdown Date khi click ra ngoài
 	useEffect(() => {
@@ -201,16 +227,16 @@ const Header: React.FC = () => {
 											Top categories
 										</h3>
 										<ul>
-											{categoriesServices.map((categoriesServices, index) => (
+											{servicesList.map((servicesList, index) => (
 												<li
 													key={index}
 													className="flex items-center text-left gap-3 p-3 hover:bg-gray-100 rounded-lg cursor-pointer"
 													onClick={() => {
-														setSelectedServices(categoriesServices.name);
+														setSelectedServices(servicesList.name);
 														setIsOpenServices(false); // Ẩn dropdown sau khi chọn
 													}}
 												>
-													<span>{categoriesServices.name}</span>
+													<span>{servicesList.name}</span>
 												</li>
 											))}
 										</ul>
@@ -232,16 +258,16 @@ const Header: React.FC = () => {
 									<div className="absolute top-14 left-0 w-96 bg-white border border-gray-200 shadow-2xl rounded-lg p-4 max-h-80 overflow-y-auto z-10">
 										{/* Danh mục */}
 										<ul>
-											{categoriesBranches.map((categoryBranches, index) => (
+											{branchesList.map((branchesList, index) => (
 												<li
 													key={index}
 													className="flex items-center text-left gap-3 p-3 hover:bg-gray-100 rounded-lg cursor-pointer"
 													onClick={() => {
-														setSelectedBranches(categoryBranches.name);
+														setSelectedBranches(branchesList.name);
 														setIsOpenBranches(false); // Ẩn dropdown sau khi chọn
 													}}
 												>
-													<span>{categoryBranches.name}</span>
+													<span>{branchesList.name}</span>
 												</li>
 											))}
 										</ul>
