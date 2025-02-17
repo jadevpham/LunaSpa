@@ -10,14 +10,14 @@ const BookingLayout = () => {
 			<BookingHeader />
 
 			{/* Main container */}
-			<div className="flex flex-col lg:flex-row justify-between mt-28 max-w-[1200px] mx-auto w-full">
+			<div className="flex flex-col lg:flex-row items-start justify-between mt-28 max-w-[1200px] mx-auto w-full px-4">
 				{/* Nội dung chính */}
 				<div className="w-full lg:w-1/2 p-4">
 					<Outlet />
 				</div>
 
 				{/* BookingCart */}
-				<div className="w-full lg:w-1/4 lg:fixed mr-40 right-0 p-4 bg-white shadow-lg">
+				<div className="w-full lg:w-1/3 lg:sticky top-36 mt-20 border border-gray-300">
 					<BookingCart
 						shopName="Luxury Spa"
 						rating={4.5}

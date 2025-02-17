@@ -28,7 +28,7 @@ const BookingCart: React.FC<BookingCartProps> = ({
 	payNow,
 }) => {
 	return (
-		<div className="bg-gray-100 p-6 rounded-lg shadow-md w-full max-w-md">
+		<div className="p-6 rounded-lg shadow-md w-full max-w-md mx-auto">
 			{/* Shop Info */}
 			<div className="flex items-start space-x-4">
 				<img
