@@ -1,9 +1,10 @@
-import React from "react";
-import Header from "../components/Header";
+import BranchesList from "../components/BranchesList";
 import Footer from "../components/Footer";
-import ServicesList from "../components/ServicesList";
-import BranchesList from "../components/ServicesList";
-import ProductsList from "../components/ServicesList";
+import Header from "../components/Header";
+import {
+	default as ProductsList,
+	default as ServicesList,
+} from "../components/ServicesList";
 import Statistics from "../components/Statistics";
 const Home = () => {
 	return (

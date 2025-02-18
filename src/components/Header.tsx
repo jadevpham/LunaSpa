@@ -1,14 +1,12 @@
-import React from "react";
-import { useState, useEffect, useRef } from "react";
-import axios from "axios";
 import { format } from "date-fns";
+import React, { useEffect, useRef, useState } from "react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { RootState, AppDispatch } from "../redux/store";
-import { fetchServices } from "../redux/servicesSlice";
-import { useSelector, useDispatch } from "react-redux";
 import { fetchBranches } from "../redux/branchesSlice";
+import { fetchServices } from "../redux/servicesSlice";
+import { AppDispatch, RootState } from "../redux/store";
 
 const Header: React.FC = () => {
 	const navigate = useNavigate();
