@@ -4,7 +4,7 @@ import { RootState } from "../redux/store";
 import { setTime } from "../redux/bookingSlice";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
-import Calendar from "react-calendar";
+import { DayPicker } from "react-day-picker";
 import "react-calendar/dist/Calendar.css";
 
 interface BookTime {
@@ -20,7 +20,9 @@ const TimePage = () => {
 	);
 	const today = dayjs();
 
-	const [selectedDate, setSelectedDate] = useState(today.format("YYYY-MM-DD"));
+	const [selectedDate, setSelectedDate] = useState<Date | undefined>(
+		today.toDate(),
+	);
 	const [selectedTime, setSelectedTime] = useState<string | null>(null);
 	const [currentWeekStart, setCurrentWeekStart] = useState(
 		today.startOf("week"),
@@ -53,7 +55,7 @@ const TimePage = () => {
 	];
 
 	// Chọn ngày
-	const handleSelectDate = (date: string) => {
+	const handleSelectDate = (date: Date) => {
 		setSelectedDate(date);
 		setSelectedTime(null);
 	};
@@ -62,15 +64,15 @@ const TimePage = () => {
 	const handleSelectTime = (time: string) => {
 		setSelectedTime(time);
 		const selectedTime: BookTime = {
-			ServiceBooking_Date: selectedDate,
+			ServiceBooking_Date: selectedDate
+				? dayjs(selectedDate).format("YYYY-MM-DD")
+				: "",
 			ServiceBooking_Time: time,
 		};
 		dispatch(setTime(selectedTime));
-		navigate("/book/confirm");
 	};
 
 	const handlePrevWeek = () => {
-		// Không cho phép trượt về tuần trước nếu tuần hiện tại đã ở quá khứ
 		if (currentWeekStart.isAfter(today.startOf("week"))) {
 			setSlideDirection("left");
 			setIsSliding(true);
@@ -84,13 +86,13 @@ const TimePage = () => {
 		setCurrentWeekStart(currentWeekStart.add(1, "week"));
 	};
 
-	// Xử lý khi người dùng chọn ngày từ calendar
-	const handleCalendarChange = (value: Date | Date[]) => {
-		const date = Array.isArray(value) ? value[0] : value;
-		setSelectedDate(dayjs(date).format("YYYY-MM-DD"));
-		// Tính lại ngày đầu tuần mới dựa trên ngày đã chọn
-		setCurrentWeekStart(dayjs(date).startOf("week"));
-		setShowCalendar(false); // Ẩn calendar sau khi chọn ngày
+	const handleCalendarChange = (value: Date | undefined) => {
+		if (value) {
+			setSelectedDate(value);
+			// Tính lại ngày đầu tuần mới dựa trên ngày đã chọn
+			setCurrentWeekStart(dayjs(value).startOf("week"));
+			setShowCalendar(false); // Ẩn calendar sau khi chọn ngày
+		}
 	};
 
 	useEffect(() => {
@@ -107,11 +109,11 @@ const TimePage = () => {
 	}, [selectedService, navigate]);
 	return (
 		<div className="p-5">
-			<h2 className="text-2xl font-bold mb-4 flex items-center justify-between">
+			<h2 className="text-5xl font-bold mb-4 flex items-center justify-between">
 				<span>Select time</span>
 				<button
 					onClick={() => setShowCalendar(!showCalendar)}
-					className="p-2 z-50"
+					className="p-2 z-20"
 				>
 					<i className="fa-solid fa-calendar-minus text-2xl cursor-pointer " />
 				</button>
@@ -128,7 +130,7 @@ const TimePage = () => {
 						className={`fa-solid fa-arrow-left cursor-pointer text-xl mx-2  ${currentWeekStart.isBefore(today.startOf("week")) ? "cursor-not-allowed" : ""}`}
 					></i>
 				</button>
-				<h3 className="flex-1 text-center font-bold text-xl">
+				<h3 className="flex-1 text-center font-bold text-2xl">
 					{currentWeekStart.format("MMMM YYYY")}
 				</h3>
 				<button className="p-2" onClick={handleNextWeek}>
@@ -138,19 +140,38 @@ const TimePage = () => {
 
 			{/* calendar overlay */}
 			{showCalendar && (
-				<div className="fixed inset-0 bg-opacity-50 flex justify-center items-center z-10">
-					<Calendar
-						onChange={handleCalendarChange}
-						value={new Date(selectedDate)}
-						className="mx-auto"
-						showNeighboringMonth={false}
-						minDate={today.toDate()}
-						selectRange={false}
-						showWeekNumbers={false}
-						locale="en"
-						next2Label={null}
-						prev2Label={null}
+				<div className="absolute top-28 right-72 w-[350px] bg-white border shadow-lg rounded-lg p-4 z-10">
+					<div className="flex gap-2 mb-4">
+						<button
+							className={`px-3 py-1 rounded-full ${!selectedDate ? "bg-blue-500 text-white" : "border"}`}
+							onClick={() => setSelectedDate(undefined)}
+						>
+							Any date
+						</button>
+						<button
+							className="border px-3 py-1 rounded-full"
+							onClick={() => setSelectedDate(new Date())}
+						>
+							Today
+						</button>
+						<button
+							className="border px-3 py-1 rounded-full"
+							onClick={() => {
+								const tomorrow = new Date();
+								tomorrow.setDate(tomorrow.getDate() + 1);
+								setSelectedDate(tomorrow);
+							}}
+						>
+							Tomorrow
+						</button>
+					</div>
+
+					{/* Hiển thị lịch */}
+					<DayPicker
+						mode="single"
 						selected={selectedDate}
+						onSelect={handleCalendarChange}
+						disabled={{ before: new Date() }} // Chặn ngày trong quá khứ
 					/>
 				</div>
 			)}
@@ -158,7 +179,7 @@ const TimePage = () => {
 			{/* chọn ngày trong tuần */}
 			<div className="flex justify-between mb-3 relative overflow-hidden">
 				<div
-					className={`flex space-x-6 my-2 transition-transform duration-300 ease-in-out ${
+					className={`grid grid-cols-7 gap-2 w-full transition-transform duration-300 ease-in-out ${
 						isSliding
 							? slideDirection === "right"
 								? "transform translate-x-[-100%]"
@@ -169,20 +190,24 @@ const TimePage = () => {
 					{daysInWeek.map((day) => (
 						<button
 							key={day.format("YYYY-MM-DD")}
-							className={`p-2 rounded-full w-20 h-20 text-center transition-transform duration-300 ease-in-out ${
+							className={`w-full max-w-[45px] md:max-w-[55px] lg:max-w-[65px] aspect-square flex flex-col items-center justify-center rounded-full transition-all duration-300 ease-in-out ${
 								day.isBefore(today, "day")
-									? "bg-gray-300 text-gray-400"
-									: selectedDate === day.format("YYYY-MM-DD")
-										? "bg-purple-600 text-white scale-105"
-										: "bg-gray-200 text-gray-700 scale-100"
+									? "bg-gray-300 text-gray-400 cursor-not-allowed"
+									: selectedDate && day.isSame(selectedDate, "day")
+										? "bg-gradient-to-tr from-purple-400 to-pink-300 text-white scale-105 shadow-md"
+										: "bg-gray-200 text-gray-700 hover:scale-105"
 							}`}
-							onClick={() => handleSelectDate(day.format("YYYY-MM-DD"))}
+							onClick={() => handleSelectDate(day.toDate())}
 							disabled={day.isBefore(today, "day")}
 						>
-							<div className="text-center">{day.format("ddd")}</div>
-							<div className="text-center font-bold">{day.format("D")}</div>
+							<div className="text-center text-xs md:text-sm lg:text-base">
+								{day.format("ddd")}
+							</div>
+							<div className="text-center text-sm font-bold">
+								{day.format("D")}
+							</div>
 						</button>
-					))}{" "}
+					))}
 				</div>
 			</div>
 
@@ -201,5 +226,4 @@ const TimePage = () => {
 		</div>
 	);
 };
-
 export default TimePage;

@@ -25,7 +25,7 @@ const ConfirmPage = () => {
 
 	return (
 		<div className="p-5 space-y-6">
-			<h2 className="text-4xl font-bold">Review and Confirm</h2>
+			<h2 className="text-5xl font-bold">Review and Confirm</h2>
 
 			{/* Phương thức thanh toán */}
 			<div className="bg-gray-100 p-4 rounded-lg">

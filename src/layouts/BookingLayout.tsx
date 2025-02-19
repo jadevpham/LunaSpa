@@ -17,7 +17,7 @@ const BookingLayout = () => {
 				</div>
 
 				{/* BookingCart */}
-				<div className="w-full lg:w-1/3 lg:sticky top-36 mt-20 border border-gray-300">
+				<div className="w-full lg:w-1/3 lg:sticky rounded-lg top-32 mt-24 border border-gray-500 mb-10">
 					<BookingCart />
 				</div>
 			</div>

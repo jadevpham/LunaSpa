@@ -10,7 +10,7 @@ type BookingState = {
 		star: number;
 		vote: number;
 	} | null;
-	selectedService: {
+	selectedService: Array<{
 		Service_ID: string;
 		Service_Name: string;
 		Service_Description: string;
@@ -19,7 +19,7 @@ type BookingState = {
 		Service_Duration: number;
 		Service_TypeID: string;
 		Service_IncludeProduct_ID: string;
-	} | null;
+	}> | null;
 	selectedTime: {
 		ServiceBooking_Date: string;
 		ServiceBooking_Time: string;
@@ -34,7 +34,7 @@ const initialState: BookingState = {
 	selectedBranch: null,
 	selectedService: null,
 	selectedTime: null,
-	selectedPaymentMethod: { id: "VNPay", name: "VNPay" },
+	selectedPaymentMethod: null,
 };
 
 const bookingSlice = createSlice({
@@ -43,54 +43,45 @@ const bookingSlice = createSlice({
 	reducers: {
 		setBranch: (
 			state,
-			action: PayloadAction<{
-				id: string;
-				name: string;
-				address: string;
-				img: string;
-				category: string;
-				star: number;
-				vote: number;
-			}>,
+			action: PayloadAction<BookingState["selectedBranch"]>,
 		) => {
 			state.selectedBranch = action.payload;
 		},
-		setService: (
+		addService: (
 			state,
-			action: PayloadAction<{
-				Service_ID: string;
-				Service_Name: string;
-				Service_Description: string;
-				Service_Image: string;
-				Service_Price: number;
-				Service_Duration: number;
-				Service_TypeID: string;
-				Service_IncludeProduct_ID: string;
-			}>,
+			action: PayloadAction<
+				NonNullable<BookingState["selectedService"]>[number]
+			>,
 		) => {
-			state.selectedService = action.payload;
+			if (!state.selectedService) {
+				state.selectedService = [];
+			}
+			state.selectedService.push(action.payload);
 		},
-		setTime: (
-			state,
-			action: PayloadAction<{
-				ServiceBooking_Date: string;
-				ServiceBooking_Time: string;
-			}>,
-		) => {
+		removeService: (state, action: PayloadAction<string>) => {
+			if (state.selectedService) {
+				state.selectedService = state.selectedService.filter(
+					(service) => service.Service_ID !== action.payload,
+				);
+			}
+		},
+		setTime: (state, action: PayloadAction<BookingState["selectedTime"]>) => {
 			state.selectedTime = action.payload;
 		},
 		setPaymentMethod: (
 			state,
-			action: PayloadAction<{
-				id: string;
-				name: string;
-			}>,
+			action: PayloadAction<BookingState["selectedPaymentMethod"]>,
 		) => {
 			state.selectedPaymentMethod = action.payload;
 		},
 	},
 });
 
-export const { setService, setTime, setBranch, setPaymentMethod } =
-	bookingSlice.actions;
+export const {
+	addService,
+	removeService,
+	setTime,
+	setBranch,
+	setPaymentMethod,
+} = bookingSlice.actions;
 export default bookingSlice.reducer;
