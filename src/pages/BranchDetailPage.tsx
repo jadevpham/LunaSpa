@@ -1,13 +1,15 @@
 import {
 	AimOutlined,
+	AppleOutlined,
 	CheckOutlined,
 	ClockCircleOutlined,
 	DownOutlined,
 	HeartFilled,
+	ProfileOutlined,
 	StarFilled,
 	UploadOutlined,
 } from "@ant-design/icons";
-import { Radio, Tabs, type RadioChangeEvent } from "antd";
+import { Popover, Radio, Tabs, type RadioChangeEvent } from "antd";
 import { useState } from "react";
 import avatar from "../assets/react.svg";
 import Footer from "../components/Footer";
@@ -17,15 +19,23 @@ import { spaServices } from "../data/servicesListMock";
 import CardItem from "../templates/CardItem";
 
 type TabYPosition = "top" | "bottom";
-
-// const ProfilePopover = (data: any) => {
-// 	return
-// 	(<div>
-// 		<h1>
-
-// 		</h1>
-// 	</div>)
-// };
+const ProfilePopoverHeader = () => {
+	return <div className="p-3 text-lg">Tui la con cho</div>;
+};
+const ProfilePopover = () => {
+	return (
+		<div className="space-y-4 font-medium text-base p-3">
+			<div className="">
+				<ProfileOutlined className="mr-2" />
+				Profile
+			</div>
+			<div className="">
+				<AppleOutlined className="mr-2" />
+				Appointments
+			</div>
+		</div>
+	);
+};
 // interface subServicesType {
 // 	name: string;
 // 	duration: string;
@@ -104,10 +114,15 @@ export default function BranchDetailPage() {
 							</button>
 						</div>
 					</div>
-					<div className="border-1.75 p-[0.2rem] rounded-full flex space-x-4 pr-3">
-						<img src={avatar} alt="Avatar" className="w-10 aspect-square" />
-						<DownOutlined />
-					</div>
+					<Popover
+						content={ProfilePopover("hehe")}
+						title={ProfilePopoverHeader()}
+					>
+						<div className="border-1.75 p-[0.2rem] rounded-full flex space-x-4 pr-3">
+							<img src={avatar} alt="Avatar" className="w-10 aspect-square" />
+							<DownOutlined />
+						</div>
+					</Popover>
 				</div>
 			</div>
 			{/* Container */}
