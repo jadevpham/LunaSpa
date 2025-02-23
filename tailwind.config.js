@@ -11,6 +11,9 @@ export default {
 				2: "#0d1619",
 				3: "#757676",
 				4: "#bfbfbf",
+				5: "#6950f3",
+				6: "3d2e9f",
+				7: "#EEEEEE",
 			},
 			borderWidth: {
 				1.75: "1.75px",
