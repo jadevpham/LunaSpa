@@ -10,7 +10,8 @@ import GoogleAuthRedirectHandler from "./auth-middlewares/GoogleAuthRedirectHand
 // Cấu hình Redux
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
-import Home from "./pages/Home";
+import HomePage from "./pages/HomePage";
+import SearchPage from "./pages/SearchPage";
 
 const App = () => {
 	return (
@@ -18,7 +19,7 @@ const App = () => {
 			<BrowserRouter>
 				<Provider store={store}>
 					<Routes>
-						<Route path="/" element={<Home />} />
+						<Route path="/" element={<HomePage />} />
 						<Route path="/auth/*" element={<AuthPage />} />
 						<Route path="/unauthorized" element={<_404Page />} />
 
@@ -35,6 +36,7 @@ const App = () => {
 							element={<GoogleAuthRedirectHandler />}
 						/>
 						<Route path="*" element={<_404Page />} />
+						<Route path="/search" element={<SearchPage />} />
 					</Routes>
 				</Provider>
 			</BrowserRouter>

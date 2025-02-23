@@ -4,6 +4,8 @@ import { configureStore } from "@reduxjs/toolkit";
 import branchesReducer from "./branchesSlice";
 import servicesReducer from "./servicesSlice";
 import productsReducer from "./productsSlice";
+import filterReducer from "./filterSlice";
+
 export const store = configureStore({
 	reducer: {
 		// hàm này sẽ return state (trong redux thì state ~~~ reducer)
@@ -15,6 +17,7 @@ export const store = configureStore({
 		// khi sang component, trong useSelector thì state.key.tênObjectTronginitialStateCủaFileSlice
 		services: servicesReducer,
 		products: productsReducer,
+		filter: filterReducer,
 	},
 });
 // ✅ Export RootState (Kiểu của Redux Store)
