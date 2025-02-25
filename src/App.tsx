@@ -1,17 +1,17 @@
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import GoogleAuthRedirectHandler from "./auth-middlewares/GoogleAuthRedirectHandler";
+import { AuthProvider } from "./auth-middlewares/authContext";
+import ProtectedRoute from "./auth-middlewares/protectedRoute";
 import AuthPage from "./pages/AuthPage";
 import _404Page from "./pages/_404Page";
 import TestAdmin from "./pages/testAdmin";
 import TestStudent from "./pages/testStudent";
-import { AuthProvider } from "./auth-middlewares/authContext";
-import ProtectedRoute from "./auth-middlewares/protectedRoute";
-import GoogleAuthRedirectHandler from "./auth-middlewares/GoogleAuthRedirectHandler";
 
 // Cấu hình Redux
 import { Provider } from "react-redux";
-import { store } from "./redux/store";
 import HomePage from "./pages/HomePage";
 import SearchPage from "./pages/SearchPage";
+import { store } from "./redux/store";
 
 const App = () => {
 	return (
