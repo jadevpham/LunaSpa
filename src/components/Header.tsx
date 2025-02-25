@@ -5,17 +5,18 @@ import "react-day-picker/dist/style.css";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { fetchBranches } from "../redux/branchesSlice";
+import { setFilterCriteria } from "../redux/filterSlice";
+import { selectFilterCriteria } from "../redux/selectors";
 import { fetchServices } from "../redux/servicesSlice";
-import { AppDispatch, RootState } from "../redux/store";
 
 const Header: React.FC = () => {
 	const navigate = useNavigate();
-	// For Services
+	const filterCriteria = useSelector(selectFilterCriteria);
+
+	// I. For Services
 	const [isOpenServices, setIsOpenServices] = useState(false);
-	const [selectedServices, setSelectedServices] = useState("All services");
-	// const [categoriesServices, setCategoriesServices] = useState<
-	// 	{ id: number; name: string }[]
-	// >([]);
+	const [selectedServicesName, setSelectedServicesName] =
+		useState("All services");
 
 	const dispatch = useDispatch<AppDispatch>(); // ✅ Khai báo dispatch kiểu AppDispatch
 
@@ -29,12 +30,32 @@ const Header: React.FC = () => {
 		dispatch(fetchServices());
 	}, [dispatch]);
 
-	// For Branches
-	const [selectedBranches, setSelectedBranches] = useState("Branches");
+	// ✅ Khi back từ trang Search về Home, giữ lại selectedServicesName
+	useEffect(() => {
+		if (filterCriteria.serviceId) {
+			// ✅ Tìm serviceName từ serviceId nếu có
+			const selectedService = servicesList.find(
+				(service) => service.id === filterCriteria.serviceId,
+			);
+			if (selectedService) {
+				setSelectedServicesName(selectedService.name);
+			}
+		} else {
+			setSelectedServicesName("All services"); // 🛠 Reset khi không có serviceId
+		}
+	}, [filterCriteria.serviceId, servicesList]);
+
+	// ✅ Khi chọn service
+	const handleSelectService = (serviceId: string, serviceName: string) => {
+		setSelectedServicesName(serviceName); // ✅ Cập nhật UI dropdown
+		dispatch(setFilterCriteria({ serviceId })); // ❌ Không gửi selectedServicesName vào Redux
+		setIsOpenServices(false); // ✅ Đóng dropdown
+	};
+
+	// II. For Branches
+	const [selectedBranchesName, setSelectedBranchesName] =
+		useState(" All Branches");
 	const [isOpenBranches, setIsOpenBranches] = useState(false);
-	// const [categoriesBranches, setCategoriesBranches] = useState<
-	// 	{ id: number; name: string }[]
-	// >([]);
 
 	// ✅ Lấy dữ liệu từ Redux Store
 	const branchesList = useSelector(
@@ -46,49 +67,32 @@ const Header: React.FC = () => {
 		dispatch(fetchBranches());
 	}, [dispatch]);
 
-	// For Date
+	// ✅ Khi back từ trang Search về Home, giữ lại setSelectedBranchesName
+	useEffect(() => {
+		if (filterCriteria.branchId) {
+			// ✅ Tìm serviceName từ serviceId nếu có
+			const selectedBranch = branchesList.find(
+				(branch) => branch.id === filterCriteria.branchId,
+			);
+			if (selectedBranch) {
+				setSelectedBranchesName(selectedBranch.name);
+			}
+		} else {
+			setSelectedBranchesName("All Branches"); // 🛠 Reset khi không có branchId
+		}
+	}, [filterCriteria.branchId, branchesList]);
+
+	// ✅ Khi chọn branches
+	const handleSelectBranch = (branchId: string, branchName: string) => {
+		setSelectedBranchesName(branchName); // ✅ Cập nhật UI dropdown
+		dispatch(setFilterCriteria({ branchId })); // ❌ Không gửi selectedServicesName vào Redux
+		setIsOpenBranches(false); // ✅ Đóng dropdown
+	};
+
+	// III. For Date
 	const [selectedDate, setSelectedDate] = useState<Date | undefined>();
 	const [isOpenDate, setIsOpenDate] = useState(false);
 	const dropdownRefDate = useRef<HTMLDivElement>(null);
-
-	// For Time
-	const [startTime, setStartTime] = useState("");
-	const [endTime, setEndTime] = useState("");
-	const [availableTimes, setAvailableTimes] = useState<string[]>([]);
-	const [isOpenTime, setIsOpenTime] = useState(false);
-	const dropdownRefTime = useRef<HTMLDivElement>(null);
-
-	// Gọi API để lấy danh mục Services từ backend
-	// useEffect(() => {
-	// 	const fetchCategoriesServices = async () => {
-	// 		try {
-	// 			const response = await axios.get(
-	// 				"https://678511531ec630ca33a70f2e.mockapi.io/fgh/categoriesServices",
-	// 			); // Thay bằng API BE
-	// 			setCategoriesServices(response.data); // Giả sử API trả về [{ id: 1, name: "Hair & styling" }, { id: 2, name: "Massage" }]
-	// 		} catch (error) {
-	// 			console.error("Error fetching categories:", error);
-	// 		}
-	// 	};
-
-	// 	fetchCategoriesServices();
-	// }, []);
-
-	// Gọi API để lấy danh mục Branches từ backend
-	// useEffect(() => {
-	// 	const fetchCategoriesBranches = async () => {
-	// 		try {
-	// 			const response = await axios.get(
-	// 				"https://678511531ec630ca33a70f2e.mockapi.io/fgh/categoriesServices",
-	// 			); // Thay bằng API BE
-	// 			setCategoriesBranches(response.data); // Giả sử API trả về [{ id: 1, name: "Hair & styling" }, { id: 2, name: "Massage" }]
-	// 		} catch (error) {
-	// 			console.error("Error fetching categories:", error);
-	// 		}
-	// 	};
-
-	// 	fetchCategoriesBranches();
-	// }, []);
 
 	// Đóng dropdown Date khi click ra ngoài
 	useEffect(() => {
@@ -104,13 +108,24 @@ const Header: React.FC = () => {
 		return () => document.removeEventListener("mousedown", handleClickOutside);
 	}, []);
 
+	// IV. For Time
+	const [startTime, setStartTime] = useState("");
+	const [endTime, setEndTime] = useState("");
+	const [availableTimes, setAvailableTimes] = useState<string[]>([]);
+	const [isOpenTime, setIsOpenTime] = useState(false);
+	const dropdownRefTime = useRef<HTMLDivElement>(null);
+
 	// Hàm tạo danh sách Time theo Date
 	useEffect(() => {
 		if (selectedDate) {
 			const times = generateValidTimeSlots(selectedDate);
-			setAvailableTimes(generateValidTimeSlots(selectedDate));
-			setStartTime(times[0]);
-			setEndTime(times[1]);
+			setAvailableTimes(times);
+
+			// Chỉ đặt startTime & endTime nếu chúng chưa được chọn trước đó
+			if (!startTime || !endTime) {
+				setStartTime("");
+				setEndTime("");
+			}
 		}
 	}, [selectedDate]);
 
@@ -133,23 +148,44 @@ const Header: React.FC = () => {
 
 	// Hàm tạo mảng thời gian theo buổi
 	const setTimeRange = (range: "any" | "morning" | "afternoon" | "evening") => {
+		if (!availableTimes.length) return;
+
+		let newStartTime = "";
+		let newEndTime = "";
+
 		switch (range) {
 			case "morning":
-				setStartTime("08:00");
-				setEndTime("12:00");
+				newStartTime = availableTimes.find((time) => time >= "08:00") || "";
+				newEndTime =
+					[...availableTimes]
+						.filter((time) => time > newStartTime && time <= "12:00")
+						.pop() || newStartTime;
 				break;
 			case "afternoon":
-				setStartTime("12:00");
-				setEndTime("16:00");
+				newStartTime = availableTimes.find((time) => time >= "12:00") || "";
+				newEndTime =
+					[...availableTimes]
+						.filter((time) => time > newStartTime && time <= "16:00")
+						.pop() || newStartTime;
 				break;
 			case "evening":
-				setStartTime("16:00");
-				setEndTime("21:00");
+				newStartTime = availableTimes.find((time) => time >= "16:00") || "";
+				newEndTime =
+					[...availableTimes]
+						.filter((time) => time > newStartTime && time <= "21:00")
+						.pop() || newStartTime;
 				break;
 			default:
-				setStartTime(availableTimes[0]);
-				setEndTime(availableTimes[1]);
+				newStartTime = availableTimes[0];
+				newEndTime = availableTimes[1] || availableTimes[0];
 		}
+
+		setStartTime(newStartTime);
+		setEndTime(newEndTime);
+
+		dispatch(
+			setFilterCriteria({ startTime: newStartTime, endTime: newEndTime }),
+		);
 	};
 
 	// Đóng dropdown Time khi click ra ngoài
@@ -177,6 +213,103 @@ const Header: React.FC = () => {
 	const isMorningPast = isToday && now.getHours() >= 12;
 	const isAfternoonPast = isToday && now.getHours() >= 16;
 	const isEveningPast = isToday && now.getHours() >= 21;
+
+	// Dispatch chúng vào Redux khi người dùng chọn giá trị mới
+	const handleSelectDate = (selectedDate?: Date | null) => {
+		if (!selectedDate) {
+			// Nếu không có ngày, reset cả UI và Redux
+			setSelectedDate(undefined);
+			setStartTime("");
+			setEndTime("");
+			dispatch(
+				setFilterCriteria({ date: undefined, startTime: "", endTime: "" }),
+			);
+			return;
+		}
+
+		// ✅ Tránh lỗi lệch ngày do múi giờ bằng cách tạo một Date UTC
+		const utcDate = new Date(
+			Date.UTC(
+				selectedDate.getFullYear(),
+				selectedDate.getMonth(),
+				selectedDate.getDate(),
+			),
+		);
+
+		// ✅ Lưu Redux dưới dạng YYYY-MM-DD mà không bị lệch múi giờ
+		const formattedDate = `${utcDate.getFullYear()}-${(utcDate.getMonth() + 1)
+			.toString()
+			.padStart(2, "0")}-${utcDate.getDate().toString().padStart(2, "0")}`;
+
+		setSelectedDate(utcDate); // ✅ Cập nhật UI với Date
+
+		// ✅ Khi chọn ngày mới, không đặt giờ mặc định
+		setStartTime("");
+		setEndTime("");
+		dispatch(
+			setFilterCriteria({ date: formattedDate, startTime: "", endTime: "" }),
+		); // ✅ Lưu Redux dưới dạng string chuẩn
+	};
+
+	const handleSelectStartTime = (time: string) => {
+		setStartTime(time);
+
+		// Tìm giá trị endTime hợp lệ
+		const nextValidEndTime = availableTimes.find((t) => t > time) || "";
+
+		// Cập nhật endTime nếu cần
+		const newEndTime = endTime && endTime > time ? endTime : nextValidEndTime;
+		setEndTime(newEndTime);
+
+		// Đảm bảo Redux nhận giá trị hợp lệ
+		dispatch(setFilterCriteria({ startTime: time, endTime: newEndTime }));
+	};
+
+	const handleSelectEndTime = (time: string) => {
+		setEndTime(time);
+
+		// Đảm bảo Redux nhận giá trị mới ngay lập tức
+		dispatch(setFilterCriteria({ startTime, endTime: time }));
+	};
+
+	useEffect(() => {
+		// Nếu filterCriteria.date có giá trị, chuyển đổi từ string về Date
+		if (filterCriteria.date) {
+			setSelectedDate(new Date(filterCriteria.date));
+		} else {
+			setSelectedDate(undefined); // Xóa date nếu không có filter
+		}
+
+		// Cập nhật startTime và endTime
+		if (filterCriteria.startTime) {
+			setStartTime(filterCriteria.startTime);
+		} else {
+			setStartTime(""); // Xóa giá trị nếu không có filter
+		}
+
+		if (filterCriteria.endTime) {
+			setEndTime(filterCriteria.endTime);
+		} else {
+			setEndTime(""); // Xóa giá trị nếu không có filter
+		}
+	}, [filterCriteria.date, filterCriteria.startTime, filterCriteria.endTime]);
+
+	// For Search: Service, Branch, Date, Time
+	const handleSearch = () => {
+		const queryParams = new URLSearchParams();
+
+		// ✅ Lấy dữ liệu từ Redux store
+		if (filterCriteria.branchId)
+			queryParams.set("branchId", filterCriteria.branchId);
+		if (filterCriteria.serviceId)
+			queryParams.set("serviceId", filterCriteria.serviceId);
+		if (filterCriteria.date) queryParams.set("date", filterCriteria.date);
+		if (startTime) queryParams.set("startTime", startTime);
+		if (endTime) queryParams.set("endTime", endTime);
+
+		// ✅ Chuyển hướng với query mới
+		navigate(`/search?${queryParams.toString()}`);
+	};
 
 	return (
 		<>
@@ -214,27 +347,23 @@ const Header: React.FC = () => {
 								<button onClick={() => setIsOpenServices(!isOpenServices)}>
 									<div className="flex items-center gap-2">
 										<span>🔍</span>
-										<span>{selectedServices}</span>
+										<span>{selectedServicesName}</span>
 									</div>
 								</button>
 								{/* Dropdown Services */}
 								{isOpenServices && (
 									<div className="absolute top-14 left-0 w-96 bg-white border border-gray-200 shadow-2xl rounded-lg p-4 max-h-80 overflow-y-auto z-10">
 										{/* Danh mục */}
-										<h3 className="text-lg font-semibold mb-2">
-											Top categories
-										</h3>
 										<ul>
-											{servicesList.map((servicesList, index) => (
+											{servicesList.map((service) => (
 												<li
-													key={index}
+													key={service.id}
 													className="flex items-center text-left gap-3 p-3 hover:bg-gray-100 rounded-lg cursor-pointer"
-													onClick={() => {
-														setSelectedServices(servicesList.name);
-														setIsOpenServices(false); // Ẩn dropdown sau khi chọn
-													}}
+													onClick={() =>
+														handleSelectService(service.id, service.name)
+													}
 												>
-													<span>{servicesList.name}</span>
+													<span>{service.name}</span>
 												</li>
 											))}
 										</ul>
@@ -248,7 +377,7 @@ const Header: React.FC = () => {
 								<button onClick={() => setIsOpenBranches(!isOpenBranches)}>
 									<div className="flex items-center gap-2">
 										<span>🔍</span>
-										<span>{selectedBranches}</span>
+										<span>{selectedBranchesName}</span>
 									</div>
 								</button>
 								{/* Dropdown Branches */}
@@ -256,16 +385,15 @@ const Header: React.FC = () => {
 									<div className="absolute top-14 left-0 w-96 bg-white border border-gray-200 shadow-2xl rounded-lg p-4 max-h-80 overflow-y-auto z-10">
 										{/* Danh mục */}
 										<ul>
-											{branchesList.map((branchesList, index) => (
+											{branchesList.map((branch) => (
 												<li
-													key={index}
+													key={branch.id}
 													className="flex items-center text-left gap-3 p-3 hover:bg-gray-100 rounded-lg cursor-pointer"
-													onClick={() => {
-														setSelectedBranches(branchesList.name);
-														setIsOpenBranches(false); // Ẩn dropdown sau khi chọn
-													}}
+													onClick={() =>
+														handleSelectBranch(branch.id, branch.name)
+													}
 												>
-													<span>{branchesList.name}</span>
+													<span>{branch.name}</span>
 												</li>
 											))}
 										</ul>
@@ -295,13 +423,13 @@ const Header: React.FC = () => {
 										<div className="flex gap-2 mb-4">
 											<button
 												className={`px-3 py-1 rounded-full ${!selectedDate ? "bg-blue-500 text-white" : "border"}`}
-												onClick={() => setSelectedDate(undefined)}
+												onClick={() => handleSelectDate(undefined)}
 											>
 												Any date
 											</button>
 											<button
 												className="border px-3 py-1 rounded-full"
-												onClick={() => setSelectedDate(new Date())}
+												onClick={() => handleSelectDate(new Date())}
 											>
 												Today
 											</button>
@@ -310,7 +438,7 @@ const Header: React.FC = () => {
 												onClick={() => {
 													const tomorrow = new Date();
 													tomorrow.setDate(tomorrow.getDate() + 1);
-													setSelectedDate(tomorrow);
+													handleSelectDate(tomorrow);
 												}}
 											>
 												Tomorrow
@@ -321,7 +449,7 @@ const Header: React.FC = () => {
 										<DayPicker
 											mode="single"
 											selected={selectedDate}
-											onSelect={setSelectedDate}
+											onSelect={handleSelectDate}
 											disabled={{ before: new Date() }} // Chặn ngày trong quá khứ
 										/>
 									</div>
@@ -370,36 +498,27 @@ const Header: React.FC = () => {
 											</button>
 											<button
 												className={`px-4 py-2 border rounded-full ${isMorningPast ? "opacity-50 cursor-not-allowed" : ""}`}
-												onClick={() => {
-													if (!isMorningPast) {
-														setStartTime("08:00");
-														setEndTime("12:00");
-													}
-												}}
+												onClick={() =>
+													!isMorningPast && setTimeRange("morning")
+												}
 												disabled={isMorningPast}
 											>
 												Morning
 											</button>
 											<button
 												className={`px-4 py-2 border rounded-full ${isAfternoonPast ? "opacity-50 cursor-not-allowed" : ""}`}
-												onClick={() => {
-													if (!isAfternoonPast) {
-														setStartTime("12:00");
-														setEndTime("16:00");
-													}
-												}}
+												onClick={() =>
+													!isAfternoonPast && setTimeRange("afternoon")
+												}
 												disabled={isAfternoonPast}
 											>
 												Afternoon
 											</button>
 											<button
-												className={`px-4 py-2 border rounded-lg ${isEveningPast ? "opacity-50 cursor-not-allowed" : ""}`}
-												onClick={() => {
-													if (!isEveningPast) {
-														setStartTime("16:00");
-														setEndTime("21:00");
-													}
-												}}
+												className={`px-4 py-2 border rounded-full ${isEveningPast ? "opacity-50 cursor-not-allowed" : ""}`}
+												onClick={() =>
+													!isEveningPast && setTimeRange("evening")
+												}
 												disabled={isEveningPast}
 											>
 												Evening
@@ -409,8 +528,8 @@ const Header: React.FC = () => {
 										<div className="flex gap-4">
 											<select
 												className="border rounded-lg p-2 w-32"
-												value={startTime}
-												onChange={(e) => setStartTime(e.target.value)}
+												value={startTime || ""} // Nếu null hoặc undefined thì về ""
+												onChange={(e) => handleSelectStartTime(e.target.value)}
 											>
 												{availableTimes.map((time) => (
 													<option key={time} value={time}>
@@ -421,11 +540,11 @@ const Header: React.FC = () => {
 
 											<select
 												className="border rounded-lg p-2 w-32"
-												value={endTime}
-												onChange={(e) => setEndTime(e.target.value)}
+												value={endTime || ""}
+												onChange={(e) => handleSelectEndTime(e.target.value)}
 											>
 												{availableTimes
-													.filter((time) => time > startTime)
+													.filter((time) => !startTime || time > startTime) // Chỉ hiển thị giờ lớn hơn startTime
 													.map((time) => (
 														<option key={time} value={time}>
 															{time}
@@ -438,7 +557,10 @@ const Header: React.FC = () => {
 							</div>
 
 							{/* Button Search */}
-							<button className="bg-black text-white px-6 py-2 rounded-full ml-2">
+							<button
+								className="bg-black text-white px-6 py-2 rounded-full ml-2"
+								onClick={handleSearch}
+							>
 								Search
 							</button>
 						</div>
