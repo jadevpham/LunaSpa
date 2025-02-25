@@ -232,7 +232,7 @@ const ServicesPage = () => {
 									);
 								}
 							}}
-							className="mt-4 bg-primary text-black border py-2 px-4 rounded-lg w-full hover:bg-black hover:text-white"
+							className="mt-4 bg-primary text-black border py-2 px-4 rounded-lg w-full transition-all duration-300 hover:bg-black hover:text-white"
 						>
 							Choose duration
 						</button>

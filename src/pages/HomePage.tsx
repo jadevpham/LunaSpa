@@ -5,7 +5,7 @@ import ServicesList from "../components/ServicesList";
 import BranchesList from "../components/BranchesList";
 import ProductsList from "../components/ProductsList";
 import Statistics from "../components/Statistics";
-const Home = () => {
+const HomePage = () => {
 	return (
 		<>
 			<Header />
@@ -18,4 +18,4 @@ const Home = () => {
 	);
 };
 
-export default Home;
+export default HomePage;

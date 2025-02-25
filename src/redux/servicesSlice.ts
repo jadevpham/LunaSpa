@@ -9,6 +9,7 @@ type ServicesItemType = {
 	category: string;
 	star: number;
 	vote: number;
+	price: number;
 };
 
 type ServicesState = {

@@ -259,7 +259,7 @@ const TimePage = () => {
 					timeSlots.map((slot) => (
 						<button
 							key={slot.time}
-							className={`block w-full p-3 rounded text-left ${selectedTime === slot.time ? "border-2 border-purple-300  bg-white  text-black rounded-xl" : "bg-white  text-black border rounded-xl"}`}
+							className={`block w-full p-3 transition-all duration-300 rounded text-left ${selectedTime === slot.time ? "border-2 border-purple-300  bg-white  text-black rounded-xl" : "bg-white  text-black border rounded-xl"}`}
 							onClick={() => handleSelectTime(slot.time)}
 						>
 							<div className="flex justify-between items-center">

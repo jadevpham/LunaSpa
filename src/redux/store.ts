@@ -5,6 +5,8 @@ import branchesReducer from "./branchesSlice";
 import servicesReducer from "./servicesSlice";
 import productsReducer from "./productsSlice";
 import bookingReducer from "./bookingSlice";
+import filterReducer from "./filterSlice";
+
 export const store = configureStore({
 	reducer: {
 		// hàm này sẽ return state (trong redux thì state ~~~ reducer)
@@ -17,6 +19,7 @@ export const store = configureStore({
 		services: servicesReducer,
 		products: productsReducer,
 		booking: bookingReducer,
+		filter: filterReducer,
 	},
 });
 // ✅ Export RootState (Kiểu của Redux Store)

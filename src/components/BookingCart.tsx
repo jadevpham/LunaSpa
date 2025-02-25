@@ -168,7 +168,7 @@ const BookingCart: React.FC = () => {
 					<button
 						className={`w-full py-3 mt-4 rounded-md text-white ${
 							isNextEnabled
-								? "bg-black hover:bg-gray-800"
+								? "bg-black transition-all duration-300 hover:bg-gray-800"
 								: "bg-gray-400 cursor-not-allowed"
 						}`}
 						onClick={handleClick}
