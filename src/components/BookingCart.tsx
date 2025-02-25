@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { removeService, removeProduct } from "../redux/bookingSlice";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const BookingCart: React.FC = () => {
 	const navigate = useNavigate();
@@ -32,29 +33,39 @@ const BookingCart: React.FC = () => {
 	const isProductSelected = selectedProducts && selectedProducts.length > 0;
 
 	let buttonLabel = "Next";
-	let handleClick = () => navigate("/book/time");
+	let handleClick = () => navigate("/book/select-time");
 	const isNextEnabled =
-		location.pathname === "/book/services"
+		location.pathname === "/book/select-service"
 			? isServiceSelected
-			: location.pathname === "/book/time"
+			: location.pathname === "/book/select-time"
 				? isServiceSelected && isTimeSelected
 				: location.pathname === "/book/confirm"
 					? isServiceSelected && isTimeSelected && isPaymentSelected
 					: true;
 
-	if (location.pathname === "/book/time") {
+	if (location.pathname === "/book/select-time") {
 		buttonLabel = "Next";
 		handleClick = () => navigate("/book/confirm");
 	} else if (location.pathname === "/book/confirm") {
 		buttonLabel = "Confirm";
 		handleClick = () => {
 			if (isServiceSelected && isTimeSelected && isPaymentSelected) {
-				alert("Booking confirmed!");
+				navigate("/review-booking");
+				toast.success("Booking successful!");
 			} else {
-				alert("Please select all required details.");
+				toast.error("Booking failed!");
 			}
 		};
 	}
+
+	const handleRemoveService = (serviceId: string) => {
+		dispatch(removeService(serviceId));
+		toast.warn("Service removed successfully");
+	};
+	const handleRemoveProduct = (productId: string) => {
+		dispatch(removeProduct(productId));
+		toast.warn("Product removed successfully");
+	};
 
 	return (
 		<div className="container p-6 rounded-xl bg-white shadow-2xl w-full h-[74vh] mx-auto sticky top-20 overflow-hidden">
@@ -105,9 +116,7 @@ const BookingCart: React.FC = () => {
 										</p>
 										<p className="text-3">{service.Service_Duration} mins</p>
 										<button
-											onClick={() =>
-												dispatch(removeService(service.Service_ID))
-											}
+											onClick={() => handleRemoveService(service.Service_ID)}
 											className="text-red-500 text-xs"
 										>
 											Remove
@@ -133,7 +142,7 @@ const BookingCart: React.FC = () => {
 											</span>
 										</p>
 										<button
-											onClick={() => dispatch(removeProduct(product.id))}
+											onClick={() => handleRemoveProduct(product.id)}
 											className="text-red-500 text-xs"
 										>
 											Remove

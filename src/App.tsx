@@ -11,12 +11,13 @@ import GoogleAuthRedirectHandler from "./auth-middlewares/GoogleAuthRedirectHand
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
 import BookingLayout from "./layouts/BookingLayout";
-import ServicesPage from "./pages/ServicesPage";
-
-import TimePage from "./pages/TimePage";
-import ConfirmPage from "./pages/ConfirmPage";
+import SelectServicePage from "./pages/SelectServicePage";
+import { ToastContainer } from "react-toastify";
+import SelectTimePage from "./pages/SelectTimePage";
+import ConfirmBookingPage from "./pages/ConfirmBookingPage";
 import HomePage from "./pages/HomePage";
 import SearchPage from "./pages/SearchPage";
+import BookingReviewPage from "./pages/BookingReviewPage";
 
 const App = () => {
 	return (
@@ -36,12 +37,13 @@ const App = () => {
 							<Route path="/student" element={<TestStudent />} />
 						</Route>
 
+						{/*booking flow */}
 						<Route path="/book/*" element={<BookingLayout />}>
-							<Route path="services" element={<ServicesPage />} />
-
-							<Route path="time" element={<TimePage />} />
-							<Route path="confirm" element={<ConfirmPage />} />
+							<Route path="select-service" element={<SelectServicePage />} />
+							<Route path="select-time" element={<SelectTimePage />} />
+							<Route path="confirm" element={<ConfirmBookingPage />} />
 						</Route>
+						<Route path="/review-booking" element={<BookingReviewPage />} />
 
 						<Route
 							path="/auth/google/callback"
@@ -50,6 +52,18 @@ const App = () => {
 						<Route path="*" element={<_404Page />} />
 						<Route path="/search" element={<SearchPage />} />
 					</Routes>
+					<ToastContainer
+						autoClose={3000}
+						position="top-right"
+						theme="colored"
+						limit={5}
+						closeButton={false}
+						draggable={true}
+						closeOnClick={true}
+						draggableDirection="x"
+						newestOnTop={true}
+						stacked={true}
+					/>
 				</Provider>
 			</BrowserRouter>
 		</AuthProvider>

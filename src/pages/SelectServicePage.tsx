@@ -6,6 +6,7 @@ import { AppDispatch, RootState } from "../redux/store";
 import CardList from "../templates/CardList";
 import CardItem from "../templates/CardItem";
 import { fetchProducts } from "../redux/productsSlice";
+import { toast } from "react-toastify";
 
 interface Duration {
 	label: string;
@@ -24,7 +25,7 @@ interface Service {
 	Service_IncludeProduct_ID: string;
 }
 
-const ServicesPage = () => {
+const SelectServicePage = () => {
 	const dispatch = useDispatch<AppDispatch>();
 	const [selectedService, setSelectedService] = useState<Service | null>(null);
 	const selectedServices = useSelector(
@@ -87,9 +88,19 @@ const ServicesPage = () => {
 			}
 
 			dispatch(addService(updatedService));
-
+			toast.success("Service added successfully");
 			setIsModalOpen(false);
 		}
+	};
+
+	const handleRemoveService = (serviceId: string) => {
+		dispatch(removeService(serviceId));
+		toast.warn("Service removed successfully");
+	};
+
+	const handleAddProduct = (product: any) => {
+		dispatch(addProduct(product));
+		toast.success("Product added successfully");
 	};
 
 	const unselectedServices = services.filter(
@@ -133,7 +144,7 @@ const ServicesPage = () => {
 										</p>
 									</div>
 									<button
-										onClick={() => dispatch(removeService(service.Service_ID))}
+										onClick={() => handleRemoveService(service.Service_ID)}
 										className="text-red-500 hover:text-red-700"
 									>
 										<i className="fa-solid fa-trash"></i>
@@ -253,7 +264,7 @@ const ServicesPage = () => {
 							star={product.star}
 							vote={product.vote}
 							onClick={() => {
-								dispatch(addProduct(product));
+								handleAddProduct(product);
 							}}
 						/>
 					)}
@@ -263,4 +274,4 @@ const ServicesPage = () => {
 	);
 };
 
-export default ServicesPage;
+export default SelectServicePage;

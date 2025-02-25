@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setPaymentMethod } from "../redux/bookingSlice";
 import { RootState } from "../redux/store";
 
-const ConfirmPage = () => {
+const ConfirmBookingPage = () => {
 	const dispatch = useDispatch();
 	const paymentMethod = useSelector(
 		(state: RootState) => state.booking.selectedPaymentMethod,
@@ -50,4 +50,4 @@ const ConfirmPage = () => {
 		</div>
 	);
 };
-export default ConfirmPage;
+export default ConfirmBookingPage;

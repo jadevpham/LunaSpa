@@ -12,7 +12,7 @@ interface BookTime {
 	ServiceBooking_Time: string;
 }
 
-const TimePage = () => {
+const SelectTimePage = () => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const selectedService = useSelector(
@@ -273,4 +273,4 @@ const TimePage = () => {
 		</div>
 	);
 };
-export default TimePage;
+export default SelectTimePage;
