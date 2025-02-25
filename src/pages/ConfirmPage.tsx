@@ -1,30 +1,20 @@
-import React, { useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPaymentMethod } from "../redux/bookingSlice";
 import { RootState } from "../redux/store";
 
 const ConfirmPage = () => {
-	// const location = useLocation();
-	// const navigate = useNavigate();
-	// const selectedService = location.state?.selectedService;
-	// const selectedTime = location.state?.selectedTime;
-
 	const dispatch = useDispatch();
 	const paymentMethod = useSelector(
 		(state: RootState) => state.booking.selectedPaymentMethod,
 	);
-	// useEffect(() => {
-	// 	if (!selectedService || !selectedTime) {
-	// 		navigate(-2);
-	// 	}
-	// }, [selectedService, selectedTime, navigate]);
+
 	const handlePaymentChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		dispatch(setPaymentMethod({ id: e.target.value, name: e.target.value }));
 	};
 
 	return (
-		<div className="p-5 space-y-6">
+		<div className="container mx-auto">
 			<h2 className="text-5xl font-bold">Review and Confirm</h2>
 
 			{/* Phương thức thanh toán */}

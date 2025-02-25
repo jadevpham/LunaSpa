@@ -60,7 +60,7 @@ const BookingHeader = () => {
 
 						{index < breadcrumbs.length - 1 && (
 							<span className=" text-gray-400">
-								<i className="fa-solid fa-greater-than text-sm"></i>
+								<i className="fa-thin fa-greater-than"></i>
 							</span>
 						)}
 					</React.Fragment>

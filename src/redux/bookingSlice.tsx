@@ -20,6 +20,15 @@ type BookingState = {
 		Service_TypeID: string;
 		Service_IncludeProduct_ID: string;
 	}> | null;
+	selectedProducts: Array<{
+		id: string;
+		name: string;
+		price: number;
+		img: string;
+		category: string;
+		star: number;
+		vote: number;
+	}> | null;
 	selectedTime: {
 		ServiceBooking_Date: string;
 		ServiceBooking_Time: string;
@@ -32,7 +41,8 @@ type BookingState = {
 
 const initialState: BookingState = {
 	selectedBranch: null,
-	selectedService: null,
+	selectedService: [],
+	selectedProducts: [],
 	selectedTime: null,
 	selectedPaymentMethod: null,
 };
@@ -65,6 +75,14 @@ const bookingSlice = createSlice({
 				);
 			}
 		},
+		updateSelectedService: (
+			state,
+			action: PayloadAction<BookingState["selectedService"]>,
+		) => {
+			if (action.payload) {
+				state.selectedService = action.payload;
+			}
+		},
 		setTime: (state, action: PayloadAction<BookingState["selectedTime"]>) => {
 			state.selectedTime = action.payload;
 		},
@@ -73,6 +91,24 @@ const bookingSlice = createSlice({
 			action: PayloadAction<BookingState["selectedPaymentMethod"]>,
 		) => {
 			state.selectedPaymentMethod = action.payload;
+		},
+		addProduct: (
+			state,
+			action: PayloadAction<
+				NonNullable<BookingState["selectedProducts"]>[number]
+			>,
+		) => {
+			if (!state.selectedProducts) {
+				state.selectedProducts = [];
+			}
+			state.selectedProducts.push(action.payload);
+		},
+		removeProduct: (state, action: PayloadAction<string>) => {
+			if (state.selectedProducts) {
+				state.selectedProducts = state.selectedProducts.filter(
+					(product) => product.id !== action.payload,
+				);
+			}
 		},
 	},
 });
@@ -83,5 +119,8 @@ export const {
 	setTime,
 	setBranch,
 	setPaymentMethod,
+	updateSelectedService,
+	addProduct,
+	removeProduct,
 } = bookingSlice.actions;
 export default bookingSlice.reducer;
