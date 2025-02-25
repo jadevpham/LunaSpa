@@ -1,4 +1,3 @@
-import BranchesList from "../components/BranchesList";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import ServicesList from "../components/ServicesList";
