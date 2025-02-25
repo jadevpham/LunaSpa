@@ -12,7 +12,7 @@ interface BookTime {
 	ServiceBooking_Time: string;
 }
 
-const TimePage = () => {
+const SelectTimePage = () => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const selectedService = useSelector(
@@ -122,7 +122,7 @@ const TimePage = () => {
 		}
 	}, [selectedService, navigate]);
 	return (
-		<div className="container mx-auto">
+		<div className="container mx-auto shadow-xl p-8 rounded-2xl bg-white">
 			<h2 className="text-5xl font-bold mb-4 flex items-center justify-between">
 				<span>Select time</span>
 				<button
@@ -273,4 +273,4 @@ const TimePage = () => {
 		</div>
 	);
 };
-export default TimePage;
+export default SelectTimePage;

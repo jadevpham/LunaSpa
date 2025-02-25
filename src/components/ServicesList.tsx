@@ -6,9 +6,11 @@ import { RootState, AppDispatch } from "../redux/store"; // ✅ Import RootState
 import { useSelector, useDispatch } from "react-redux";
 import CardList from "../templates/CardList";
 import CardItem from "../templates/CardItem";
+import { useNavigate } from "react-router-dom";
+import { addService } from "../redux/bookingSlice";
 const ServicesList: React.FC = () => {
 	const dispatch = useDispatch<AppDispatch>(); // ✅ Khai báo dispatch kiểu AppDispatch
-
+	const navigate = useNavigate();
 	// ✅ Lấy dữ liệu từ Redux Store
 	const servicesList = useSelector(
 		(state: RootState) => state.services.servicesList,
@@ -23,6 +25,11 @@ const ServicesList: React.FC = () => {
 
 	if (loading) return <p>Đang tải dữ liệu...</p>;
 	if (error) return <p className="text-red-500">{error}</p>;
+
+	const handleSelectService = (service: any) => {
+		dispatch(addService(service));
+		navigate("/book/select-service");
+	};
 
 	return (
 		<>
@@ -39,6 +46,7 @@ const ServicesList: React.FC = () => {
 						category={service.category}
 						star={service.star}
 						vote={service.vote}
+						// onClick={() => handleSelectService(service)}
 					/>
 				)}
 			/>

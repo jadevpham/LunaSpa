@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setPaymentMethod } from "../redux/bookingSlice";
 import { RootState } from "../redux/store";
 
-const ConfirmPage = () => {
+const ConfirmBookingPage = () => {
 	const dispatch = useDispatch();
 	const paymentMethod = useSelector(
 		(state: RootState) => state.booking.selectedPaymentMethod,
@@ -14,7 +14,7 @@ const ConfirmPage = () => {
 	};
 
 	return (
-		<div className="container mx-auto">
+		<div className="container mx-auto shadow-xl p-8 rounded-2xl bg-white">
 			<h2 className="text-5xl font-bold">Review and Confirm</h2>
 
 			{/* Phương thức thanh toán */}
@@ -50,4 +50,4 @@ const ConfirmPage = () => {
 		</div>
 	);
 };
-export default ConfirmPage;
+export default ConfirmBookingPage;

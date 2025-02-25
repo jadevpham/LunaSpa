@@ -1,11 +1,11 @@
 import { useDispatch, useSelector } from "react-redux";
-import { addProduct, addService, removeService } from "../redux/bookingSlice";
+import { addService, removeService } from "../redux/bookingSlice";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { AppDispatch, RootState } from "../redux/store";
-import CardList from "../templates/CardList";
-import CardItem from "../templates/CardItem";
 import { fetchProducts } from "../redux/productsSlice";
+import { toast } from "react-toastify";
+import LoadingAnimation from "../components/LoadingAnimation";
 
 interface Duration {
 	label: string;
@@ -24,7 +24,7 @@ interface Service {
 	Service_IncludeProduct_ID: string;
 }
 
-const ServicesPage = () => {
+const SelectServicePage = () => {
 	const dispatch = useDispatch<AppDispatch>();
 	const [selectedService, setSelectedService] = useState<Service | null>(null);
 	const selectedServices = useSelector(
@@ -34,12 +34,6 @@ const ServicesPage = () => {
 	const [services, setServices] = useState<Service[]>([]);
 	const [selectedDuration, setSelectedDuration] = useState<Duration | null>(
 		null,
-	);
-	const productsList = useSelector(
-		(state: RootState) => state.products.productsList,
-	);
-	const selectedProducts = useSelector(
-		(state: RootState) => state.booking.selectedProducts,
 	);
 
 	const loading = useSelector((state: RootState) => state.products.loading);
@@ -68,7 +62,7 @@ const ServicesPage = () => {
 		setSelectedDuration(service.Service_Duration[0] || null);
 		setIsModalOpen(true);
 	};
-	if (loading) return <p>Đang tải dữ liệu...</p>;
+	if (loading) return <LoadingAnimation />;
 	if (error) return <p className="text-red-500">{error}</p>;
 	const handleSelectDuration = (duration: number, price: number) => {
 		if (selectedService) {
@@ -87,9 +81,14 @@ const ServicesPage = () => {
 			}
 
 			dispatch(addService(updatedService));
-
+			toast.success("Service added successfully");
 			setIsModalOpen(false);
 		}
+	};
+
+	const handleRemoveService = (serviceId: string) => {
+		dispatch(removeService(serviceId));
+		toast.warn("Service removed successfully");
 	};
 
 	const unselectedServices = services.filter(
@@ -99,15 +98,8 @@ const ServicesPage = () => {
 			),
 	);
 
-	const unselectedProducts = productsList.filter(
-		(product) =>
-			!selectedProducts?.some(
-				(selectedProduct) => selectedProduct.id === product.id,
-			),
-	);
-
 	return (
-		<div className="container mx-auto">
+		<div className="container mx-auto shadow-xl p-8 rounded-2xl bg-white">
 			<h2 className="text-2xl font-bold mb-4">Selected Services</h2>
 			{selectedServices && selectedServices.length > 0 ? (
 				<div className="mb-8 ">
@@ -129,11 +121,11 @@ const ServicesPage = () => {
 											Duration: {service.Service_Duration} minutes
 										</p>
 										<p className="text-sm font-semibold">
-											Price: ${service.Service_Price.toLocaleString("en-US")}
+											Price: ${service?.Service_Price.toLocaleString("en-US")}
 										</p>
 									</div>
 									<button
-										onClick={() => dispatch(removeService(service.Service_ID))}
+										onClick={() => handleRemoveService(service.Service_ID)}
 										className="text-red-500 hover:text-red-700"
 									>
 										<i className="fa-solid fa-trash"></i>
@@ -154,7 +146,7 @@ const ServicesPage = () => {
 				</div>
 			)}
 			<h2 className="text-2xl font-bold mb-4">Related Services</h2>
-			<div className="grid gap-4 max-h-[60vh] overflow-y-auto hide-scrollbar">
+			<div className="grid gap-4 max-h-[76vh] overflow-y-auto hide-scrollbar">
 				{unselectedServices.map((service) => (
 					<div
 						key={service.Service_ID}
@@ -239,28 +231,8 @@ const ServicesPage = () => {
 					</div>
 				</div>
 			)}
-			<div className="container mx-auto mt-8 border-t pt-8 pr-6">
-				<CardList
-					title="Recommended products"
-					items={unselectedProducts}
-					renderItem={(product) => (
-						<CardItem
-							key={product.id}
-							name={product.name}
-							address={product.price.toLocaleString("en-US")}
-							img={product.img}
-							category={product.category}
-							star={product.star}
-							vote={product.vote}
-							onClick={() => {
-								dispatch(addProduct(product));
-							}}
-						/>
-					)}
-				/>
-			</div>
 		</div>
 	);
 };
 
-export default ServicesPage;
+export default SelectServicePage;

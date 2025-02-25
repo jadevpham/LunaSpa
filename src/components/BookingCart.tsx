@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { removeService, removeProduct } from "../redux/bookingSlice";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const BookingCart: React.FC = () => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
+	const [isLoading, setIsLoading] = useState(false);
 	const {
 		selectedBranch,
 		selectedService,
@@ -32,32 +34,55 @@ const BookingCart: React.FC = () => {
 	const isProductSelected = selectedProducts && selectedProducts.length > 0;
 
 	let buttonLabel = "Next";
-	let handleClick = () => navigate("/book/time");
+	let handleClick = async () => {
+		setIsLoading(true);
+		await new Promise((resolve) => setTimeout(resolve, 1000));
+		navigate("/book/select-time");
+		setIsLoading(false);
+	};
 	const isNextEnabled =
-		location.pathname === "/book/services"
+		location.pathname === "/book/select-service"
 			? isServiceSelected
-			: location.pathname === "/book/time"
+			: location.pathname === "/book/select-time"
 				? isServiceSelected && isTimeSelected
 				: location.pathname === "/book/confirm"
 					? isServiceSelected && isTimeSelected && isPaymentSelected
 					: true;
 
-	if (location.pathname === "/book/time") {
+	if (location.pathname === "/book/select-time") {
 		buttonLabel = "Next";
-		handleClick = () => navigate("/book/confirm");
+		handleClick = async () => {
+			setIsLoading(true);
+			await new Promise((resolve) => setTimeout(resolve, 1000));
+			navigate("/book/confirm");
+			setIsLoading(false);
+		};
 	} else if (location.pathname === "/book/confirm") {
 		buttonLabel = "Confirm";
-		handleClick = () => {
+		handleClick = async () => {
 			if (isServiceSelected && isTimeSelected && isPaymentSelected) {
-				alert("Booking confirmed!");
+				setIsLoading(true);
+				await new Promise((resolve) => setTimeout(resolve, 1000));
+				navigate("/review-booking");
+				toast.success("Booking successful!");
+				setIsLoading(false);
 			} else {
-				alert("Please select all required details.");
+				toast.error("Booking failed!");
 			}
 		};
 	}
 
+	const handleRemoveService = (serviceId: string) => {
+		dispatch(removeService(serviceId));
+		toast.warn("Service removed successfully");
+	};
+	const handleRemoveProduct = (productId: string) => {
+		dispatch(removeProduct(productId));
+		toast.warn("Product removed successfully");
+	};
+
 	return (
-		<div className="container p-6 rounded-xl bg-white shadow-2xl w-full h-[74vh] mx-auto sticky top-20 overflow-hidden">
+		<div className="container p-6 rounded-xl bg-white shadow-xl w-full h-[74vh] mx-auto sticky top-20 overflow-hidden">
 			<div className="h-full flex flex-col">
 				{/* Shop Info */}
 				<div className="flex items-start bg-gray-100 p-4 rounded-lg w-full">
@@ -105,9 +130,7 @@ const BookingCart: React.FC = () => {
 										</p>
 										<p className="text-3">{service.Service_Duration} mins</p>
 										<button
-											onClick={() =>
-												dispatch(removeService(service.Service_ID))
-											}
+											onClick={() => handleRemoveService(service.Service_ID)}
 											className="text-red-500 text-xs"
 										>
 											Remove
@@ -133,7 +156,7 @@ const BookingCart: React.FC = () => {
 											</span>
 										</p>
 										<button
-											onClick={() => dispatch(removeProduct(product.id))}
+											onClick={() => handleRemoveProduct(product.id)}
 											className="text-red-500 text-xs"
 										>
 											Remove
@@ -172,9 +195,15 @@ const BookingCart: React.FC = () => {
 								: "bg-gray-400 cursor-not-allowed"
 						}`}
 						onClick={handleClick}
-						disabled={!isNextEnabled}
+						disabled={!isNextEnabled || isLoading}
 					>
-						{buttonLabel}
+						{isLoading ? (
+							<div className="flex items-center justify-center">
+								<div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white bg-gradient-to-tr from-purple-400 to-pink-300"></div>
+							</div>
+						) : (
+							buttonLabel
+						)}
 					</button>
 				</div>
 			</div>
