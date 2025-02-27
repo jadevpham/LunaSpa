@@ -1,5 +1,6 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "./authContext";
+import LoadingAnimation from "../components/LoadingAnimation";
 
 const ProtectedRoute = ({ allowedRoles }: { allowedRoles: string[] }) => {
 	const { role, isAuthenticated, isLoading } = useAuth();
@@ -7,7 +8,7 @@ const ProtectedRoute = ({ allowedRoles }: { allowedRoles: string[] }) => {
 	console.log("Protected Route:", { role, isAuthenticated, isLoading });
 
 	if (isLoading) {
-		return <div>Loading...</div>;
+		return <LoadingAnimation />;
 	}
 
 	if (!isAuthenticated) {

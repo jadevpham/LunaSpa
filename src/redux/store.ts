@@ -4,6 +4,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import branchesReducer from "./branchesSlice";
 import servicesReducer from "./servicesSlice";
 import productsReducer from "./productsSlice";
+import bookingReducer from "./bookingSlice";
 import filterReducer from "./filterSlice";
 
 export const store = configureStore({
@@ -17,6 +18,7 @@ export const store = configureStore({
 		// khi sang component, trong useSelector thì state.key.tênObjectTronginitialStateCủaFileSlice
 		services: servicesReducer,
 		products: productsReducer,
+		booking: bookingReducer,
 		filter: filterReducer,
 	},
 });

@@ -80,7 +80,7 @@ const SearchPage = () => {
 					{/* Left Panel: Salon List */}
 					<div className="w-2/5 bg-white p-6 overflow-y-auto">
 						<div className="flex justify-between items-center mb-4">
-						<p className="text-sm text-gray-500">29 Branch</p>
+							<p className="text-sm text-gray-500">29 Branch</p>
 						</div>
 						<div className="space-y-4">
 							{branchesToShow.length > 0 ? (
@@ -155,8 +155,8 @@ const SearchPage = () => {
 
 export default SearchPage;
 
-
-{/* <div>
+{
+	/* <div>
 <h2>Kết quả tìm kiếm</h2>
 
 <h3>Chi nhánh:</h3>
@@ -191,4 +191,5 @@ export default SearchPage;
 ) : (
 	<p>Không có thời gian kết thúc</p>
 )}
-</div> */}
+</div> */
+}

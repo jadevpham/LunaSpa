@@ -4,9 +4,15 @@ type CardListProps<T> = {
 	items: T[];
 	renderItem: (item: T) => React.ReactNode;
 	title: string;
+	customClass?: string;
 };
 
-const CardList = <T,>({ items, renderItem, title }: CardListProps<T>) => {
+const CardList = <T,>({
+	items,
+	renderItem,
+	title,
+	customClass,
+}: CardListProps<T>) => {
 	const scrollRef = useRef<HTMLDivElement | null>(null); // giữ tham chiếu đến danh sách card.
 	// Tuy nhiên nút cuộn trái/phải chỉ trong component này thôi không ở components khác hay truyền props sang component khác nên chỉ dùng hooks useState là được
 	//không cần dùng state của Redux
@@ -39,7 +45,9 @@ const CardList = <T,>({ items, renderItem, title }: CardListProps<T>) => {
 	};
 
 	return (
-		<div className="bg-gradient-to-r from-white to-purple-100 p-6">
+		<div
+			className={`p-6 ${customClass || "bg-gradient-to-r from-white to-purple-100"}`}
+		>
 			<div className="container w-full mx-auto">
 				<h2 className="text-2xl font-bold mb-4">{title}</h2>
 				<div className="relative">
