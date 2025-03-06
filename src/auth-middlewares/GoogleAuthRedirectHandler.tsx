@@ -10,14 +10,11 @@ const GoogleAuthRedirectHandler = () => {
 		const refreshToken = params.get("refreshToken");
 
 		if (accessToken && refreshToken) {
-			// Lưu vào localStorage
 			localStorage.setItem("accessToken", accessToken);
 			localStorage.setItem("refreshToken", refreshToken);
 
-			// Xóa token khỏi URL bằng cách thay đổi lịch sử trình duyệt
 			window.history.replaceState({}, document.title, window.location.pathname);
 
-			// Điều hướng về trang chính (hoặc trang dashboard)
 			navigate("/");
 		}
 	}, [navigate]);

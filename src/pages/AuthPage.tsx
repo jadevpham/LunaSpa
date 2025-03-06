@@ -1,20 +1,22 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSignIn, useSignUp } from "../services/authService.tsx";
+import axiosInstance from "../axios/axiosInstance";
+import { toast } from "react-toastify";
+import { useAuth } from "../auth-middlewares/useAuth";
+
 const AuthPage = () => {
 	const navigate = useNavigate();
+	const { login } = useAuth();
 	const [isSignUp, setIsSignUp] = useState(false);
 	const [showPassword, setShowPassword] = useState(false);
 
 	const [formData, setFormData] = useState({
-		name: "",
 		email: "",
 		password: "",
 		confirmPassword: "",
 	});
 	const [passwordMatch, setPasswordMatch] = useState(true);
 	const isSignUpDisabled =
-		!formData.name ||
 		!formData.email ||
 		!formData.password ||
 		!formData.confirmPassword ||
@@ -24,69 +26,142 @@ const AuthPage = () => {
 	const togglePasswordVisibility = () => {
 		setShowPassword((prev) => !prev);
 	};
+
+	const validateEmail = (email: string) => {
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		return emailRegex.test(email);
+	};
+
+	const dataFromLocalStorage =
+		localStorage.getItem("user") ||
+		localStorage.getItem("access_token") ||
+		localStorage.getItem("refresh_token");
+	useEffect(() => {
+		if (dataFromLocalStorage) {
+			navigate("/");
+		}
+	}, [navigate]);
+
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
+		const trimmedValue = value.trim();
+
 		setFormData((prev) => ({
 			...prev,
-			[name]: value,
+			[name]: trimmedValue,
 		}));
 
 		if (name === "confirmPassword" || name === "password") {
 			const isMatch =
 				name === "confirmPassword"
-					? value === formData.password
-					: formData.confirmPassword === value;
+					? trimmedValue === formData.password
+					: formData.confirmPassword === trimmedValue;
 			setPasswordMatch(isMatch);
 		}
 	};
 
-	const { mutate: login, isPending, isError, error } = useSignIn();
-
-	const handleSignIn = (e: React.FormEvent) => {
+	const handleSignIn = async (e: React.FormEvent) => {
 		e.preventDefault();
+		if (!validateEmail(formData.email)) {
+			toast.error("Invalid email format");
+			return;
+		}
 
-		login(
-			{ email: formData.email, password: formData.password },
-			{
-				onSuccess: (data) => {
-					const { accessToken, refreshToken, userData } = data.data;
+		try {
+			const userData = {
+				email: formData.email.toLowerCase().trim(),
+				password: formData.password.trim(),
+			};
 
-					localStorage.setItem("accessToken", accessToken);
-					localStorage.setItem("refreshToken", refreshToken);
-					localStorage.setItem("role", userData.role);
+			const response = await axiosInstance.post("/accounts/login", userData);
+			if (response.data.result) {
+				const user = response.data.result.user;
+				const access_token = response.data.result.access_token;
+				const refresh_token = response.data.result.refresh_token;
 
-					navigate("/");
-				},
-				onError: (err) => {
-					console.error("Login failed:", err);
-				},
-			},
-		);
+				if (!user || !user.roles || user.roles.length === 0) {
+					toast.error("Invalid user data received");
+					return;
+				}
+
+				if (user.verify === 2) {
+					toast.error("Your account has been deleted");
+					return;
+				}
+
+				if (user.verify === 3) {
+					toast.error("Your account has been banned");
+					return;
+				}
+
+				login(access_token, refresh_token, user);
+				toast.success("Sign-in successful");
+
+				const role = user.roles[0].role_name;
+				switch (role) {
+					case "user":
+						navigate("/", { replace: true });
+						break;
+					case "staff":
+						navigate("/staff", { replace: true });
+						break;
+					case "admin":
+						navigate("/admin", { replace: true });
+						break;
+					default:
+						navigate("/", { replace: true });
+				}
+			}
+		} catch (error: any) {
+			const errors = error.response?.data?.errors;
+			if (errors) {
+				Object.keys(errors).forEach((field) => {
+					const message = errors[field]?.msg;
+					if (message) {
+						toast.error(message);
+					}
+				});
+			} else {
+				toast.error("Sign-in failed. Please try again.");
+			}
+		}
 	};
 
-	const {
-		mutate: register,
-		isPending: isSigningUp,
-		isError: signUpError,
-		error: signUpErrorMessage,
-	} = useSignUp();
 	const handleSignUp = async (e: React.FormEvent) => {
 		e.preventDefault();
+		if (!validateEmail(formData.email)) {
+			toast.error("Invalid email format");
+			return;
+		}
 
-		const userData = {
-			name: formData.name,
-			email: formData.email,
-			password: formData.password,
-		};
-		register(userData, {
-			onSuccess: (data) => {
-				console.log("Registration successful:", data);
-				setIsSignUp(false);
-			},
-			onError: (err) => {
-				console.error("Registration failed:", err);
-			},
-		});
+		try {
+			const userData = {
+				email: formData.email.toLowerCase().trim(),
+				password: formData.password.trim(),
+				confirm_password: formData.confirmPassword.trim(),
+			};
+			const response = await axiosInstance.post("/accounts/register", userData);
+			if (response.data.result) {
+				// console.log(response.data.result);
+				toast.success("Sign-up successful. Please verify your email.");
+			}
+		} catch (error: any) {
+			const errors = error.response?.data?.errors;
+			if (errors) {
+				Object.keys(errors).forEach((field) => {
+					const message = errors[field]?.msg;
+					if (message) {
+						toast.error(message);
+					}
+				});
+			} else {
+				console.error("Unknown error during sign-up");
+			}
+		}
+	};
+	const test = async () => {
+		const response = await axiosInstance.get("/roles?page=1&limit=10");
+		console.log(response.data);
 	};
 
 	const handleGoogleSignIn = () => {
@@ -119,7 +194,7 @@ const AuthPage = () => {
 									href="#"
 									className="border border-gray-600 p-3 w-16 rounded-full hover:bg-gray-300"
 								>
-									<i className="fab fa-facebook-f"></i>
+									<i className="fab fa-facebook-f" onClick={test}></i>
 								</a>
 								<a
 									href="#"
@@ -168,20 +243,15 @@ const AuthPage = () => {
 							</a>
 							<button
 								type="submit"
-								disabled={isPending || isSigninDisabled}
+								disabled={isSigninDisabled}
 								className={`mt-4 px-6 py-3 text-white font-bold rounded-full ${
 									isSigninDisabled
 										? "bg-gray-400 cursor-not-allowed"
 										: "bg-gradient-to-tr from-purple-400 to-pink-300"
 								}`}
 							>
-								{isPending ? "Signing In..." : "Sign In"}
+								Sign in
 							</button>
-							{isError && (
-								<p className="text-red-500">
-									{error instanceof Error ? error.message : "An error occurred"}
-								</p>
-							)}
 						</form>
 					</div>
 
@@ -211,14 +281,6 @@ const AuthPage = () => {
 							<span className="text-sm">
 								or use your email for registration
 							</span>
-							<input
-								type="text"
-								name="name"
-								value={formData.name}
-								onChange={handleInputChange}
-								placeholder="Name"
-								className="w-full p-3 my-2 bg-gray-200 rounded"
-							/>
 							<input
 								type="email"
 								name="email"
@@ -282,22 +344,15 @@ const AuthPage = () => {
 							)}
 							<button
 								type="submit"
-								disabled={isSigningUp || isSignUpDisabled}
+								disabled={isSignUpDisabled}
 								className={`mt-4 px-6 py-3 text-white font-bold rounded-full ${
 									isSignUpDisabled
 										? "bg-gray-400 cursor-not-allowed"
 										: "bg-gradient-to-tr from-purple-400 to-pink-300"
 								}`}
 							>
-								{isSigningUp ? "Signing Up..." : "Sign Up"}
+								Sign Up
 							</button>
-							{signUpError && (
-								<p className="text-red-500">
-									{signUpErrorMessage instanceof Error
-										? signUpErrorMessage.message
-										: "An error occurred"}
-								</p>
-							)}
 						</form>
 					</div>
 

@@ -263,7 +263,10 @@ const SelectTimePage = () => {
 							onClick={() => handleSelectTime(slot.time)}
 						>
 							<div className="flex justify-between items-center">
-								<span>🕒 {slot.time}</span>
+								<span>
+									<i className="fa-regular fa-clock"></i>
+									{slot.time}
+								</span>
 								<span>${slot.price.toLocaleString("en-US")}</span>
 							</div>
 						</button>

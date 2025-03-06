@@ -10,6 +10,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { fetchBranches } from "../redux/branchesSlice";
 import { setFilterCriteria } from "../redux/filterSlice";
 import { selectFilterCriteria } from "../redux/selectors";
+import { toast } from "react-toastify";
 
 const Header: React.FC = () => {
 	const navigate = useNavigate();
@@ -84,6 +85,26 @@ const Header: React.FC = () => {
 		}
 	}, [filterCriteria.branchId, branchesList]);
 
+	const [user, setUser] = useState<{ name: string; avatar: string } | null>(
+		null,
+	);
+	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+	useEffect(() => {
+		const storedUser = localStorage.getItem("user");
+		if (storedUser) {
+			setUser(JSON.parse(storedUser));
+		}
+	}, []);
+
+	const handleLogout = () => {
+		localStorage.removeItem("user");
+		localStorage.removeItem("access_token");
+		localStorage.removeItem("refresh_token");
+		setUser(null);
+		toast.success("Logout successfully");
+		navigate("/");
+	};
 	// ✅ Khi chọn branches
 	const handleSelectBranch = (branchId: string, branchName: string) => {
 		setSelectedBranchesName(branchName); // ✅ Cập nhật UI dropdown
@@ -324,14 +345,63 @@ const Header: React.FC = () => {
 							<a href="#">LunaSpa</a>
 						</div>
 						{/* Nút */}
-						<div className="flex space-x-4">
+						{user ? (
+							<div className="relative">
+								<button
+									className="flex items-center justify-between gap-4 bg-white border px-2 py-2 rounded-full w-24 h-12"
+									onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+								>
+									<img
+										src={
+											user.avatar ||
+											"../../public/spa-avatar-flat-cartoon-design-this-illustration-avatar-woman-immersed-spa_198565-9639.avif"
+										}
+										alt="Avatar"
+										className="w-10 h-10 rounded-full border"
+									/>
+									<i
+										className={
+											isDropdownOpen
+												? "fa-solid fa-chevron-up"
+												: "fa-solid fa-chevron-down"
+										}
+									></i>
+								</button>
+
+								{/* Dropdown Menu */}
+								<div
+									className={`absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg transition-all duration-300 ease-in-out transform 
+    ${isDropdownOpen ? "opacity-100 translate-y-0 scale-100" : "opacity-0 -translate-y-4 scale-95 pointer-events-none"}`}
+								>
+									<ul className="py-2">
+										<li>
+											<button
+												onClick={() => navigate("/user-profile")}
+												className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+											>
+												👤 Profile
+											</button>
+										</li>
+										<li>
+											<button
+												onClick={handleLogout}
+												className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+											>
+												🚪 Logout
+											</button>
+										</li>
+									</ul>
+								</div>
+							</div>
+						) : (
+							/* Nếu chưa login => Hiển thị nút Login */
 							<button
-								className="px-6 py-2 border-1.75 border-gray-400 rounded-full ml-2"
+								className="px-6 py-2 border-1.75 border-gray-400 rounded-full hover:bg-gray-200"
 								onClick={() => navigate("auth")}
 							>
 								Login
 							</button>
-						</div>
+						)}
 					</nav>
 				</div>
 				{/* Hero Section */}
