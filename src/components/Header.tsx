@@ -342,7 +342,7 @@ const Header: React.FC = () => {
 					<nav className="flex justify-between items-center py-6">
 						{/* Logo */}
 						<div className="text-3xl font-extrabold">
-							<a href="#">LunaSpa</a>
+							<a href="/">LunaSpa</a>
 						</div>
 						{/* Nút */}
 						{user ? (

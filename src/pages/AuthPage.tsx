@@ -3,12 +3,14 @@ import { useNavigate } from "react-router-dom";
 import axiosInstance from "../axios/axiosInstance";
 import { toast } from "react-toastify";
 import { useAuth } from "../auth-middlewares/useAuth";
+import PasswordStrengthMeter from "../components/PasswordStrengthMeter";
 
 const AuthPage = () => {
 	const navigate = useNavigate();
 	const { login } = useAuth();
 	const [isSignUp, setIsSignUp] = useState(false);
 	const [showPassword, setShowPassword] = useState(false);
+	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
 	const [formData, setFormData] = useState({
 		email: "",
@@ -25,6 +27,9 @@ const AuthPage = () => {
 	const isSigninDisabled = !formData.email || !formData.password;
 	const togglePasswordVisibility = () => {
 		setShowPassword((prev) => !prev);
+	};
+	const toggleConfirmPasswordVisibility = () => {
+		setShowConfirmPassword((prev) => !prev);
 	};
 
 	const validateEmail = (email: string) => {
@@ -176,7 +181,7 @@ const AuthPage = () => {
 				>
 					<button
 						className={`absolute top-5 left-5 text-2xl z-50 cursor-pointer text-gray-600 hover:text-gray-800`}
-						onClick={() => navigate(-1)}
+						onClick={() => navigate("/")}
 					>
 						<i className="fa-solid fa-arrow-left"></i>
 					</button>
@@ -214,6 +219,7 @@ const AuthPage = () => {
 								onChange={handleInputChange}
 								placeholder="Email"
 								className="w-full p-3 my-2 bg-gray-200 rounded"
+								tabIndex={1}
 							/>
 							<div className="relative w-full">
 								<input
@@ -223,12 +229,14 @@ const AuthPage = () => {
 									onChange={handleInputChange}
 									placeholder="Password"
 									className="bg-gray-200 rounded w-full p-3"
+									tabIndex={2}
 								/>
 								<button
 									className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:outline-double"
 									type="button"
 									onClick={togglePasswordVisibility}
 									aria-label="Toggle password visibility"
+									tabIndex={-1}
 								>
 									{showPassword ? (
 										<i className="fa-solid fa-eye-slash  "></i>
@@ -238,7 +246,10 @@ const AuthPage = () => {
 								</button>
 							</div>
 
-							<a href="" className="text-blue-500 text-sm my-2 hover:underline">
+							<a
+								href="/forgot-password"
+								className="text-blue-500 text-sm my-2 hover:underline"
+							>
 								Forgot your password?
 							</a>
 							<button
@@ -315,7 +326,7 @@ const AuthPage = () => {
 								<>
 									<div className="relative w-full my-2">
 										<input
-											type={showPassword ? "text" : "password"}
+											type={showConfirmPassword ? "text" : "password"}
 											name="confirmPassword"
 											value={formData.confirmPassword}
 											onChange={handleInputChange}
@@ -325,10 +336,10 @@ const AuthPage = () => {
 										<button
 											className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:outline-double"
 											type="button"
-											onClick={togglePasswordVisibility}
+											onClick={toggleConfirmPasswordVisibility}
 											aria-label="Toggle password visibility"
 										>
-											{showPassword ? (
+											{showConfirmPassword ? (
 												<i className="fa-solid fa-eye-slash"></i>
 											) : (
 												<i className="fa-solid fa-eye"></i>

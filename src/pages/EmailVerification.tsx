@@ -14,7 +14,7 @@ const UserProfile = () => {
 			const token = searchParams.get("token");
 			try {
 				// Add delay simulation
-				await new Promise((resolve) => setTimeout(resolve, 6000));
+				// await new Promise((resolve) => setTimeout(resolve, 6000));
 				const response = await axiosInstance.post(
 					"http://localhost:4000/accounts/verify-email",
 					{

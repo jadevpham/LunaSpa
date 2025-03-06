@@ -20,6 +20,8 @@ import UserProfile from "./pages/UserProfile";
 import BookingHistory from "./pages/BookingHistory";
 import EmailVerification from "./pages/EmailVerification";
 import NotFoundPage from "./pages/_404Page";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 const RouteHandler = () => {
 	const location = useLocation();
@@ -37,6 +39,8 @@ const RouteHandler = () => {
 			<Route path="/auth/*" element={<AuthPage />} />
 			<Route path="/unauthorized" element={<NotFoundPage />} />
 			<Route path="/email-verifications" element={<EmailVerification />} />
+			<Route path="/forgot-password" element={<ForgotPasswordPage />} />
+			<Route path="/reset-password" element={<ResetPasswordPage />} />
 
 			<Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
 				{/* <Route path="/admin" element={<BookingHistory />} /> */}
