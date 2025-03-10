@@ -17,6 +17,7 @@ import HomePage from "./pages/HomePage";
 import SearchPage from "./pages/SearchPage";
 import BookingReviewPage from "./pages/BookingReviewPage";
 import { useEffect } from "react";
+import AdminPage from "./pages/AdminPage";
 
 const RouteHandler = () => {
 	const location = useLocation();
@@ -34,7 +35,9 @@ const RouteHandler = () => {
 			<Route path="/auth/*" element={<AuthPage />} />
 			<Route path="/unauthorized" element={<_404Page />} />
 
-			<Route element={<ProtectedRoute allowedRoles={["admin"]} />}></Route>
+			<Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+				<Route path="/admin/*" element={<AdminPage />} />
+			</Route>
 
 			<Route element={<ProtectedRoute allowedRoles={["student"]} />}></Route>
 
