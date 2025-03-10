@@ -1,11 +1,8 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import AuthPage from "./pages/AuthPage";
-import _404Page from "./pages/_404Page";
 import { AuthProvider } from "./auth-middlewares/authContext";
 import ProtectedRoute from "./auth-middlewares/protectedRoute";
-import GoogleAuthRedirectHandler from "./auth-middlewares/GoogleAuthRedirectHandler";
-
-// Cấu hình Redux
+import AuthRedirectHandler from "./auth-middlewares/AuthRedirectHandler";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
 import BookingLayout from "./layouts/BookingLayout";
@@ -17,6 +14,12 @@ import HomePage from "./pages/HomePage";
 import SearchPage from "./pages/SearchPage";
 import BookingReviewPage from "./pages/BookingReviewPage";
 import { useEffect } from "react";
+import UserProfile from "./pages/UserProfile";
+import BookingHistory from "./pages/BookingHistory";
+import EmailVerification from "./pages/EmailVerification";
+import NotFoundPage from "./pages/_404Page";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 const RouteHandler = () => {
 	const location = useLocation();
@@ -32,25 +35,34 @@ const RouteHandler = () => {
 		<Routes>
 			<Route path="/" element={<HomePage />} />
 			<Route path="/auth/*" element={<AuthPage />} />
-			<Route path="/unauthorized" element={<_404Page />} />
+			<Route path="/unauthorized" element={<NotFoundPage />} />
+			<Route path="/email-verifications" element={<EmailVerification />} />
+			<Route path="/forgot-password" element={<ForgotPasswordPage />} />
+			<Route path="/reset-password" element={<ResetPasswordPage />} />
 
-			<Route element={<ProtectedRoute allowedRoles={["admin"]} />}></Route>
+			<Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+				{/* <Route path="/admin" element={<BookingHistory />} /> */}
+			</Route>
 
-			<Route element={<ProtectedRoute allowedRoles={["student"]} />}></Route>
+			<Route element={<ProtectedRoute allowedRoles={["user", "admin"]} />}>
+				{/* <Route path="/user-profile" element={<UserProfile />} /> */}
+			</Route>
 
-			{/*booking flow */}
-			<Route path="/book/*" element={<BookingLayout />}>
-				<Route path="select-service" element={<SelectServicePage />} />
-				<Route path="select-time" element={<SelectTimePage />} />
-				<Route path="confirm" element={<ConfirmBookingPage />} />
+			<Route
+				element={
+					<ProtectedRoute allowedRoles={["user"]} requireVerified={true} />
+				}
+			>
+				<Route path="/book/*" element={<BookingLayout />}>
+					<Route path="select-service" element={<SelectServicePage />} />
+					<Route path="select-time" element={<SelectTimePage />} />
+					<Route path="confirm" element={<ConfirmBookingPage />} />
+				</Route>
 			</Route>
 			<Route path="/review-booking" element={<BookingReviewPage />} />
 
-			<Route
-				path="/auth/google/callback"
-				element={<GoogleAuthRedirectHandler />}
-			/>
-			<Route path="*" element={<_404Page />} />
+			<Route path="/login/*" element={<AuthRedirectHandler />} />
+			<Route path="*" element={<NotFoundPage />} />
 			<Route path="/search" element={<SearchPage />} />
 		</Routes>
 	);
