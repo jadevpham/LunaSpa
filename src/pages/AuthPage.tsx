@@ -3,11 +3,12 @@ import { useNavigate } from "react-router-dom";
 import axiosInstance from "../axios/axiosInstance";
 import { toast } from "react-toastify";
 import { useAuth } from "../auth-middlewares/useAuth";
-import PasswordStrengthMeter from "../components/PasswordStrengthMeter";
+import { useTranslation } from "react-i18next";
 
 const AuthPage = () => {
 	const navigate = useNavigate();
 	const { login } = useAuth();
+	const { t } = useTranslation();//this is used for translation
 	const [isSignUp, setIsSignUp] = useState(false);
 	const [showPassword, setShowPassword] = useState(false);
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -164,20 +165,51 @@ const AuthPage = () => {
 			}
 		}
 	};
-	const test = async () => {
-		const response = await axiosInstance.get("/roles?page=1&limit=10");
-		console.log(response.data);
+
+	const getGoogleAuthUrl = () => {
+		const { VITE_GOOGLE_CLIENT_ID, VITE_GOOGLE_REDIRECT_URI } = import.meta.env;
+		const url = `https://accounts.google.com/o/oauth2/v2/auth`;
+		const query = {
+			client_id: VITE_GOOGLE_CLIENT_ID,
+			redirect_uri: VITE_GOOGLE_REDIRECT_URI,
+			response_type: "code",
+			scope: [
+				"https://www.googleapis.com/auth/userinfo.profile",
+				"https://www.googleapis.com/auth/userinfo.email",
+			].join(" "),
+			prompt: "consent",
+			access_type: "offline",
+		};
+		const queryString = new URLSearchParams(query).toString();
+		return `${url}?${queryString}`;
 	};
 
-	const handleGoogleSignIn = () => {
-		window.location.href = `http://localhost:3200/api/auth/login/google?role=student&failRedirectURL=http://localhost:5173&successRedirectURL=http://localhost:5173/auth/google/callback`;
+	const googleOAuthUrl = getGoogleAuthUrl();
+
+	const getFacebookAuthUrl = () => {
+		const { VITE_FACEBOOK_CLIENT_ID, VITE_FACEBOOK_REDIRECT_URI } = import.meta
+			.env;
+		const url = `https://www.facebook.com/v22.0/dialog/oauth`;
+		const query = {
+			client_id: VITE_FACEBOOK_CLIENT_ID,
+			redirect_uri: VITE_FACEBOOK_REDIRECT_URI,
+			response_type: "code",
+			auth_type: "rerequest",
+			state: "12345huydeptrai",
+			scope: ["email", "public_profile"].join(" "),
+		};
+
+		const queryString = new URLSearchParams(query).toString();
+		return `${url}?${queryString}`;
 	};
+	const facebookOAuthUrl = getFacebookAuthUrl();
+
 	return (
 		<div className="grid grid-cols-1 lg:grid-cols-3">
 			{/* Form */}
 			<div className="flex items-center justify-center h-screen bg-gray-100 col-span-2">
 				<div
-					className={`relative w-[768px] max-w-full min-h-[500px] bg-white shadow-2xl rounded-lg overflow-hidden transition-all duration-500 ${isSignUp ? "right-panel-active" : ""}`}
+					className={`relative w-[768px] max-w-full min-h-[500px] bg-white shadow-2xl rounded-2xl overflow-hidden transition-all duration-500 ${isSignUp ? "right-panel-active" : ""}`}
 				>
 					<button
 						className={`absolute top-5 left-5 text-2xl z-50 cursor-pointer text-gray-600 hover:text-gray-800`}
@@ -196,19 +228,16 @@ const AuthPage = () => {
 							<h1 className="font-bold text-xl">Sign In</h1>
 							<div className="flex gap-3 my-4">
 								<a
-									href="#"
+									href={facebookOAuthUrl}
 									className="border border-gray-600 p-3 w-16 rounded-full hover:bg-gray-300"
 								>
-									<i className="fab fa-facebook-f" onClick={test}></i>
+									<i className="fab fa-facebook-f"></i>
 								</a>
 								<a
-									href="#"
+									href={googleOAuthUrl}
 									className="border border-gray-600 p-3 w-16 rounded-full hover:bg-gray-300"
 								>
-									<i
-										className="fab fa-google-plus-g"
-										onClick={handleGoogleSignIn}
-									></i>
+									<i className="fab fa-google-plus-g"></i>
 								</a>
 							</div>
 							<span className="text-sm">or use your account</span>
@@ -250,7 +279,7 @@ const AuthPage = () => {
 								href="/forgot-password"
 								className="text-blue-500 text-sm my-2 hover:underline"
 							>
-								Forgot your password?
+								{t("Forgot your password?")}
 							</a>
 							<button
 								type="submit"
@@ -277,13 +306,13 @@ const AuthPage = () => {
 							<h1 className="font-bold text-xl">Create Account</h1>
 							<div className="flex gap-3 my-4">
 								<a
-									href="#"
+									href={facebookOAuthUrl}
 									className="border border-gray-600 p-3 w-16 rounded-full hover:bg-gray-300"
 								>
 									<i className="fab fa-facebook-f"></i>
 								</a>
 								<a
-									href="#"
+									href={googleOAuthUrl}
 									className="border border-gray-600 p-3 w-16 rounded-full hover:bg-gray-300"
 								>
 									<i className="fab fa-google-plus-g"></i>

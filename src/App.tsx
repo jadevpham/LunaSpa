@@ -2,9 +2,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import AuthPage from "./pages/AuthPage";
 import { AuthProvider } from "./auth-middlewares/authContext";
 import ProtectedRoute from "./auth-middlewares/protectedRoute";
-import GoogleAuthRedirectHandler from "./auth-middlewares/GoogleAuthRedirectHandler";
-
-// Cấu hình Redux
+import AuthRedirectHandler from "./auth-middlewares/AuthRedirectHandler";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
 import BookingLayout from "./layouts/BookingLayout";
@@ -63,10 +61,7 @@ const RouteHandler = () => {
 			</Route>
 			<Route path="/review-booking" element={<BookingReviewPage />} />
 
-			<Route
-				path="/auth/google/callback"
-				element={<GoogleAuthRedirectHandler />}
-			/>
+			<Route path="/login/*" element={<AuthRedirectHandler />} />
 			<Route path="*" element={<NotFoundPage />} />
 			<Route path="/search" element={<SearchPage />} />
 		</Routes>
