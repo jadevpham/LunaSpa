@@ -10,10 +10,22 @@ import { useSelector, useDispatch } from "react-redux";
 import { fetchBranches } from "../redux/branchesSlice";
 import { setFilterCriteria } from "../redux/filterSlice";
 import { selectFilterCriteria } from "../redux/selectors";
+import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
+type LngRet = { [lng: string]: { nativeName: string } };
 const Header: React.FC = () => {
 	const navigate = useNavigate();
 	const filterCriteria = useSelector(selectFilterCriteria);
+
+	const { t, i18n } = useTranslation();
+	const [lngs, setLngs] = useState<LngRet>({ en: { nativeName: "English" } });
+	const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
+	useEffect(() => {
+		i18n.services.backendConnector.backend
+			.getLanguages()
+			.then((ret: LngRet) => setLngs(ret));
+	}, [i18n]);
 
 	// I. For Services
 	const [isOpenServices, setIsOpenServices] = useState(false);
@@ -84,6 +96,28 @@ const Header: React.FC = () => {
 		}
 	}, [filterCriteria.branchId, branchesList]);
 
+	const [user, setUser] = useState<{
+		name: string;
+		avatar: string;
+		roles: Array<{ role_name: string }>;
+	} | null>(null);
+	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+	useEffect(() => {
+		const storedUser = localStorage.getItem("user");
+		if (storedUser) {
+			setUser(JSON.parse(storedUser));
+		}
+	}, []);
+
+	const handleLogout = () => {
+		localStorage.removeItem("user");
+		localStorage.removeItem("access_token");
+		localStorage.removeItem("refresh_token");
+		setUser(null);
+		toast.success("Logout successfully");
+		navigate("/");
+	};
 	// ✅ Khi chọn branches
 	const handleSelectBranch = (branchId: string, branchName: string) => {
 		setSelectedBranchesName(branchName); // ✅ Cập nhật UI dropdown
@@ -321,16 +355,119 @@ const Header: React.FC = () => {
 					<nav className="flex justify-between items-center py-6">
 						{/* Logo */}
 						<div className="text-3xl font-extrabold">
-							<a href="#">LunaSpa</a>
+							<a href="/">LunaSpa</a>
 						</div>
 						{/* Nút */}
-						<div className="flex space-x-4">
-							<button
-								className="px-6 py-2 border-1.75 border-gray-400 rounded-full ml-2"
-								onClick={() => navigate("auth")}
-							>
-								Login
-							</button>
+						<div className="relative flex items-center gap-4">
+							<i
+								className="fa-solid fa-globe cursor-pointer"
+								onClick={() =>
+									setIsLanguageDropdownOpen(!isLanguageDropdownOpen)
+								}
+							></i>
+							{isLanguageDropdownOpen && (
+								<div className="absolute top-14 right-0 w-48 bg-white border rounded-lg shadow-lg">
+									{Object.keys(lngs).map((lng) => {
+										const isSelected = i18n.resolvedLanguage === lng;
+										return (
+											<button
+												key={lng}
+												type="button"
+												disabled={isSelected}
+												onClick={() => {
+													i18n.changeLanguage(lng);
+													setIsLanguageDropdownOpen(false);
+													localStorage.setItem("language", lng);
+												}}
+												className={`block w-full text-left px-4 py-2 hover:bg-gray-100 ${
+													isSelected ? "bg-gray-200" : ""
+												}`}
+											>
+												{lngs[lng].nativeName.split(",")[0]}
+											</button>
+										);
+									})}
+								</div>
+							)}
+
+							{user ? (
+								<div className="relative">
+									<div></div>
+									<button
+										className="flex items-center justify-between gap-4 bg-white border px-2 py-2 rounded-full w-24 h-12"
+										onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+									>
+										<img
+											src={
+												user.avatar ||
+												"../../public/spa-avatar-flat-cartoon-design-this-illustration-avatar-woman-immersed-spa_198565-9639.avif"
+											}
+											alt="Avatar"
+											className="w-10 h-10 rounded-full border"
+										/>
+										<i
+											className={
+												isDropdownOpen
+													? "fa-solid fa-chevron-up"
+													: "fa-solid fa-chevron-down"
+											}
+										></i>
+									</button>
+
+									{/* Dropdown Menu */}
+									<div
+										className={`absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg transition-all duration-300 ease-in-out transform 
+    ${isDropdownOpen ? "opacity-100 translate-y-0 scale-100" : "opacity-0 -translate-y-4 scale-95 pointer-events-none"}`}
+									>
+										<ul className="py-2">
+											{user.roles[0].role_name === "Admin" && (
+												<li>
+													<button
+														onClick={() => navigate("/admin")}
+														className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+													>
+														<i className="fa-solid fa-shield mr-4"></i> Admin
+													</button>
+												</li>
+											)}
+											<li>
+												<button
+													onClick={() => navigate("/user-profile")}
+													className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+												>
+													<i className="fa-regular fa-user mr-4"></i> Profile
+												</button>
+											</li>
+											<li>
+												<button
+													onClick={() => navigate("/review-booking")}
+													className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+												>
+													<i className="fa-regular fa-calendar mr-4"></i> My
+													Bookings
+												</button>
+											</li>
+											<li>
+												<button
+													onClick={handleLogout}
+													className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+												>
+													<i className="fa-solid fa-arrow-right-from-bracket mr-4"></i>{" "}
+													{t("logout")}
+												</button>
+											</li>
+										</ul>
+									</div>
+								</div>
+							) : (
+								/* Nếu chưa login => Hiển thị nút Login */
+								<button
+									className="px-6 py-2 border-1.75 border-gray-400 rounded-full hover:bg-gray-200"
+									onClick={() => navigate("auth")}
+								>
+									Login
+								</button>
+							)}
 						</div>
 					</nav>
 				</div>
@@ -338,7 +475,8 @@ const Header: React.FC = () => {
 				<div className="text-center py-16">
 					{/* Tiêu đề chính */}
 					<h1 className="text-5xl md:text-6xl font-bold leading-tight">
-						Book local beauty and <br /> wellness services
+						{t("Book local beauty and")}
+						<br />" wellness services"
 					</h1>
 					{/* Thanh tìm kiếm */}
 					<div className="max-w-4xl mx-auto mt-8">
