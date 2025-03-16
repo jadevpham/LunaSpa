@@ -159,7 +159,7 @@ const AuthPageAdminStaff = () => {
 	return (
 		<div className="grid grid-cols-1 lg:grid-cols-3">
 			{/* Form */}
-			<div className="flex items-center justify-center h-screen bg-gray-100 col-span-1">
+			<div className="flex items-center justify-center h-screen bg-gray-200 col-span-1">
 				<button
 					className={`absolute top-5 left-5 text-2xl z-50 cursor-pointer text-gray-600 hover:text-gray-800`}
 					onClick={() => navigate("/")}
@@ -167,10 +167,10 @@ const AuthPageAdminStaff = () => {
 					<i className="fa-solid fa-arrow-left"></i>
 				</button>
 				<div
-					className={`relative w-[468px] max-w-full min-h-[500px] bg-white shadow-2xl rounded-2xl overflow-hidden `}
+					className={`relative w-[468px] max-w-full min-h-[500px] bg-white shadow-2xl rounded-2xl overflow-hidden rounded-tl-[90px] rounded-br-[90px] rounded-tr-[20px] rounded-bl-[20px]`}
 				>
 					{/* Sign In Form */}
-					<div className={`absolute top-0 left-0 w-full h-full `}>
+					<div className={`absolute top-0 left-0 w-full h-full`}>
 						<form
 							onSubmit={handleSignIn}
 							className="flex flex-col items-center text-center  justify-center p-10 h-full"
@@ -197,7 +197,7 @@ const AuthPageAdminStaff = () => {
 								value={formData.email}
 								onChange={handleInputChange}
 								placeholder="Email"
-								className="w-full p-3 my-2 bg-gray-200 rounded"
+								className="w-full p-3 my-2 bg-gray-200 rounded focus:ring-2 focus:ring-purple-400 focus:outline-none transition"
 								tabIndex={1}
 							/>
 							<div className="relative w-full">
@@ -207,7 +207,7 @@ const AuthPageAdminStaff = () => {
 									value={formData.password}
 									onChange={handleInputChange}
 									placeholder="Password"
-									className="bg-gray-200 rounded w-full p-3"
+									className="w-full p-3 my-2 bg-gray-200 rounded focus:ring-2 focus:ring-purple-400 focus:outline-none transition"
 									tabIndex={2}
 								/>
 								<button
@@ -218,7 +218,7 @@ const AuthPageAdminStaff = () => {
 									tabIndex={-1}
 								>
 									{showPassword ? (
-										<i className="fa-solid fa-eye-slash  "></i>
+										<i className="fa-solid fa-eye-slash"></i>
 									) : (
 										<i className="fa-solid fa-eye"></i>
 									)}
@@ -237,7 +237,7 @@ const AuthPageAdminStaff = () => {
 								className={`mt-4 px-6 py-3 text-white font-bold rounded-full ${
 									isSigninDisabled
 										? "bg-gray-400 cursor-not-allowed"
-										: "bg-gradient-to-tr from-purple-400 to-pink-300"
+										: "bg-gradient-to-tr from-purple-400 to-pink-300 hover:from-pink-300 hover:to-purple-400"
 								}`}
 							>
 								Sign in
@@ -252,7 +252,8 @@ const AuthPageAdminStaff = () => {
 			{/* image */}
 			<div className="hidden lg:block col-span-2">
 				<img
-					src="../../public/730500-spa-wallpaper.jpg"
+					// src="../../public/730500-spa-wallpaper.jpg"
+					src="https://spabeautique.com.au/wp-content/uploads/2022/08/best-place.jpg"
 					alt="auth"
 					className="object-cover max-h-screen w-full h-full"
 				/>

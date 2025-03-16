@@ -43,6 +43,10 @@ const CreateUserForm = () => {
 	const yearRef = useRef<HTMLInputElement>(null);
 	const [selectedDate, setSelectedDate] = useState<Date | undefined>();
 	const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+	const [avatarPreview, setAvatarPreview] = useState<string>(
+		"https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=286",
+	);
+	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
 	const getValidDay = (day: number, month: number, year: number) => {
 		const maxDays = getDaysInMonth(new Date(year, month - 1));
@@ -141,6 +145,39 @@ const CreateUserForm = () => {
 		},
 		100,
 	);
+
+	const fileInputRef = useRef<HTMLInputElement>(null);
+
+	const handleUploadClick = () => {
+		fileInputRef.current?.click();
+	};
+
+	const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		const file = event.target.files?.[0];
+		if (file) {
+			const maxSizeInMB = 2; //max 2mb
+			const validImageTypes = ["image/jpeg", "image/png", "image/gif"];
+
+			if (!validImageTypes.includes(file.type)) {
+				setErrorMessage(
+					"Invalid file type. Please upload an image (JPEG, PNG, GIF).",
+				);
+				return;
+			}
+
+			if (file.size > maxSizeInMB * 1024 * 1024) {
+				setErrorMessage("File size exceeds 2MB. Please upload a smaller file.");
+				return;
+			}
+
+			setErrorMessage(null);
+
+			const fileURL = URL.createObjectURL(file);
+			setAvatarPreview(fileURL);
+			console.log("File uploaded:", file);
+		}
+	};
+
 	return (
 		<Box sx={{ flex: 1, width: "100%" }}>
 			<Stack
@@ -176,14 +213,15 @@ const CreateUserForm = () => {
 								sx={{ flex: 1, minWidth: 120, borderRadius: "100%" }}
 							>
 								<img
-									src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=286"
+									src={avatarPreview}
 									srcSet="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=286&dpr=2 2x"
 									loading="lazy"
-									alt=""
+									alt="Avatar"
 								/>
 							</AspectRatio>
+
 							<IconButton
-								onClick={() => {}}
+								onClick={handleUploadClick}
 								aria-label="upload new picture"
 								size="sm"
 								variant="outlined"
@@ -200,6 +238,13 @@ const CreateUserForm = () => {
 							>
 								<EditRoundedIcon />
 							</IconButton>
+							<input
+								type="file"
+								accept="image/*"
+								ref={fileInputRef}
+								style={{ display: "none" }}
+								onChange={handleFileChange}
+							/>
 						</Stack>
 						<Stack spacing={2} sx={{ flexGrow: 1 }}>
 							<Stack spacing={1}>
@@ -306,6 +351,11 @@ const CreateUserForm = () => {
 									startMonth={new Date(1900, 0)}
 									endMonth={new Date()}
 								/>
+							)}
+							{errorMessage && (
+								<Typography textColor="danger.500" sx={{ mt: 1 }}>
+									{errorMessage}
+								</Typography>
 							)}
 						</Stack>
 					</Stack>

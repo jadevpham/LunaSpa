@@ -70,7 +70,7 @@ const RouteHandler = () => {
 					<Route path="users" element={<UsersPage />} />
 					<Route path="revenues" element={<RevenuesPage />} />
 					<Route path="devices" element={<DevicesManagement />} />
-					//phân quyền route khác cho admin
+
 					<Route path="users">
 						{/* <Route index element={<UsersPage />} /> */}
 						<Route path="user-management" element={<UsersManagementPage />} />
