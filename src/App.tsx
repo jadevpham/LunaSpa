@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import AuthPage from "./pages/AuthPage";
 import { AuthProvider } from "./auth-middlewares/authContext";
 import ProtectedRoute from "./auth-middlewares/protectedRoute";
-import AuthRedirectHandler from "./auth-middlewares/AuthRedirectHandler";
+import AuthRedirectHandler from "./auth-middlewares/authRedirectHandler";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
 import BookingLayout from "./layouts/BookingLayout";
@@ -20,6 +20,7 @@ import EmailVerification from "./pages/EmailVerification";
 import NotFoundPage from "./pages/_404Page";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import ServiceDetail from "./pages/ServiceDetail";
 
 const RouteHandler = () => {
 	const location = useLocation();
@@ -64,6 +65,7 @@ const RouteHandler = () => {
 			<Route path="/login/*" element={<AuthRedirectHandler />} />
 			<Route path="*" element={<NotFoundPage />} />
 			<Route path="/search" element={<SearchPage />} />
+			<Route path="/serviceDetail" element={<ServiceDetail />} />
 		</Routes>
 	);
 };

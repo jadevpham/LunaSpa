@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 
-type ServicesItemType = {
+type ServiceDetailType = {
 	id: string;
 	name: string;
 	description: string;
@@ -17,63 +17,60 @@ type ServicesItemType = {
 		price: number;
 		discount_price: number;
 		duration_in_minutes: number; // == durationID
-	};
+	}[];
 	devices: {
 		name: string;
 		description: string;
 		status: number;
-	};
+	}[];
 };
-
 type ServicesState = {
-	servicesList: ServicesItemType[];
+	service: ServiceDetailType | null;
 	loading: boolean;
 	error: string | null;
 };
-
 const initialState: ServicesState = {
-	servicesList: [],
+	service: null,
 	loading: false,
 	error: null,
 };
 
-// ✅ Call API bằng createAsyncThunk
-export const fetchServices = createAsyncThunk(
-	"services/fetchServices",
+export const fetchServiceDetail = createAsyncThunk(
+	"serviceDetail/fetchServiceDetail",
 	async (_, { rejectWithValue }) => {
 		try {
-			const response = await axios.get("http://localhost:4000/services");
-			return response.data.result.data; // API trả về danh sách services
+			const response = await axios.get("http://localhost:4000/services/67d3c8f8e299109b8d7f93a4");
+            return response.data.result; // API trả về danh sách services
 		} catch (error: any) {
 			return rejectWithValue(error.response?.data || "Lỗi không xác định");
 		}
 	},
 );
 
-const servicesSlice = createSlice({
-	name: "services",
+const serviceDetailSlice = createSlice({
+	name: "serviceDetail",
 	initialState,
 	reducers: {},
 	extraReducers: (builder) => {
 		builder
-			.addCase(fetchServices.pending, (state) => {
+			.addCase(fetchServiceDetail.pending, (state) => {
 				state.loading = true;
 				state.error = null;
 			})
 			.addCase(
-				fetchServices.fulfilled,
-				(state, action: PayloadAction<ServicesItemType[]>) => {
+				fetchServiceDetail.fulfilled,
+				(state, action: PayloadAction<ServiceDetailType>) => {
 					state.loading = false;
-					state.servicesList = action.payload; // ✅ Cập nhật state bằng dữ liệu API
+					state.service = action.payload; // Cập nhật state bằng dữ liệu API
 				},
 			)
-			.addCase(fetchServices.rejected, (state, action) => {
+			.addCase(fetchServiceDetail.rejected, (state, action) => {
 				state.loading = false;
 				state.error = action.payload as string;
 			});
 	},
 });
 
-export const {} = servicesSlice.actions; // bóc tách hàm xử lý action
+export const {} = serviceDetailSlice.actions; // bóc tách hàm xử lý action
 
-export default servicesSlice.reducer; // xuất sang file store.ts
+export default serviceDetailSlice.reducer; // xuất sang file store.ts

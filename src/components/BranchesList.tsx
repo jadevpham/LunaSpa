@@ -39,7 +39,7 @@ const BranchesList: React.FC = () => {
 				renderItem={(branch) => (
 					<CardItem
 						key={branch.id}
-						data={branch}
+						// data={branch}
 						name={branch.name}
 						address={branch.address}
 						img={branch.img}
