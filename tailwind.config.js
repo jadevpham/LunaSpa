@@ -18,6 +18,9 @@ export default {
 			borderWidth: {
 				1.75: "1.75px",
 			},
+			boxShadow: {
+				full: "0 2px 6px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.08), 0 0 8px rgba(0, 0, 0, 0.05)",
+			},
 		},
 	},
 	plugins: [],

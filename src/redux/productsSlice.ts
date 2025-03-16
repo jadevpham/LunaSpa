@@ -5,10 +5,12 @@ type ProductsItemType = {
 	id: string;
 	name: string;
 	price: number;
-	img: string;
-	category: string;
-	star: number;
-	vote: number;
+	discount_price: number;
+	images: string;
+	category: {
+		name: string;
+	};
+	description: string;
 };
 
 type ProductsState = {
@@ -29,9 +31,9 @@ export const fetchProducts = createAsyncThunk(
 	async (_, { rejectWithValue }) => {
 		try {
 			const response = await axios.get(
-				"https://678511531ec630ca33a70f2e.mockapi.io/fgh/categoriesServices",
+				"http://localhost:4000/products?max_price=2500000&min_price=0&category_id=67cd73028d84f38f7341a07e&discount_price=10000000",
 			);
-			return response.data; // ✅ API trả về danh sách categories
+			return response.data.result.data;
 		} catch (error: any) {
 			return rejectWithValue(error.response?.data || "Lỗi không xác định");
 		}

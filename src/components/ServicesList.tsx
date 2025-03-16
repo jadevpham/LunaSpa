@@ -39,13 +39,23 @@ const ServicesList: React.FC = () => {
 				renderItem={(service) => (
 					<CardItem
 						key={service.id}
-						data={service}
+						// data={service}
 						name={service.name}
-						address={service.address}
-						img={service.img}
-						category={service.category}
-						star={service.star}
-						vote={service.vote}
+						address={service.description}
+						img={service.images}
+						category={service.service_category?.name || "unknown"}
+						star={service.view_count}
+						vote={service.booking_count}
+						ratingComponent={
+							<div className="flex items-center gap-4 text-sm my-2">
+								<span className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm">
+									{service.view_count} 👁
+								</span>
+								<span className="bg-green-100 text-green-600 px-3 py-1 rounded-full text-sm">
+									{service.booking_count} 📅
+								</span>
+							</div>
+						}
 						// onClick={() => handleSelectService(service)}
 					/>
 				)}
