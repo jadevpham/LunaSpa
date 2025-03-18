@@ -32,13 +32,29 @@ const ProductsList: React.FC = () => {
 				renderItem={(product) => (
 					<CardItem
 						key={product.id}
-						data={product}
+						// data={product}
 						name={product.name}
-						address={product.price}
-						img={product.img}
-						category={product.category}
-						star={product.star}
-						vote={product.vote}
+						address={product.description}
+						img={product.images}
+						category={product.category.name}
+						star={product.price}
+						vote={product.discount_price}
+						ratingComponent={
+							<div className="flex items-center gap-4 text-sm my-2">
+								<span className="text-gray-500 line-through">
+									{new Intl.NumberFormat("vi-VN", {
+										style: "currency",
+										currency: "VND",
+									}).format(product.price)}
+								</span>
+								<span className="bg-yellow-200 text-red-500 font-semibold px-3 py-1 rounded-full">
+									{new Intl.NumberFormat("vi-VN", {
+										style: "currency",
+										currency: "VND",
+									}).format(product.discount_price)}
+								</span>
+							</div>
+						}
 					/>
 				)}
 			/>

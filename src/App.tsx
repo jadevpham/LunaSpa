@@ -41,6 +41,7 @@ import BranchesManagement from "./pages/AdminPages/Branches/BranchesManagement";
 import CreateNewBranch from "./pages/AdminPages/Branches/CreateNewBranch";
 import DevicesManagement from "./pages/AdminPages/Devices/DevicesManagement";
 import AuthPageAdminStaff from "./pages/AuthPages/AuthPageAdminStaff";
+import ServiceDetail from "./pages/ServiceDetail";
 
 const RouteHandler = () => {
 	const location = useLocation();
@@ -117,6 +118,7 @@ const RouteHandler = () => {
 			<Route path="/login/*" element={<AuthRedirectHandler />} />
 			<Route path="*" element={<NotFoundPage />} />
 			<Route path="/search" element={<SearchPage />} />
+			<Route path="/serviceDetail" element={<ServiceDetail />} />
 		</Routes>
 	);
 };
