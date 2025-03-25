@@ -57,7 +57,14 @@ const CardList = <T,>({
 						className="flex space-x-8 overflow-x-auto hide-scrollbar scroll-smooth snap-x"
 						onScroll={checkScroll}
 					>
-						{items.map((item) => renderItem(item))}
+						{/* {items?.map((item) => renderItem(item))} */}
+						{items?.map((item) => (
+							<div key={(item as any).id}>
+								{" "}
+								{/* 🚀 Thêm key vào đây */}
+								{renderItem(item)}
+							</div>
+						))}
 					</div>
 
 					{/* Nút cuộn trái */}
