@@ -7,9 +7,7 @@ type ProductsItemType = {
 	price: number;
 	discount_price: number;
 	images: string;
-	category: {
-		name: string;
-	};
+	quantity: number;
 	description: string;
 };
 
@@ -31,8 +29,9 @@ export const fetchProducts = createAsyncThunk(
 	async (_, { rejectWithValue }) => {
 		try {
 			const response = await axios.get(
-				"http://localhost:4000/products?max_price=2500000&min_price=0&category_id=67cd73028d84f38f7341a07e&discount_price=10000000",
+				"http://localhost:4000/products?limit=10&page=1&sort=&search=&order=&max_price=2500000&min_price=0&category_id=67cd73028d84f38f7341a07e&discount_price=10000000&quantity=1000",
 			);
+			// console.log(response.data.result.data);
 			return response.data.result.data;
 		} catch (error: any) {
 			return rejectWithValue(error.response?.data || "Lỗi không xác định");
@@ -54,7 +53,7 @@ const productsSlice = createSlice({
 				fetchProducts.fulfilled,
 				(state, action: PayloadAction<ProductsItemType[]>) => {
 					state.loading = false;
-					state.productsList = action.payload; // ✅ Cập nhật state bằng dữ liệu API
+					state.productsList = action.payload; // Cập nhật state bằng dữ liệu API
 				},
 			)
 			.addCase(fetchProducts.rejected, (state, action) => {

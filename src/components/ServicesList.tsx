@@ -27,8 +27,15 @@ const ServicesList: React.FC = () => {
 	if (error) return <p className="text-red-500">{error}</p>;
 
 	const handleSelectService = (service: any) => {
-		dispatch(addService(service));
-		navigate("/book/select-service");
+		console.log("Service object:", service); // ✅ Kiểm tra object
+		console.log("Navigating with serviceId:", service?._id); // ✅ Kiểm tra _id
+
+		if (!service?._id) {
+			console.error("❌ Service ID is undefined. Kiểm tra API response!");
+			return;
+		}
+
+		navigate(`/serviceDetail?id=${service._id}`); //Truyền ID dưới dạng query string
 	};
 
 	return (
@@ -49,14 +56,14 @@ const ServicesList: React.FC = () => {
 						ratingComponent={
 							<div className="flex items-center gap-4 text-sm my-2">
 								<span className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm">
-									{service.view_count} 👁
+									👁 {service.view_count}
 								</span>
 								<span className="bg-green-100 text-green-600 px-3 py-1 rounded-full text-sm">
-									{service.booking_count} 📅
+									📅 {service.booking_count}
 								</span>
 							</div>
 						}
-						// onClick={() => handleSelectService(service)}
+						onClick={() => handleSelectService(service)}
 					/>
 				)}
 			/>

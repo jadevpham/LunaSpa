@@ -7,7 +7,7 @@ import productsReducer from "./productsSlice";
 import bookingReducer from "./bookingSlice";
 import filterReducer from "./filterSlice";
 import serviceDetailReducer from "./serviceDetailSlice";
-
+import productsByServiceReducer from "./productsByServiceSlice";
 export const store = configureStore({
 	reducer: {
 		// hàm này sẽ return state (trong redux thì state ~~~ reducer)
@@ -22,6 +22,7 @@ export const store = configureStore({
 		booking: bookingReducer,
 		filter: filterReducer,
 		serviceDetail: serviceDetailReducer,
+		productsByService: productsByServiceReducer,
 	},
 });
 // ✅ Export RootState (Kiểu của Redux Store)

@@ -6,11 +6,24 @@ import axios from "axios";
 type BranchesItemType = {
 	id: string;
 	name: string;
-	address: string;
-	img: string;
-	category: string;
-	star: number;
-	vote: number;
+	description: string;
+	rating: number;
+	images: string;
+	status: number;
+	opening_hours: {
+		day: string;
+		open: string;
+		close: string;
+	}[];
+	contact: {
+		phone: string;
+		email: string;
+		address: string;
+	};
+	// category: string;
+	// star: number;
+	// vote: number;
+	// address: string;
 };
 
 type BranchesState = {
@@ -37,10 +50,9 @@ export const fetchBranches = createAsyncThunk(
 	"branches/fetchBranches",
 	async (_, { rejectWithValue }) => {
 		try {
-			const response = await axios.get(
-				"https://678511531ec630ca33a70f2e.mockapi.io/fgh/categoriesServices",
-			);
-			return response.data; // ✅ API trả về danh sách categories
+			const response = await axios.get("http://localhost:4000/branches");
+			// console.log(response.data.result.data);
+			return response.data.result.data;
 		} catch (error: any) {
 			return rejectWithValue(error.response?.data || "Lỗi không xác định");
 		}
