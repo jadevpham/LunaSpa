@@ -476,7 +476,8 @@ const Header: React.FC = () => {
 					{/* Tiêu đề chính */}
 					<h1 className="text-5xl md:text-6xl font-bold leading-tight">
 						{t("Book local beauty and")}
-						<br />wellness services
+						<br />
+						wellness services
 					</h1>
 					{/* Thanh tìm kiếm */}
 					<div className="max-w-4xl mx-auto mt-8">

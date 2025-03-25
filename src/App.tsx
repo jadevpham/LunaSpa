@@ -18,7 +18,7 @@ import SelectTimePage from "./pages/SelectTimePage";
 import ConfirmBookingPage from "./pages/ConfirmBookingPage";
 import HomePage from "./pages/HomePage";
 import SearchPage from "./pages/SearchPage";
-import BookingReviewPage from "./pages/BookingReviewPage";
+import PaymentPage from "./pages/PaymentPage";
 import { useEffect } from "react";
 // import UserProfile from "./pages/UserProfile";
 // import BookingHistory from "./pages/BookingHistory";
@@ -99,21 +99,22 @@ const RouteHandler = () => {
 				{/* <Route path="/user-profile" element={<UserProfile />} /> */}
 			</Route>
 
-			<Route
+			{/* <Route
 				element={
 					<ProtectedRoute
 						allowedRoles={["User", "Admin"]}
 						requireVerified={true}
 					/>
 				}
-			>
-				<Route path="/book/*" element={<BookingLayout />}>
-					<Route path="select-service" element={<SelectServicePage />} />
-					<Route path="select-time" element={<SelectTimePage />} />
-					<Route path="confirm" element={<ConfirmBookingPage />} />
-				</Route>
+			> */}
+			<Route path="/book/*" element={<BookingLayout />}>
+				<Route index element={<Navigate to="select-service" replace />} />
+				<Route path="select-service" element={<SelectServicePage />} />
+				<Route path="select-time" element={<SelectTimePage />} />
+				<Route path="confirm" element={<ConfirmBookingPage />} />
 			</Route>
-			<Route path="/review-booking" element={<BookingReviewPage />} />
+			{/* </Route> */}
+			<Route path="/payment" element={<PaymentPage />} />
 
 			<Route path="/login/*" element={<AuthRedirectHandler />} />
 			<Route path="*" element={<NotFoundPage />} />

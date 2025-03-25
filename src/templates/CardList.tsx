@@ -57,7 +57,9 @@ const CardList = <T,>({
 						className="flex space-x-8 overflow-x-auto hide-scrollbar scroll-smooth snap-x"
 						onScroll={checkScroll}
 					>
-						{items.map((item) => renderItem(item))}
+						{items.map((item, index) => (
+							<React.Fragment key={index}>{renderItem(item)}</React.Fragment>
+						))}
 					</div>
 
 					{/* Nút cuộn trái */}

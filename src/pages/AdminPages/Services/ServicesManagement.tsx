@@ -1,7 +1,7 @@
 import { Box, Typography, Button } from "@mui/joy";
 import DownloadRoundedIcon from "@mui/icons-material/DownloadRounded";
-import UserTable from "../../../components/admin/Users/UserTable";
-import UserList from "../../../components/admin/Users/UserList";
+import UserTable from "../../../components/admin/Services/ServiceTable";
+// import UserList from "../../../components/admin/Services/UserList";
 import CustomBreadcrumbs from "../../../components/admin/Breadcrumbs";
 const ServicesManagement = () => {
 	return (
@@ -27,7 +27,7 @@ const ServicesManagement = () => {
 				}}
 			>
 				<Typography level="h2" component="h1">
-					Users
+					Services
 				</Typography>
 				<Button
 					color="primary"
@@ -38,7 +38,7 @@ const ServicesManagement = () => {
 				</Button>
 			</Box>
 			<UserTable />
-			<UserList />
+			{/* <UserList /> */}
 		</>
 	);
 };

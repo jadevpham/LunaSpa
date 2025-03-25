@@ -14,7 +14,7 @@ axiosInstance.interceptors.request.use(
 		// Check hệ thống có accessToken hay không và cập nhật Authorization header nếu có
 		const accessToken = localStorage.getItem("access_token");
 		if (accessToken) {
-			config.headers.Authorization = "Bearer" + " " + accessToken;
+			config.headers.Authorization = `Bearer ${accessToken}`;
 		}
 		return config;
 	},
@@ -40,9 +40,17 @@ axiosInstance.interceptors.response.use(
 					console.log("Access token hết hạn, đang làm mới...");
 					const refreshToken = localStorage.getItem("refresh_token");
 
+					if (!refreshToken) {
+						console.warn("Không tìm thấy refresh token, đăng xuất...");
+						localStorage.removeItem("access_token");
+						localStorage.removeItem("refresh_token");
+						window.location.href = "/login"; // Điều hướng về trang đăng nhập
+						return Promise.reject(error);
+					}
+
 					// Gửi request làm mới token
 					const { data } = await axios.post(
-						BASE_URL + "/accounts/refresh-token",
+						`${BASE_URL}/accounts/refresh-token`,
 						null,
 						{
 							headers: {
@@ -58,7 +66,10 @@ axiosInstance.interceptors.response.use(
 					error.config.headers.Authorization = `Bearer ${data.access_token}`;
 					return axiosInstance(error.config);
 				} catch (err) {
-					console.error("Làm mới token thất bại:", err);
+					console.error("Làm mới token thất bại, đăng xuất...");
+					localStorage.removeItem("access_token");
+					localStorage.removeItem("refresh_token");
+					window.location.href = "/login";
 					return Promise.reject(err);
 				}
 			}
@@ -66,7 +77,11 @@ axiosInstance.interceptors.response.use(
 			// Nếu lỗi là 422 (Validation) => Trả về lỗi mà không làm mới token
 			if (status === 422) {
 				console.warn("Lỗi validation:", errorMessage);
-				return Promise.reject(error);
+				// Có thể throw error với thông tin rõ ràng hơn
+				return Promise.reject({
+					message: errorMessage,
+					errors: error.response.data.errors || [],
+				});
 			}
 		}
 

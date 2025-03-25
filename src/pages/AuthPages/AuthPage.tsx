@@ -85,6 +85,7 @@ const AuthPage = () => {
 			};
 
 			const response = await axiosInstance.post("/accounts/login", userData);
+			// console.log(response)
 			if (response.data.result) {
 				const user = response.data.result.user;
 				const access_token = response.data.result.access_token;

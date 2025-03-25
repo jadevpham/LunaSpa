@@ -23,6 +23,7 @@ import SpaRoundedIcon from "@mui/icons-material/SpaRounded";
 import ListAltRoundedIcon from "@mui/icons-material/ListAltRounded";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import ChairAltRoundedIcon from "@mui/icons-material/ChairAltRounded";
+import FaceRetouchingNaturalRoundedIcon from "@mui/icons-material/FaceRetouchingNaturalRounded";
 import ColorSchemeToggle from "./ColorSchemeToggle";
 import { closeSidebar } from "../../utils/utils";
 import { useLocation, Link, useNavigate } from "react-router-dom";
@@ -65,11 +66,19 @@ const AdminSidebar = () => {
 	const location = useLocation();
 	const currentPath = location.pathname;
 	const navigate = useNavigate();
+	const [user, setUser] = React.useState<any>(null);
+
+	React.useEffect(() => {
+		const user = localStorage.getItem("user");
+		if (user) {
+			setUser(JSON.parse(user));
+		}
+	}, []);
 	const handleLogout = () => {
 		localStorage.removeItem("user");
 		localStorage.removeItem("access_token");
 		localStorage.removeItem("refresh_token");
-		// setUser(null);
+		setUser(null);
 		toast.success("Logout successfully");
 		navigate("/");
 	};
@@ -258,6 +267,53 @@ const AdminSidebar = () => {
 					</ListItem>
 					<ListItem nested>
 						<Toggler
+							defaultExpanded={currentPath.startsWith("/admin/products")}
+							renderToggle={({ open, setOpen }) => (
+								<ListItemButton onClick={() => setOpen(!open)}>
+									<FaceRetouchingNaturalRoundedIcon />
+									<ListItemContent>
+										<Typography level="title-sm">Products</Typography>
+									</ListItemContent>
+									<KeyboardArrowDownIcon
+										sx={[
+											open
+												? {
+														transform: "rotate(180deg)",
+													}
+												: {
+														transform: "none",
+													},
+										]}
+									/>
+								</ListItemButton>
+							)}
+						>
+							<List sx={{ gap: 0.5 }}>
+								<ListItem>
+									<ListItemButton
+										component={Link}
+										to="/admin/products/product-management"
+										selected={
+											currentPath === "/admin/products/product-management"
+										}
+									>
+										Product List
+									</ListItemButton>
+								</ListItem>
+								<ListItem>
+									<ListItemButton
+										component={Link}
+										to="/admin/products/create-product"
+										selected={currentPath === "/admin/products/create-product"}
+									>
+										Create a new product
+									</ListItemButton>
+								</ListItem>
+							</List>
+						</Toggler>
+					</ListItem>
+					<ListItem nested>
+						<Toggler
 							defaultExpanded={currentPath.startsWith("/admin/categories")}
 							renderToggle={({ open, setOpen }) => (
 								<ListItemButton onClick={() => setOpen(!open)}>
@@ -376,9 +432,17 @@ const AdminSidebar = () => {
 					size="sm"
 					src="https://muaxegiatot.com/wp-content/uploads/2021/05/dau-xe-mercedes-maybach-s680-4matic-2021-20202-muaxegiatot-vn.jpg"
 				/>
-				<Box sx={{ minWidth: 0, flex: 1 }}>
-					<Typography level="title-sm">Username</Typography>
-					<Typography level="body-xs">User email</Typography>
+				<Box
+					sx={{
+						minWidth: 0,
+						flex: 1,
+						overflow: "hidden",
+						textOverflow: "ellipsis",
+						whiteSpace: "nowrap",
+					}}
+				>
+					<Typography level="title-sm">{user?.name}</Typography>
+					<Typography level="body-xs">{user?.email}</Typography>
 				</Box>
 				<IconButton size="sm" variant="plain" color="neutral">
 					<LogoutRoundedIcon onClick={handleLogout} />

@@ -2,27 +2,31 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 
 type ServicesItemType = {
-	id: string;
+	_id: string;
 	name: string;
 	description: string;
-	images: string;
+	images: string[];
 	service_category: {
 		name: string;
+		_id: string;
 	};
 	view_count: number;
 	booking_count: number;
-	price: number;
+	status: number;
 	durations: {
 		duration_name: string;
 		price: number;
 		discount_price: number;
-		duration_in_minutes: number; // == durationID
-	};
+		duration_in_minutes: number;
+		sub_description: string;
+	}[];
 	devices: {
 		name: string;
 		description: string;
 		status: number;
-	};
+	}[];
+	created_at: string;
+	updated_at: string;
 };
 
 type ServicesState = {
@@ -43,7 +47,8 @@ export const fetchServices = createAsyncThunk(
 	async (_, { rejectWithValue }) => {
 		try {
 			const response = await axios.get("http://localhost:4000/services");
-			return response.data.result.data; // API trả về danh sách services
+			console.log(response.data.result);
+			return response.data.result; // API trả về danh sách services
 		} catch (error: any) {
 			return rejectWithValue(error.response?.data || "Lỗi không xác định");
 		}

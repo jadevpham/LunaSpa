@@ -68,14 +68,14 @@ const SelectTimePage = () => {
 
 	// Chọn giờ
 	const handleSelectTime = (time: string) => {
-		setSelectedTime(time);
-		const selectedTime: BookTime = {
-			ServiceBooking_Date: selectedDate
-				? dayjs(selectedDate).format("YYYY-MM-DD")
-				: "",
-			ServiceBooking_Time: time,
-		};
-		dispatch(setTime(selectedTime));
+		if (selectedDate) {
+			setSelectedTime(time);
+			const selectedTime: BookTime = {
+				ServiceBooking_Date: dayjs(selectedDate).format("YYYY-MM-DD"),
+				ServiceBooking_Time: time,
+			};
+			dispatch(setTime(selectedTime));
+		}
 	};
 
 	const handlePrevWeek = () => {
@@ -95,9 +95,9 @@ const SelectTimePage = () => {
 	const handleCalendarChange = (value: Date | undefined) => {
 		if (value) {
 			setSelectedDate(value);
-			// Tính lại ngày đầu tuần mới dựa trên ngày đã chọn
+
 			setCurrentWeekStart(dayjs(value).startOf("week"));
-			setShowCalendar(false); // Ẩn calendar sau khi chọn ngày
+			setShowCalendar(false);
 		}
 	};
 
@@ -111,7 +111,7 @@ const SelectTimePage = () => {
 
 	useEffect(() => {
 		if (isSliding) {
-			const timer = setTimeout(() => setIsSliding(false), 300); // Reset trạng thái sau 300ms (thời gian transition)
+			const timer = setTimeout(() => setIsSliding(false), 300);
 			return () => clearTimeout(timer);
 		}
 	}, [isSliding]);
@@ -133,7 +133,7 @@ const SelectTimePage = () => {
 				</button>
 			</h2>
 
-			{/* icon và điều hướng tuần */}
+			{/* icon và navigate */}
 			<div className="flex items-center mb-4">
 				<button
 					className={`p-2 ${currentWeekStart.isBefore(today.startOf("week")) ? "cursor-not-allowed" : ""}`}
@@ -180,7 +180,6 @@ const SelectTimePage = () => {
 						</button>{" "}
 					</div>
 
-					{/* Hiển thị lịch */}
 					<DayPicker
 						mode="single"
 						selected={selectedDate}
@@ -196,7 +195,7 @@ const SelectTimePage = () => {
 				</div>
 			)}
 
-			{/* chọn ngày trong tuần */}
+			{/* days of week */}
 			<div className="flex justify-between mb-3 relative overflow-hidden">
 				<div
 					className={`grid grid-cols-7 gap-2 w-full transition-transform duration-300 ease-in-out ${
@@ -231,7 +230,7 @@ const SelectTimePage = () => {
 				</div>
 			</div>
 
-			{/* chọn thời gian */}
+			{/* time slots */}
 			<div className="mt-5 space-y-3">
 				{selectedDate && !hasTimeSlots(selectedDate) ? (
 					<div className="text-center p-4 bg-gray-100 rounded">
@@ -249,7 +248,7 @@ const SelectTimePage = () => {
 							onClick={() => {
 								const nextDate = getNextAvailableDate();
 								setSelectedDate(nextDate.toDate());
-								handleCalendarChange(nextDate.toDate()); //
+								handleCalendarChange(nextDate.toDate());
 							}}
 						>
 							Go to next available day
@@ -259,7 +258,7 @@ const SelectTimePage = () => {
 					timeSlots.map((slot) => (
 						<button
 							key={slot.time}
-							className={`block w-full p-3 transition-all duration-300 rounded text-left ${selectedTime === slot.time ? "border-2 border-purple-300  bg-white  text-black rounded-xl" : "bg-white  text-black border rounded-xl"}`}
+							className={`block w-full p-3 transition-all duration-300 rounded text-left ${selectedTime === slot.time ? "border-2 border-purple-300 bg-gradient-to-tr from-purple-400 to-pink-300 text-white rounded-xl" : "bg-white text-black border rounded-xl"}`}
 							onClick={() => handleSelectTime(slot.time)}
 						>
 							<div className="flex justify-between items-center">

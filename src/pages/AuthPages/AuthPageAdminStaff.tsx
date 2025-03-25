@@ -61,8 +61,9 @@ const AuthPageAdminStaff = () => {
 			};
 
 			const response = await axiosInstance.post("/accounts/login", userData);
+			// console.log(response.data.result.user_profile.account);
 			if (response.data.result) {
-				const user = response.data.result.user;
+				const user = response.data.result.user_profile.account;
 				const access_token = response.data.result.access_token;
 				const refresh_token = response.data.result.refresh_token;
 

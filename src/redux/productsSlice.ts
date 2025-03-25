@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 
 type ProductsItemType = {
-	id: string;
+	_id: string;
 	name: string;
 	price: number;
 	discount_price: number;
@@ -31,7 +31,7 @@ export const fetchProducts = createAsyncThunk(
 	async (_, { rejectWithValue }) => {
 		try {
 			const response = await axios.get(
-				"http://localhost:4000/products?max_price=2500000&min_price=0&category_id=67cd73028d84f38f7341a07e&discount_price=10000000",
+				"http://localhost:4000/products?max_price=2500000&min_price=0&discount_price=10000000",
 			);
 			return response.data.result.data;
 		} catch (error: any) {
