@@ -8,6 +8,8 @@ import bookingReducer from "./bookingSlice";
 import filterReducer from "./filterSlice";
 import serviceDetailReducer from "./serviceDetailSlice";
 import productsByServiceReducer from "./productsByServiceSlice";
+import branchDetailReducer from "./branchDetailSlice";
+import chatReducer from "./chatSlice";
 export const store = configureStore({
 	reducer: {
 		// hàm này sẽ return state (trong redux thì state ~~~ reducer)
@@ -23,6 +25,8 @@ export const store = configureStore({
 		filter: filterReducer,
 		serviceDetail: serviceDetailReducer,
 		productsByService: productsByServiceReducer,
+		branchDetail: branchDetailReducer,
+		chat: chatReducer,
 	},
 });
 // ✅ Export RootState (Kiểu của Redux Store)

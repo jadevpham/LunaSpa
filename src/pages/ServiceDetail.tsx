@@ -91,20 +91,20 @@ const ServiceDetail: React.FC = () => {
 				}
 				nameSec3={highestRatedBranch?.name || "Không có chi nhánh nào"}
 				nameThir={
-					serviceDetail?.devices?.map((d) => d.name).join(", ") || "N/A"
+					serviceDetail?.devices?.map((d) => d.name).join("\n") || "N/A"
 				}
 				priceMin={
 					serviceDetail?.durations?.length
 						? serviceDetail.durations.reduce((min, d) =>
-								d.price < min.price ? d : min,
-							).price
+								d.discount_price < min.discount_price ? d : min,
+							).discount_price
 						: 0
 				} // hiện tại duration mới chỉ có 1
 				priceMax={
 					serviceDetail?.durations?.length
 						? serviceDetail.durations.reduce((max, d) =>
-								d.price > max.price ? d : max,
-							).price
+								d.discount_price > max.discount_price ? d : max,
+							).discount_price
 						: 0
 				}
 				durationsNameMin={
@@ -122,7 +122,9 @@ const ServiceDetail: React.FC = () => {
 						: "N/A"
 				}
 				address={highestRatedBranch?.contact?.address ?? "N/A"} // sau thay bằng địa chị branch
-				image={serviceDetail?.images || "default.jpg"}
+				image1={serviceDetail?.images[0] || "default.jpg"}
+				image2={serviceDetail?.images[1] || "default.jpg"}
+				image3={serviceDetail?.images[2] || "default.jpg"}
 				day={todayDay}
 				opening_hours={todayOpening} //sau thay bằng giờ của branch
 				close_hours={todayClosing}

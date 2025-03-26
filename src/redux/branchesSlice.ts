@@ -8,7 +8,7 @@ type BranchesItemType = {
 	name: string;
 	description: string;
 	rating: number;
-	images: string;
+	images: string[];
 	status: number;
 	opening_hours: {
 		day: string;
@@ -20,10 +20,6 @@ type BranchesItemType = {
 		email: string;
 		address: string;
 	};
-	// category: string;
-	// star: number;
-	// vote: number;
-	// address: string;
 };
 
 type BranchesState = {
