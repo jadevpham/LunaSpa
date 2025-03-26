@@ -1,29 +1,65 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { setPaymentMethod } from "../redux/bookingSlice";
 import { RootState } from "../redux/store";
 import { toast } from "react-toastify";
 
 const ConfirmBookingPage = () => {
 	const dispatch = useDispatch();
+	const navigate = useNavigate();
 	const paymentMethod = useSelector(
 		(state: RootState) => state.booking.selectedPaymentMethod,
 	);
-	const [discountCode, setDiscountCode] = useState("");
+	const selectedTime = useSelector(
+		(state: RootState) => state.booking.selectedTime,
+	);
+	const selectedService = useSelector(
+		(state: RootState) => state.booking.selectedService,
+	);
+	const [bookingNotes, setBookingNotes] = useState("");
+	const [method, setMethod] = useState("");
+	if (!selectedService) {
+		navigate("/book/service");
+		return null;
+	}
+
+	if (!selectedTime) {
+		navigate("/book/select-time");
+		return null;
+	}
 
 	const handlePaymentChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-		dispatch(setPaymentMethod({ _id: e.target.value, name: e.target.value }));
-		toast.info(`Payment method changed to ${e.target.value}`);
+		const selectedMethod = e.target.value;
+		setMethod(selectedMethod);
+		dispatch(
+			setPaymentMethod({
+				_id: selectedMethod,
+				name: selectedMethod,
+				notes: bookingNotes,
+			}),
+		);
+		toast.info(`Payment method changed to ${selectedMethod}`);
 	};
 
-	const handleDiscountApply = () => {
-		const validCodes = ["DISCOUNT10", "SAVE20"];
-		if (validCodes.includes(discountCode)) {
-			toast.success("Discount code applied successfully!");
-		} else {
-			toast.error("Invalid discount code.");
-		}
+	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setBookingNotes(e.target.value);
+		dispatch(
+			setPaymentMethod({
+				_id: method,
+				name: method,
+				notes: bookingNotes,
+			}),
+		);
 	};
+	// const handleDiscountApply = () => {
+	// 	const validCodes = ["DISCOUNT10", "SAVE20"];
+	// 	if (validCodes.includes(discountCode)) {
+	// 		toast.success("Discount code applied successfully!");
+	// 	} else {
+	// 		toast.error("Invalid discount code.");
+	// 	}
+	// };
 
 	return (
 		<div className="container mx-auto shadow-xl p-8 rounded-2xl bg-white">
@@ -45,7 +81,7 @@ const ConfirmBookingPage = () => {
 				</select>
 			</div>
 
-			<div className="bg-gray-100 p-6 rounded-lg mb-4">
+			{/* <div className="bg-gray-100 p-6 rounded-lg mb-4">
 				<h3 className="font-semibold text-lg mb-2">Discount Code</h3>
 				<div className="flex">
 					<input
@@ -62,13 +98,15 @@ const ConfirmBookingPage = () => {
 						Apply
 					</button>
 				</div>
-			</div>
+			</div> */}
 
 			<div className="bg-gray-100 p-6 rounded-lg">
 				<h3 className="font-semibold text-lg mb-2">Booking Notes</h3>
 				<textarea
 					placeholder="Add any notes for your booking..."
 					className="w-full p-3 border rounded-lg h-20 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+					value={bookingNotes}
+					onChange={(e) => handleInputChange(e)}
 				></textarea>
 			</div>
 		</div>

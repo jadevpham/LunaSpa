@@ -3,11 +3,10 @@ import {
 	useElements,
 	useStripe,
 } from "@stripe/react-stripe-js";
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../axios/axiosInstance";
-
+import { toast } from "react-toastify";
 // Define the props type for CheckoutForm
 interface CheckoutFormProps {
 	orderId: string;
@@ -36,18 +35,18 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
 			console.log("Payment Intent Status:", paymentIntent.status);
 			switch (paymentIntent.status) {
 				case "succeeded":
-					setMessage("Payment completed successfully!");
+					toast.success("Payment completed successfully!");
 					// Handle order status update after successful payment
 					confirmPaymentSuccess(paymentIntent.id, paymentIntent.payment_method);
 					break;
 				case "processing":
-					setMessage("Your payment is being processed.");
+					toast.info("Your payment is being processed.");
 					break;
 				case "requires_payment_method":
-					setMessage('Please enter your card information and click "Pay Now"');
+					toast.warn('Please enter your card information and click "Pay Now"');
 					break;
 				default:
-					setMessage("An error occurred.");
+					toast.error("An error occurred.");
 					break;
 			}
 		});
@@ -64,8 +63,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
 				paymentMethodId,
 				orderId,
 			});
-			const response = await axios.post(
-				`http://localhost:4000/orders/${orderId}/payment/confirm`,
+			const response = await axiosInstance.post(
+				`/orders/${orderId}/payment/confirm`,
 				{
 					payment_intent_id: paymentIntentId,
 					payment_method_id: paymentMethodId,
@@ -81,21 +80,21 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
 			console.log("Payment confirmation result:", response.data);
 
 			if (response.data && response.data.result) {
-				setMessage("Payment successful! Redirecting...");
+				toast.success("Payment successful! Redirecting...");
 				// Redirect to order status page
 				setTimeout(() => {
-					navigate(`/order/status/${orderId}`);
+					navigate(`/order-detail/${orderId}`);
 				}, 3000); // Increase time to 3 seconds
 			} else {
 				console.error("Response error:", response.data);
-				setMessage("Order update failed. Please contact support.");
+				toast.error("Order update failed. Please contact support.");
 			}
 		} catch (error) {
 			console.error(
 				"Error confirming payment:",
 				error.response?.data || error.message,
 			);
-			setMessage(
+			toast.error(
 				"Payment succeeded but order update failed. Please contact support.",
 			);
 		}
@@ -126,12 +125,12 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
 
 		if (error) {
 			if (error.type === "card_error" || error.type === "validation_error") {
-				setMessage(error.message);
+				toast.error(error.message);
 			} else {
-				setMessage("An unexpected error occurred");
+				toast.error("An unexpected error occurred");
 			}
 		} else if (paymentIntent && paymentIntent.status === "succeeded") {
-			setMessage("Payment successful! Updating order...");
+			toast.success("Payment successful! Updating order...");
 			// Call function to update order
 			await confirmPaymentSuccess(
 				paymentIntent.id,
@@ -147,43 +146,49 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
 	};
 
 	return (
-		<form className="checkout-form" onSubmit={handleSubmit}>
-			<div className="form-header">
-				<h3>Card Information</h3>
-				<p>Please enter your card information</p>
+		<form
+			className="p-5 md:p-6 bg-white rounded-xl shadow-xl h-full  flex justify-center flex-col"
+			onSubmit={handleSubmit}
+		>
+			<div className="mb-6">
+				<h3 className="text-[#32325d] mb-2">Card Information</h3>
+				<p className="text-[#6b7c93] mt-0">
+					Please enter your card information
+				</p>
 			</div>
 
-			<div className="payment-element-container">
+			<div className="mb-5">
 				<PaymentElement />
 			</div>
 
 			{message && (
 				<div
-					className={`payment-message ${message.includes("successful") ? "success" : message.includes("processing") ? "processing" : "error"}`}
+					className={`text-[#32325d] text-lg leading-5 p-4 rounded mb-5 ${message.includes("successful") ? "bg-[#f0fff4] border border-[#c6f6d5]" : message.includes("processing") ? "bg-[#e3f2fd] border border-[#bbdefb]" : "bg-[#fff5f5] border border-[#fed7d7] text-[#e53e3e]"}`}
 				>
 					{message}
 				</div>
 			)}
 
-			<div className="save-card-option">
+			<div className="my-5 flex items-center">
 				<input
 					type="checkbox"
 					id="save-card"
 					checked={saveCard}
 					onChange={handleSaveCardChange}
+					className="mr-2"
 				/>
-				<label htmlFor="save-card">
+				<label htmlFor="save-card" className="text-[#32325d] cursor-pointer">
 					Save this card information for next time
 				</label>
 			</div>
 
 			<button
-				className="pay-button"
+				className="bg-[#6772e5] text-white py-3 px-4 rounded font-semibold cursor-pointer transition-all duration-200 ease-in-out w-full text-center text-lg"
 				disabled={isProcessing || !stripe || !elements}
 			>
 				{isProcessing ? (
-					<span className="button-text">
-						<div className="spinner"></div>
+					<span className="flex items-center justify-center">
+						<div className="mr-2 w-5 h-5 border-3 border-white border-opacity-30 rounded-full border-t-white animate-spin"></div>
 						Processing...
 					</span>
 				) : (

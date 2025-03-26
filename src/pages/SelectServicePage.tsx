@@ -110,7 +110,7 @@ const SelectServicePage = () => {
 		toast.warn("Service removed successfully");
 	};
 
-	const unselectedServices = services.filter((service) => {
+	const unselectedServices = services?.filter((service) => {
 		const isSelected = !selectedServices?.some(
 			(selectedService) => selectedService._id === service._id,
 		);
@@ -184,7 +184,7 @@ const SelectServicePage = () => {
 			)}
 			<h2 className="text-2xl font-bold mb-4">Related Services</h2>
 			<div className="grid gap-4 max-h-[76vh] overflow-y-auto hide-scrollbar">
-				{unselectedServices.map((service) => (
+				{unselectedServices?.map((service) => (
 					<div
 						key={service._id}
 						className="bg-white rounded-lg shadow p-3 flex gap-4"
@@ -270,7 +270,7 @@ const SelectServicePage = () => {
 											onChange={() => setSelectedDuration(duration)}
 											className="mr-2"
 										/>
-										{duration.duration_name} - $
+										{duration.duration_in_minutes} minutes - $
 										{duration.discount_price.toLocaleString("en-US")}
 										<span className="ml-1 text-gray-500 line-through text-sm">
 											{duration.price.toLocaleString("en-US")}

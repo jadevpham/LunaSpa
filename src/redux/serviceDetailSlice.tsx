@@ -23,6 +23,23 @@ type ServiceDetailType = {
 		description: string;
 		status: number;
 	}[];
+	branches: {
+		id: string;
+		name: string;
+		description: string;
+		rating: number;
+		images: string;
+		opening_hours: {
+			day: string;
+			open: string;
+			close: string;
+		}[];
+		contact: {
+			phone: string;
+			email: string;
+			address: string;
+		};
+	}[];
 };
 type ServicesState = {
 	service: ServiceDetailType | null;
@@ -37,13 +54,15 @@ const initialState: ServicesState = {
 
 export const fetchServiceDetail = createAsyncThunk(
 	"serviceDetail/fetchServiceDetail",
-	async (_, { rejectWithValue }) => {
+	async (serviceId: string, { rejectWithValue }) => {
 		try {
 			const response = await axios.get(
-				"http://localhost:4000/services/67d3c8f8e299109b8d7f93a4",
+				`http://localhost:4000/services/${serviceId}`,
 			);
+			console.log(response.data.result);
 			return response.data.result; // API trả về danh sách services
 		} catch (error: any) {
+			console.error("API Error:", error.response?.data); // Log lỗi chi tiết
 			return rejectWithValue(error.response?.data || "Lỗi không xác định");
 		}
 	},
@@ -63,8 +82,14 @@ const serviceDetailSlice = createSlice({
 				fetchServiceDetail.fulfilled,
 				(state, action: PayloadAction<ServiceDetailType>) => {
 					state.loading = false;
-					state.service = action.payload; // Cập nhật state bằng dữ liệu API
-				},
+					state.service = {
+						...action.payload,
+						branches: action.payload.branches.map((branch) => ({
+							...branch,
+							id: (branch as any)._id, // Chuyển _id thành id
+						})),
+					};
+				}, // Cập nhật state bằng dữ liệu API
 			)
 			.addCase(fetchServiceDetail.rejected, (state, action) => {
 				state.loading = false;

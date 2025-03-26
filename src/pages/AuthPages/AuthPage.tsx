@@ -85,9 +85,10 @@ const AuthPage = () => {
 			};
 
 			const response = await axiosInstance.post("/accounts/login", userData);
-			// console.log(response)
+			// console.log(response.data.result.user_profile.account);
 			if (response.data.result) {
-				const user = response.data.result.user;
+				const user = response.data.result.user_profile.account;
+				const user_profile_id = response.data.result.user_profile._id;
 				const access_token = response.data.result.access_token;
 				const refresh_token = response.data.result.refresh_token;
 
@@ -110,7 +111,7 @@ const AuthPage = () => {
 				switch (role) {
 					case "User":
 						navigate("/", { replace: true });
-						login(access_token, refresh_token, user);
+						login(access_token, refresh_token, user, user_profile_id);
 						toast.success("Sign-in successful");
 						break;
 					default:

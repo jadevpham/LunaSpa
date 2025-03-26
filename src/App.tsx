@@ -42,6 +42,13 @@ import CreateNewBranch from "./pages/AdminPages/Branches/CreateNewBranch";
 import DevicesManagement from "./pages/AdminPages/Devices/DevicesManagement";
 import AuthPageAdminStaff from "./pages/AuthPages/AuthPageAdminStaff";
 import ServiceDetail from "./pages/ServiceDetail";
+import OrderDetail from "./pages/OrderDetail";
+import UserProfileLayout from "./layouts/UserProfileLayout";
+import UserProfile from "./pages/UserProfilePages/UserProfile";
+import AppointmentPage from "./pages/UserProfilePages/AppointmentPage";
+import FavoritePage from "./pages/UserProfilePages/FavoritePage";
+import HistoryPage from "./pages/UserProfilePages/HistoryPage";
+import ProductsManagement from "./pages/AdminPages/Products/ProductsManagement";
 
 const RouteHandler = () => {
 	const location = useLocation();
@@ -92,11 +99,22 @@ const RouteHandler = () => {
 						<Route path="branch-management" element={<BranchesManagement />} />
 						<Route path="create-branch" element={<CreateNewBranch />} />
 					</Route>
+					<Route path="products">
+						<Route path="product-management" element={<ProductsManagement />} />
+						{/* <Route path="create-product" element={<CreateNewBranch />} /> */}
+					</Route>
 				</Route>
 			</Route>
 
+			<Route path="order-detail/:orderId" element={<OrderDetail />} />
+
 			<Route element={<ProtectedRoute allowedRoles={["User", "Admin"]} />}>
-				{/* <Route path="/user-profile" element={<UserProfile />} /> */}
+				<Route path="/user/*" element={<UserProfileLayout />}>
+					<Route path="profile" element={<UserProfile />} />
+					<Route path="appointment" element={<AppointmentPage />} />
+					<Route path="favorites" element={<FavoritePage />} />
+					<Route path="histories" element={<HistoryPage />} />
+				</Route>
 			</Route>
 
 			{/* <Route

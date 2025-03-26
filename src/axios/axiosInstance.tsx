@@ -5,7 +5,7 @@ export const BASE_URL = "http://localhost:4000";
 // Tạo một instance Axios
 const axiosInstance = axios.create({
 	baseURL: BASE_URL,
-	timeout: 5000,
+	timeout: 1000000,
 });
 
 // Đón chặn Request

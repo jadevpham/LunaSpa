@@ -8,13 +8,24 @@ import { loadStripe } from "@stripe/stripe-js";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
+const formatPrice = (price: number) => {
+	return price
+		.toLocaleString("en-US", { style: "currency", currency: "VND" })
+		.replace("₫", "");
+};
+
 const PaymentPage: React.FC = () => {
 	const [clientSecret, setClientSecret] = useState<string>("");
 	const [orderId, setOrderId] = useState<string>("");
 	const [orderCreated, setOrderCreated] = useState(false);
 
-	const { selectedBranch, selectedService, selectedTime, selectedProducts } =
-		useSelector((state: RootState) => state.booking);
+	const {
+		selectedBranch,
+		selectedService,
+		selectedTime,
+		selectedProducts,
+		selectedPaymentMethod,
+	} = useSelector((state: RootState) => state.booking);
 
 	// Tính tổng giá dịch vụ bằng useMemo
 	const totalServicePrice = useMemo(() => {
@@ -78,7 +89,7 @@ const PaymentPage: React.FC = () => {
 					branch_id: selectedBranch?._id,
 					items,
 					payment_method: "stripe",
-					note: "Order for products via Stripe",
+					note: selectedPaymentMethod?.notes,
 				});
 
 				if (orderResponse.data?.result) {
@@ -126,70 +137,122 @@ const PaymentPage: React.FC = () => {
 	);
 
 	return (
-		<div className="p-6 bg-gray-100">
-			<h1 className="text-3xl font-bold mb-6 text-center">Booking Review</h1>
+		<div className="p-6 bg-gray-100 flex justify-center gap-6">
+			<div className="w-2/3 bg-white p-6 rounded-lg shadow-lg flex flex-col items-center">
+				<h1 className="text-3xl font-bold mb-6 text-center">Booking Review</h1>
 
-			<div className="mb-6 p-4 border rounded-lg shadow-lg bg-white">
-				<h2 className="text-2xl font-semibold mb-2">Branch Information</h2>
-				{selectedBranch ? (
-					<div>
-						<p className="text-lg">Name: {selectedBranch.name}</p>
-						<p>Address: {selectedBranch.address}</p>
-					</div>
-				) : (
-					<p>No branch selected.</p>
-				)}
-			</div>
-
-			<div className="mb-6 p-4 border rounded-lg shadow-lg bg-white">
-				<h2 className="text-2xl font-semibold mb-2">Date and Time</h2>
-				{selectedTime ? (
-					<div>
-						<p>Date: {selectedTime.ServiceBooking_Date}</p>
-						<p>Time: {selectedTime.ServiceBooking_Time}</p>
-					</div>
-				) : (
-					<p>No time selected.</p>
-				)}
-			</div>
-
-			<div className="mb-6 p-4 border rounded-lg shadow-lg bg-white">
-				<h2 className="text-2xl font-semibold mb-2">Selected Services</h2>
-				{selectedService && selectedService.length > 0 ? (
-					selectedService.map((service) => (
-						<div key={service._id} className="mb-2 border-b pb-2">
-							<p className="text-lg">Name: {service.name}</p>
-							<p>Price: {service.selectedDuration.discount_price}</p>
+				<div className="mb-6 p-4 border rounded-lg w-full max-w-[800px] bg-white shadow-md flex flex-col items-start">
+					<h2 className="text-2xl font-semibold mb-2 text-blue-600">
+						Branch Information
+					</h2>
+					{selectedBranch && selectedTime ? (
+						<div className="flex justify-between w-full">
+							<div className="flex flex-col">
+								<p className="text-lg font-medium">
+									Name:
+									<span className="font-normal">{selectedBranch?.name}</span>
+								</p>
+								<p className="text-lg font-medium">
+									Address:
+									<span className="font-normal">{selectedBranch?.address}</span>
+								</p>
+							</div>
+							<div className="flex flex-col items-end">
+								<p className="text-lg font-medium">
+									Date:
+									<span className="font-normal">
+										{selectedTime?.ServiceBooking_Date}
+									</span>
+								</p>
+								<p className="text-lg font-medium">
+									Time:
+									<span className="font-normal">
+										{selectedTime?.ServiceBooking_Time}
+									</span>
+								</p>
+							</div>
 						</div>
-					))
-				) : (
-					<p>No services selected.</p>
+					) : (
+						<p className="text-red-500">No branch selected.</p>
+					)}
+				</div>
+
+				<div className="mb-6 p-4 border rounded-lg w-full max-w-[800px] bg-white shadow-md flex flex-col items-start">
+					<h2 className="text-2xl font-semibold mb-2 text-blue-600">
+						Selected Services
+					</h2>
+					{selectedService && selectedService.length > 0 ? (
+						selectedService.map((service) => (
+							<div key={service._id} className="mb-2 border-b pb-2">
+								<p className="text-lg font-medium">
+									Name: <span className="font-normal">{service.name}</span>
+								</p>
+								<p className="text-lg font-medium">
+									Price:{" "}
+									<span className="font-normal">
+										{formatPrice(service.selectedDuration.discount_price)} -{" "}
+										{""}
+										{service.selectedDuration.duration_in_minutes} minutes
+									</span>
+								</p>
+							</div>
+						))
+					) : (
+						<p className="text-red-500">No services selected.</p>
+					)}
+				</div>
+
+				<div className="mb-6 p-4 border rounded-lg w-full max-w-[800px] bg-white shadow-md flex flex-col items-start">
+					<h2 className="text-2xl font-semibold mb-2 text-blue-600">
+						Selected Products
+					</h2>
+
+					{selectedProducts && selectedProducts.length > 0 ? (
+						selectedProducts.map((product) => (
+							<div key={product._id} className="mb-2 border-b pb-2 w-full">
+								<div className="flex justify-between relative">
+									<div className="">
+										<p className="text-lg font-medium">
+											Name: <span className="font-normal">{product.name}</span>
+										</p>
+										<p className="text-lg font-medium">
+											Price:
+											<span className="font-normal">
+												{formatPrice(product.discount_price)}
+											</span>
+										</p>
+										<p className="text-lg font-medium">
+											Quantity:{" "}
+											<span className="font-normal">{product.quantity}</span>
+										</p>
+									</div>
+									<div className="flex justify-end">
+										<p className="text-lg font-medium absolute right-0 bottom-0">
+											Total Price:
+											<span className="font-normal">
+												{formatPrice(product.discount_price * product.quantity)}
+											</span>
+										</p>
+									</div>
+								</div>
+							</div>
+						))
+					) : (
+						<p className="text-red-500">No products selected.</p>
+					)}
+				</div>
+
+				<h2 className="text-2xl font-bold mt-4 text-right w-full absolute bottom-6 right-6 text-green-500">
+					Total Price: {formatPrice(totalPrice)}
+				</h2>
+			</div>
+			<div className="w-1/3">
+				{clientSecret && (
+					<Elements stripe={stripePromise} options={options}>
+						<CheckoutForm orderId={orderId} clientSecret={clientSecret} />
+					</Elements>
 				)}
 			</div>
-
-			<div className="mb-6 p-4 border rounded-lg shadow-lg bg-white">
-				<h2 className="text-2xl font-semibold mb-2">Selected Products</h2>
-				{selectedProducts && selectedProducts.length > 0 ? (
-					selectedProducts.map((product) => (
-						<div key={product._id} className="mb-2 border-b pb-2">
-							<p className="text-lg">Name: {product.name}</p>
-							<p>Price: {product.discount_price}</p>
-							<p>Quantity: {product.quantity}</p>
-						</div>
-					))
-				) : (
-					<p>No products selected.</p>
-				)}
-			</div>
-
-			<h2 className="text-2xl font-bold mt-4 text-center">
-				Total Price: {totalPrice}
-			</h2>
-			{clientSecret && (
-				<Elements stripe={stripePromise} options={options}>
-					<CheckoutForm orderId={orderId} clientSecret={clientSecret} />
-				</Elements>
-			)}
 		</div>
 	);
 };

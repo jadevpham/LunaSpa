@@ -32,11 +32,12 @@ const ProductsList: React.FC = () => {
 				renderItem={(product) => (
 					<CardItem
 						key={product._id}
-						// data={product}
+						data={product}
 						name={product.name}
 						address={product.description}
 						img={product.images}
-						// category={product.category.name}
+						category={product.quantity.toString()}
+						category={`Quantity: ${product.quantity}`}
 						star={product.price}
 						vote={product.discount_price}
 						ratingComponent={

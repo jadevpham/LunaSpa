@@ -96,11 +96,9 @@ const Header: React.FC = () => {
 		}
 	}, [filterCriteria.branchId, branchesList]);
 
-	const [user, setUser] = useState<{
-		name: string;
-		avatar: string;
-		roles: Array<{ role_name: string }>;
-	} | null>(null);
+	const [user, setUser] = useState<{ name: string; avatar: string } | null>(
+		null,
+	);
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
 	useEffect(() => {
@@ -420,31 +418,12 @@ const Header: React.FC = () => {
     ${isDropdownOpen ? "opacity-100 translate-y-0 scale-100" : "opacity-0 -translate-y-4 scale-95 pointer-events-none"}`}
 									>
 										<ul className="py-2">
-											{user.roles[0].role_name === "Admin" && (
-												<li>
-													<button
-														onClick={() => navigate("/admin")}
-														className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-													>
-														<i className="fa-solid fa-shield mr-4"></i> Admin
-													</button>
-												</li>
-											)}
 											<li>
 												<button
-													onClick={() => navigate("/user-profile")}
+													onClick={() => navigate("/user/profile")}
 													className="block w-full text-left px-4 py-2 hover:bg-gray-100"
 												>
-													<i className="fa-regular fa-user mr-4"></i> Profile
-												</button>
-											</li>
-											<li>
-												<button
-													onClick={() => navigate("/review-booking")}
-													className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-												>
-													<i className="fa-regular fa-calendar mr-4"></i> My
-													Bookings
+													👤 Profile
 												</button>
 											</li>
 											<li>
@@ -452,8 +431,7 @@ const Header: React.FC = () => {
 													onClick={handleLogout}
 													className="block w-full text-left px-4 py-2 hover:bg-gray-100"
 												>
-													<i className="fa-solid fa-arrow-right-from-bracket mr-4"></i>{" "}
-													{t("logout")}
+													🚪 {t("logout")}
 												</button>
 											</li>
 										</ul>
@@ -476,8 +454,7 @@ const Header: React.FC = () => {
 					{/* Tiêu đề chính */}
 					<h1 className="text-5xl md:text-6xl font-bold leading-tight">
 						{t("Book local beauty and")}
-						<br />
-						wellness services
+						<br />" wellness services"
 					</h1>
 					{/* Thanh tìm kiếm */}
 					<div className="max-w-4xl mx-auto mt-8">

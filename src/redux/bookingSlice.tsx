@@ -56,6 +56,7 @@ type BookingState = {
 	selectedPaymentMethod: {
 		_id: string;
 		name: string;
+		notes: string;
 	} | null;
 };
 
