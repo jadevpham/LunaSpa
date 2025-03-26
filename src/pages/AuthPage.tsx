@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 const AuthPage = () => {
 	const navigate = useNavigate();
 	const { login } = useAuth();
-	const { t } = useTranslation();//this is used for translation
+	const { t } = useTranslation(); //this is used for translation
 	const [isSignUp, setIsSignUp] = useState(false);
 	const [showPassword, setShowPassword] = useState(false);
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false);

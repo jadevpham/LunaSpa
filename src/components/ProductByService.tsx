@@ -1,11 +1,7 @@
-import React from 'react'
+import React from "react";
 
 const ProductByService: React.FC = () => {
-  return (
-    <>
-      
-    </>
-  )
-}
+	return <></>;
+};
 
-export default ProductByService
+export default ProductByService;

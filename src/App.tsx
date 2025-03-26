@@ -14,13 +14,14 @@ import HomePage from "./pages/HomePage";
 import SearchPage from "./pages/SearchPage";
 import BookingReviewPage from "./pages/BookingReviewPage";
 import { useEffect } from "react";
-import UserProfile from "./pages/UserProfile";
-import BookingHistory from "./pages/BookingHistory";
+// import UserProfile from "./pages/UserProfile";
+// import BookingHistory from "./pages/BookingHistory";
 import EmailVerification from "./pages/EmailVerification";
 import NotFoundPage from "./pages/_404Page";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import ServiceDetail from "./pages/ServiceDetail";
+import BranchDetail from "./pages/BranchDetail";
 
 const RouteHandler = () => {
 	const location = useLocation();
@@ -66,6 +67,7 @@ const RouteHandler = () => {
 			<Route path="*" element={<NotFoundPage />} />
 			<Route path="/search" element={<SearchPage />} />
 			<Route path="/serviceDetail" element={<ServiceDetail />} />
+			<Route path="/branchDetail" element={<BranchDetail />} />
 		</Routes>
 	);
 };

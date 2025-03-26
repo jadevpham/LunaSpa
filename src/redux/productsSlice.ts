@@ -6,9 +6,14 @@ type ProductsItemType = {
 	name: string;
 	price: number;
 	discount_price: number;
-	images: string;
+	images: string[];
 	quantity: number;
 	description: string;
+	product_category: {
+		_id: string;
+		name: string;
+		description: string;
+	};
 };
 
 type ProductsState = {
@@ -28,9 +33,7 @@ export const fetchProducts = createAsyncThunk(
 	"products/fetchProducts",
 	async (_, { rejectWithValue }) => {
 		try {
-			const response = await axios.get(
-				"http://localhost:4000/products?limit=10&page=1&sort=&search=&order=&max_price=2500000&min_price=0&category_id=67cd73028d84f38f7341a07e&discount_price=10000000&quantity=1000",
-			);
+			const response = await axios.get("http://localhost:4000/products");
 			// console.log(response.data.result.data);
 			return response.data.result.data;
 		} catch (error: any) {

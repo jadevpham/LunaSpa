@@ -6,6 +6,7 @@ import { RootState, AppDispatch } from "../redux/store"; // ✅ Import RootState
 import { useSelector, useDispatch } from "react-redux";
 import CardList from "../templates/CardList";
 import CardItem from "../templates/CardItem";
+import { useNavigate } from "react-router-dom";
 import { Star, Phone } from "lucide-react";
 const BranchesList: React.FC = () => {
 	// state cần quan tâm ở đây là mảng các Branches lấy từ api
@@ -16,7 +17,7 @@ const BranchesList: React.FC = () => {
 	// useDispatch ~~~ setState trong useState,
 	// const dispatch = useDispatch();
 	const dispatch = useDispatch<AppDispatch>(); // ✅ Khai báo dispatch kiểu AppDispatch
-
+	const navigate = useNavigate();
 	// ✅ Lấy dữ liệu từ Redux Store
 	const branchesList = useSelector(
 		(state: RootState) => state.branches.branchesList,
@@ -32,6 +33,17 @@ const BranchesList: React.FC = () => {
 	if (loading) return <p>Đang tải dữ liệu...</p>;
 	if (error) return <p className="text-red-500">{error}</p>;
 
+	const handleSelectBranch = (branch: any) => {
+		console.log("Branch object:", branch); // ✅ Kiểm tra object
+		console.log("Navigating with serviceId:", branch?._id); // Kiểm tra _id
+
+		if (!branch?._id) {
+			console.error("❌ Service ID is undefined. Kiểm tra API response!");
+			return;
+		}
+
+		navigate(`/branchDetail?id=${branch._id}`); //Truyền ID dưới dạng query string
+	};
 	return (
 		<>
 			<CardList
@@ -43,7 +55,7 @@ const BranchesList: React.FC = () => {
 						// data={branch}
 						name={branch.name}
 						address={branch.contact.address}
-						img={branch.images}
+						img={branch.images[0]}
 						category={(() => {
 							const today = new Date().toLocaleDateString("en-US", {
 								weekday: "long",
@@ -80,6 +92,7 @@ const BranchesList: React.FC = () => {
 								</div>
 							</div>
 						}
+						onClick={() => handleSelectBranch(branch)}
 					/>
 				)}
 			/>

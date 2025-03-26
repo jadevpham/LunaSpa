@@ -11,7 +11,6 @@ type DetailItemProps = {
 	items2?: Array<{
 		id: string;
 		name: string;
-		// openingHours: { day: string; open: string; close: string }[];
 		day: string;
 		open: string;
 		close: string;
@@ -24,7 +23,9 @@ type DetailItemProps = {
 	durationsNameMin: string;
 	durationsNameMax: string;
 	address: string;
-	image: string;
+	image1: string;
+	image2: string;
+	image3: string;
 	day: string;
 	opening_hours: string;
 	close_hours: string;
@@ -44,7 +45,9 @@ const DetailItem: FC<DetailItemProps> = ({
 	durationsNameMin,
 	durationsNameMax,
 	address,
-	image,
+	image1,
+	image2,
+	image3,
 	day,
 	opening_hours,
 	close_hours,
@@ -87,19 +90,19 @@ const DetailItem: FC<DetailItemProps> = ({
 				<div className="grid grid-cols-3 gap-4">
 					<div className="col-span-2">
 						<img
-							src={image}
+							src={image1}
 							alt={namePri}
 							className="w-full h-80 object-cover rounded-lg"
 						/>
 					</div>
 					<div className="flex flex-col gap-8">
 						<img
-							src={image}
+							src={image2}
 							alt={namePri}
 							className="w-full h-36 object-cover rounded-lg"
 						/>
 						<img
-							src={image}
+							src={image3}
 							alt={namePri}
 							className="w-full h-36 object-cover rounded-lg"
 						/>
@@ -131,91 +134,103 @@ const DetailItem: FC<DetailItemProps> = ({
 									console.log("Mapping item:", item);
 									console.log("Item ID:", item.id); // Kiểm tra ID
 									return (
-										<div
-											key={item.id}
-											className="flex justify-between items-center bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:bg-gray-100 transition cursor-pointer"
-											onClick={() => {
-												if (!item.id) {
-													console.error("Item ID is undefined:", item);
-													return;
-												}
-												const newSelected =
-													item.id === selectedItem ? null : item.id;
-												console.log("Clicked item ID:", item.id);
-												console.log("New selectedItem:", newSelected);
-												setSelectedItem(newSelected);
-												console.log("SelectedItem:", selectedItem);
-											}}
-										>
-											<div>
-												<h3 className="text-xl font-bold">{item.name}</h3>
-												<p className="text-sm text-gray-500">
-													{durationsNameMin} - {durationsNameMax}
-												</p>
-												<p className="text-gray-800 font-semibold">
-													From{" "}
-													{new Intl.NumberFormat("vi-VN", {
-														style: "currency",
-														currency: "VND",
-													}).format(priceMin)}
-												</p>
-												<p className="flex items-start gap-2 text-gray-600">
-													{" "}
-													{item.address}
-												</p>
+										<div key={item.id}>
+											{/* Item hiển thị */}
+											<div
+												className="flex justify-between items-center bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:bg-gray-100 transition cursor-pointer"
+												onClick={() => {
+													if (!item.id) {
+														console.error("Item ID is undefined:", item);
+														return;
+													}
+													const newSelected =
+														item.id === selectedItem ? null : item.id;
+													console.log("Clicked item ID:", item.id);
+													console.log("New selectedItem:", newSelected);
+													setSelectedItem(newSelected);
+													console.log("SelectedItem:", selectedItem);
+												}}
+											>
+												<div>
+													<h3 className="text-xl font-bold">{item.name}</h3>
+													<p className="text-sm text-gray-500">
+														{durationsNameMin === durationsNameMax
+															? durationsNameMin
+															: `${durationsNameMin} - ${durationsNameMax}`}
+													</p>
+
+													<p className="text-gray-800 font-semibold">
+														From{" "}
+														{new Intl.NumberFormat("vi-VN", {
+															style: "currency",
+															currency: "VND",
+														}).format(priceMin)}
+													</p>
+													<p className="flex items-start gap-2 text-gray-600">
+														{item.address}
+													</p>
+												</div>
+												<button className="bg-blue-100 text-blue-600 px-4 py-2 rounded-full">
+													Book
+												</button>
 											</div>
-											<button className="bg-blue-100 text-blue-600 px-4 py-2 rounded-full">
-												Book
-											</button>
+											{/* Chỉ hiển thị khi item được chọn */}
+											{selectedItem === item.id && (
+												<div className="p-4 border rounded-lg bg-gray-50 mt-2">
+													<h2 className="text-xl font-bold mb-2">
+														Opening times
+													</h2>
+													<div className="space-y-2">
+														{items2
+															?.filter((i) => i.id === selectedItem)
+															?.map((i) => (
+																<div
+																	key={i.id}
+																	className="flex justify-between items-center"
+																>
+																	<div className="flex items-center gap-2">
+																		<span
+																			className={`w-3 h-3 rounded-full ${
+																				i.isOpen
+																					? "bg-green-500"
+																					: "bg-gray-400"
+																			}`}
+																		></span>
+																		<span
+																			className={i.isBold ? "font-bold" : ""}
+																		>
+																			{i.day}
+																		</span>
+																	</div>
+																	<span
+																		className={
+																			i.isBold ? "font-bold" : "text-gray-600"
+																		}
+																	>
+																		{i.open && i.close
+																			? `${i.open} - ${i.close}`
+																			: "Closed"}
+																	</span>
+																</div>
+															))}
+													</div>
+												</div>
+											)}
 										</div>
 									);
 								})}
 							</div>
 						</div>
 						{/* code phần sau vào đây */}
-						{selectedItem && (
-							<div className="p-4 border rounded-lg bg-gray-50">
-								<h2 className="text-xl font-bold mb-2">Opening times</h2>
-								<div className="space-y-2">
-									{items2
-										?.filter((item) => item.id === selectedItem)
-										?.map((item) => (
-											<div
-												key={item.id}
-												className="flex justify-between items-center"
-											>
-												<div className="flex items-center gap-2">
-													<span
-														className={`w-3 h-3 rounded-full ${
-															item.isOpen ? "bg-green-500" : "bg-gray-400"
-														}`}
-													></span>
-													<span className={item.isBold ? "font-bold" : ""}>
-														{item.day}
-													</span>
-												</div>
-												<span
-													className={
-														item.isBold ? "font-bold" : "text-gray-600"
-													}
-												>
-													{/* {item.open} - {item.close} */}
-													{item.open && item.close
-														? `${item.open} - ${item.close}`
-														: "Closed"}
-												</span>
-											</div>
-										))}
-								</div>
-							</div>
-						)}
 					</div>
 					{/* Thẻ thông tin cuộn theo vùng nhìn, dành cho branch có cg đó nhất */}
 					<div className="w-1/3 max-h-[80vh] overflow-hidden sticky top-20 ml-auto p-6">
 						<div className="rounded-[8px] border border-solid border-gray-200 shadow-full p-6">
 							<h2 className="text-2xl font-bold">{namePri}</h2>
 							<div className="flex items-center gap-2 mt-2">
-								<p className="text-sm text-gray-500">{nameThir}</p>
+								<p className="text-sm text-gray-500 whitespace-pre-line">
+									{nameThir}
+								</p>
 								{/* tên thiết bị */}
 							</div>
 							<div className="flex gap-2 mt-3">
@@ -225,15 +240,20 @@ const DetailItem: FC<DetailItemProps> = ({
 										currency: "VND",
 									}).format(priceMin)}
 								</span>
-								<span className="text-red-500 font-semibold py-1 rounded-full">
-									-
-								</span>
-								<span className="text-red-400 font-semibold py-1 rounded-full">
-									{new Intl.NumberFormat("vi-VN", {
-										style: "currency",
-										currency: "VND",
-									}).format(priceMax)}
-								</span>
+
+								{priceMin !== priceMax && (
+									<>
+										<span className="text-red-500 font-semibold py-1 rounded-full">
+											-
+										</span>
+										<span className="text-red-400 font-semibold py-1 rounded-full">
+											{new Intl.NumberFormat("vi-VN", {
+												style: "currency",
+												currency: "VND",
+											}).format(priceMax)}
+										</span>
+									</>
+								)}
 							</div>
 							<button className="bg-black text-white w-full py-3 rounded-lg mt-4 font-medium">
 								Book now

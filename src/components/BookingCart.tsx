@@ -10,7 +10,7 @@ const BookingCart: React.FC = () => {
 	const dispatch = useDispatch();
 	const [isLoading, setIsLoading] = useState(false);
 	const {
-		selectedBranch,
+		// selectedBranch,
 		selectedService,
 		selectedTime,
 		selectedPaymentMethod,
