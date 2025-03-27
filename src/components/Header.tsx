@@ -420,7 +420,7 @@ const Header: React.FC = () => {
 										<ul className="py-2">
 											<li>
 												<button
-													onClick={() => navigate("/user-profile")}
+													onClick={() => navigate("/user/profile")}
 													className="block w-full text-left px-4 py-2 hover:bg-gray-100"
 												>
 													👤 Profile

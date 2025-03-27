@@ -2,27 +2,31 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 
 type ServicesItemType = {
-	id: string;
+	_id: string;
 	name: string;
 	description: string;
 	images: string[];
 	service_category: {
 		name: string;
+		_id: string;
 	};
 	view_count: number;
 	booking_count: number;
-	price: number;
+	status: number;
 	durations: {
 		duration_name: string;
 		price: number;
 		discount_price: number;
-		duration_in_minutes: number; // == durationID
-	};
+		duration_in_minutes: number;
+		sub_description: string;
+	}[];
 	devices: {
 		name: string;
 		description: string;
 		status: number;
-	};
+	}[];
+	created_at: string;
+	updated_at: string;
 };
 
 type ServicesState = {

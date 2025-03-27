@@ -4,7 +4,7 @@ import axiosInstance from "../axios/axiosInstance";
 import LoadingAnimation from "../components/LoadingAnimation";
 import { toast } from "react-toastify";
 
-const UserProfile = () => {
+const EmailVerification = () => {
 	const [message, setMessage] = useState("");
 	const [loading, setLoading] = useState(true);
 	const [searchParams] = useSearchParams();
@@ -15,12 +15,9 @@ const UserProfile = () => {
 			try {
 				// Add delay simulation
 				// await new Promise((resolve) => setTimeout(resolve, 6000));
-				const response = await axiosInstance.post(
-					"http://localhost:4000/accounts/verify-email",
-					{
-						email_verify_token: token,
-					},
-				);
+				const response = await axiosInstance.post("/accounts/verify-email", {
+					email_verify_token: token,
+				});
 				setMessage(response.data.message);
 				toast.success(response.data.message);
 				console.log(response.data);
@@ -56,4 +53,4 @@ const UserProfile = () => {
 	);
 };
 
-export default UserProfile;
+export default EmailVerification;

@@ -31,8 +31,8 @@ const ProductsList: React.FC = () => {
 				items={productsList}
 				renderItem={(product) => (
 					<CardItem
-						key={product.id}
-						// data={product}
+						key={product._id}
+						data={product}
 						name={product.name}
 						address={product.description}
 						img={product.images[0]}

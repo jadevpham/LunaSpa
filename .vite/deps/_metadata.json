@@ -1,0 +1,142 @@
+{
+  "hash": "d905c3f0",
+  "configHash": "e688c13c",
+  "lockfileHash": "870cf8ec",
+  "browserHash": "63a007ee",
+  "optimized": {
+    "i18next": {
+      "src": "../../node_modules/i18next/dist/esm/i18next.js",
+      "file": "i18next.js",
+      "fileHash": "4f15d27c",
+      "needsInterop": false
+    },
+    "react-i18next": {
+      "src": "../../node_modules/react-i18next/dist/es/index.js",
+      "file": "react-i18next.js",
+      "fileHash": "8159dc11",
+      "needsInterop": false
+    },
+    "i18next-browser-languageDetector": {
+      "src": "../../node_modules/i18next-browser-languagedetector/dist/esm/i18nextBrowserLanguageDetector.js",
+      "file": "i18next-browser-languageDetector.js",
+      "fileHash": "13a95377",
+      "needsInterop": false
+    },
+    "i18next-locize-backend": {
+      "src": "../../node_modules/i18next-locize-backend/esm/index.js",
+      "file": "i18next-locize-backend.js",
+      "fileHash": "2eb50846",
+      "needsInterop": false
+    },
+    "locize-lastused": {
+      "src": "../../node_modules/locize-lastused/esm/index.js",
+      "file": "locize-lastused.js",
+      "fileHash": "37551ae8",
+      "needsInterop": false
+    },
+    "locize": {
+      "src": "../../node_modules/locize/dist/esm/index.js",
+      "file": "locize.js",
+      "fileHash": "fa552fb5",
+      "needsInterop": false
+    },
+    "react/jsx-dev-runtime": {
+      "src": "../../node_modules/react/jsx-dev-runtime.js",
+      "file": "react_jsx-dev-runtime.js",
+      "fileHash": "8d3acfb9",
+      "needsInterop": true
+    },
+    "react-router-dom": {
+      "src": "../../node_modules/react-router-dom/dist/index.mjs",
+      "file": "react-router-dom.js",
+      "fileHash": "259fe0be",
+      "needsInterop": false
+    },
+    "react-redux": {
+      "src": "../../node_modules/react-redux/dist/react-redux.mjs",
+      "file": "react-redux.js",
+      "fileHash": "55b4e82d",
+      "needsInterop": false
+    },
+    "react-toastify": {
+      "src": "../../node_modules/react-toastify/dist/index.mjs",
+      "file": "react-toastify.js",
+      "fileHash": "cab477b5",
+      "needsInterop": false
+    },
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "8d750c36",
+      "needsInterop": true
+    },
+    "axios": {
+      "src": "../../node_modules/axios/index.js",
+      "file": "axios.js",
+      "fileHash": "aa30dcec",
+      "needsInterop": false
+    },
+    "dayjs": {
+      "src": "../../node_modules/dayjs/dayjs.min.js",
+      "file": "dayjs.js",
+      "fileHash": "46ac79b9",
+      "needsInterop": true
+    },
+    "react-day-picker": {
+      "src": "../../node_modules/react-day-picker/dist/esm/index.js",
+      "file": "react-day-picker.js",
+      "fileHash": "2051afc9",
+      "needsInterop": false
+    },
+    "@reduxjs/toolkit": {
+      "src": "../../node_modules/@reduxjs/toolkit/dist/redux-toolkit.modern.mjs",
+      "file": "@reduxjs_toolkit.js",
+      "fileHash": "1d2bb3c1",
+      "needsInterop": false
+    },
+    "react-lottie": {
+      "src": "../../node_modules/react-lottie/dist/index.js",
+      "file": "react-lottie.js",
+      "fileHash": "4176ac33",
+      "needsInterop": true
+    },
+    "date-fns": {
+      "src": "../../node_modules/date-fns/index.js",
+      "file": "date-fns.js",
+      "fileHash": "652d63b8",
+      "needsInterop": false
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "10d1474c",
+      "needsInterop": true
+    },
+    "@tanstack/react-query": {
+      "src": "../../node_modules/@tanstack/react-query/build/modern/index.js",
+      "file": "@tanstack_react-query.js",
+      "fileHash": "225337ab",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "browser-ponyfill-TXRLFSLK": {
+      "file": "browser-ponyfill-TXRLFSLK.js"
+    },
+    "browser-ponyfill-FYFBNOON": {
+      "file": "browser-ponyfill-FYFBNOON.js"
+    },
+    "chunk-UI7EJ3EL": {
+      "file": "chunk-UI7EJ3EL.js"
+    },
+    "chunk-WOWBALJJ": {
+      "file": "chunk-WOWBALJJ.js"
+    },
+    "chunk-RVMO727X": {
+      "file": "chunk-RVMO727X.js"
+    },
+    "chunk-WOOG5QLI": {
+      "file": "chunk-WOOG5QLI.js"
+    }
+  }
+}

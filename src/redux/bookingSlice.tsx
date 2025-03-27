@@ -1,8 +1,16 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+interface Duration {
+	duration_name: string;
+	price: number;
+	discount_price: number;
+	duration_in_minutes: number;
+	sub_description: string;
+}
+
 type BookingState = {
 	selectedBranch: {
-		id: string;
+		_id: string;
 		name: string;
 		address: string;
 		img: string;
@@ -11,21 +19,33 @@ type BookingState = {
 		vote: number;
 	} | null;
 	selectedService: Array<{
-		Service_ID: string;
-		Service_Name: string;
-		Service_Description: string;
-		Service_Image: string;
-		Service_Price: number;
-		Service_Duration: number;
-		Service_TypeID: string;
-		Service_IncludeProduct_ID: string;
+		_id: string;
+		name: string;
+		description: string;
+		images: string[];
+		service_category: {
+			name: string;
+			_id: string;
+		};
+		view_count: number;
+		booking_count: number;
+		status: number;
+		selectedDuration: Duration;
+		devices: {
+			name: string;
+			description: string;
+			status: number;
+		}[];
 	}> | null;
 	selectedProducts: Array<{
-		id: string;
+		_id: string;
 		name: string;
 		price: number;
-		img: string;
-		category: string;
+		discount_price: number;
+		quantity: number;
+		images: string[];
+		description: string;
+		category_id: string;
 		star: number;
 		vote: number;
 	}> | null;
@@ -34,13 +54,22 @@ type BookingState = {
 		ServiceBooking_Time: string;
 	} | null;
 	selectedPaymentMethod: {
-		id: string;
+		_id: string;
 		name: string;
+		notes: string;
 	} | null;
 };
 
 const initialState: BookingState = {
-	selectedBranch: null,
+	selectedBranch: {
+		_id: "67cd31c685b65937c44884b6",
+		name: "Luna Spa Hải Phòng",
+		address: "abcdxyz",
+		img: "https://lunaspa.s3.ap-southeast-1.amazonaws.com/7e6b535b5afdff403c91d1b02.jpg",
+		category: "",
+		star: 0,
+		vote: 0,
+	},
 	selectedService: [],
 	selectedProducts: [],
 	selectedTime: null,
@@ -71,7 +100,7 @@ const bookingSlice = createSlice({
 		removeService: (state, action: PayloadAction<string>) => {
 			if (state.selectedService) {
 				state.selectedService = state.selectedService.filter(
-					(service) => service.Service_ID !== action.payload,
+					(service) => service._id !== action.payload,
 				);
 			}
 		},
@@ -106,9 +135,15 @@ const bookingSlice = createSlice({
 		removeProduct: (state, action: PayloadAction<string>) => {
 			if (state.selectedProducts) {
 				state.selectedProducts = state.selectedProducts.filter(
-					(product) => product.id !== action.payload,
+					(product) => product._id !== action.payload,
 				);
 			}
+		},
+		setProducts: (
+			state,
+			action: PayloadAction<BookingState["selectedProducts"]>,
+		) => {
+			state.selectedProducts = action.payload;
 		},
 	},
 });
@@ -122,5 +157,6 @@ export const {
 	updateSelectedService,
 	addProduct,
 	removeProduct,
+	setProducts,
 } = bookingSlice.actions;
 export default bookingSlice.reducer;
