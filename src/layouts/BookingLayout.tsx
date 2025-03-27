@@ -93,8 +93,8 @@ const BookingLayout = () => {
 							key={product.id}
 							name={product.name}
 							address={product.price.toLocaleString("en-US")}
-							img={product.images}
-							category={product.category.name}
+							img={product.images[0]}
+							category={product.product_category.name}
 							star={product.price}
 							vote={product.price}
 							onClick={() => {

@@ -88,12 +88,12 @@ const SearchPage = () => {
 									<div className="bg-white shadow-md rounded-lg overflow-hidden">
 										<div className="p-4">
 											<img
-												src={branch.img}
+												src={branch.images[0]}
 												alt="Branch 1"
 												className="w-full h-48 object-cover rounded-2xl"
 											/>
 											<h3 className="mt-3 text-xl font-bold">{branch.name}</h3>
-											<p className="text-sm text-gray-500">{branch.address}</p>
+											<p className="text-sm text-gray-500">{branch.contact.address}</p>
 											<div className="mt-3">
 												<h4 className="text-lg font-bold">Services</h4>
 												<ul className="list-disc">
@@ -109,7 +109,7 @@ const SearchPage = () => {
 																	</span>
 																</li>
 																<p className="text-sm text-gray-500">
-																	{service.address}
+																	{service.description}
 																</p>
 																<div className="flex space-x-2 mt-2">
 																	<button className="px-3 py-1 border rounded-lg text-sm border-5 text-5 hover:border-1.75 hover:bg-7 transition-all duration-300">
