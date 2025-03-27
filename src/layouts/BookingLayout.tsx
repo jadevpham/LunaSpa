@@ -88,31 +88,31 @@ const BookingLayout = () => {
 		localStorage.removeItem("sessionStart");
 	};
 	useEffect(() => {
-		// if (localStorage.getItem("sessionExpired") === "true") {
-		// 	handleToHome();
-		// }
-		// const timeoutDuration = 10 * 60 * 1000;
-		// const sessionStart = localStorage.getItem("sessionStart");
-		// if (sessionStart) {
-		// 	const elapsedTime = Date.now() - parseInt(sessionStart, 10);
-		// 	if (elapsedTime >= timeoutDuration) {
-		// 		setShowModal(true);
-		// 		localStorage.removeItem("bookingData");
-		// 	} else {
-		// 		setTimeout(() => {
-		// 			setShowModal(true);
-		// 			localStorage.removeItem("bookingData");
-		// 			localStorage.setItem("sessionExpired", "true");
-		// 		}, timeoutDuration - elapsedTime);
-		// 	}
-		// } else {
-		// 	localStorage.setItem("sessionStart", Date.now().toString());
-		// 	setTimeout(() => {
-		// 		setShowModal(true);
-		// 		localStorage.removeItem("bookingData");
-		// 		localStorage.setItem("sessionExpired", "true");
-		// 	}, timeoutDuration);
-		// }
+		if (localStorage.getItem("sessionExpired") === "true") {
+			handleToHome();
+		}
+		const timeoutDuration = 10 * 60 * 1000;
+		const sessionStart = localStorage.getItem("sessionStart");
+		if (sessionStart) {
+			const elapsedTime = Date.now() - parseInt(sessionStart, 10);
+			if (elapsedTime >= timeoutDuration) {
+				setShowModal(true);
+				localStorage.removeItem("bookingData");
+			} else {
+				setTimeout(() => {
+					setShowModal(true);
+					localStorage.removeItem("bookingData");
+					localStorage.setItem("sessionExpired", "true");
+				}, timeoutDuration - elapsedTime);
+			}
+		} else {
+			localStorage.setItem("sessionStart", Date.now().toString());
+			setTimeout(() => {
+				setShowModal(true);
+				localStorage.removeItem("bookingData");
+				localStorage.setItem("sessionExpired", "true");
+			}, timeoutDuration);
+		}
 	}, []);
 
 	useEffect(() => {
@@ -150,34 +150,20 @@ const BookingLayout = () => {
 					title="Recommended products"
 					items={productsList}
 					customClass="bg-white rounded-lg shadow-xl"
-					renderItem={(product) => {
-						const isAdded = selectedProducts?.some(
-							(item) => item._id === product._id,
-						);
-						return (
-							<div
-								className={`relative ${isAdded ? "border border-blue-500 rounded-md" : ""}`}
-							>
-								<CardItem
-									key={product._id}
-									name={product.name}
-									address={product.price.toLocaleString("en-US")}
-									img={product.images[0]}
-									// category={product.category}
-									// star={product.star}
-									// vote={product.vote}
-									onClick={() => {
-										handleAddProduct(product);
-									}}
-								/>
-								{isAdded && (
-									<span className="absolute top-0 right-0 bg-blue-500 text-white text-xs px-2 py-1 rounded-sm">
-										Added
-									</span>
-								)}
-							</div>
-						);
-					}}
+					renderItem={(product) => (
+						<CardItem
+							key={product._id}
+							name={product.name}
+							address={product.price.toLocaleString("en-US")}
+							img={product.images[0]}
+							category={product.product_category.name}
+							star={product.price}
+							vote={product.price}
+							onClick={() => {
+								handleAddProduct(product);
+							}}
+						/>
+					)}
 				/>
 			</div>
 			{showModal && (

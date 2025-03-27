@@ -49,6 +49,7 @@ import AppointmentPage from "./pages/UserProfilePages/AppointmentPage";
 import FavoritePage from "./pages/UserProfilePages/FavoritePage";
 import HistoryPage from "./pages/UserProfilePages/HistoryPage";
 import ProductsManagement from "./pages/AdminPages/Products/ProductsManagement";
+import BranchDetail from "./pages/BranchDetail";
 
 const RouteHandler = () => {
 	const location = useLocation();
@@ -138,6 +139,7 @@ const RouteHandler = () => {
 			<Route path="*" element={<NotFoundPage />} />
 			<Route path="/search" element={<SearchPage />} />
 			<Route path="/serviceDetail" element={<ServiceDetail />} />
+			<Route path="/branchDetail" element={<BranchDetail />} />
 		</Routes>
 	);
 };

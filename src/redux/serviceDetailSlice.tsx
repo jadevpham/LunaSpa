@@ -5,7 +5,7 @@ type ServiceDetailType = {
 	id: string;
 	name: string;
 	description: string;
-	images: string;
+	images: string[];
 	service_category: {
 		name: string;
 	};
