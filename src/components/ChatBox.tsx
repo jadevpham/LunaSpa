@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState, AppDispatch } from "../redux/store"; // Import kiểu từ store
 import { sendMessage, addUserMessage } from "../redux/chatSlice";
@@ -8,11 +8,23 @@ export default function Chatbox() {
 	const dispatch = useDispatch<AppDispatch>(); // Định kiểu AppDispatch
 	const { messages, loading } = useSelector((state: RootState) => state.chat);
 
+	// Sử dụng useRef để lưu thời gian gửi tin nhắn cuối cùng
+	const lastSentTime = useRef<number>(0);
+
 	const handleSendMessage = () => {
 		if (!input.trim()) return;
+		// Kiểm tra thời gian gửi tin nhắn cuối cùng (tránh spam API)
+		const now = Date.now();
+		if (now - lastSentTime.current < 20000) {
+			alert("Vui lòng chờ trước khi gửi tiếp!");
+			return;
+		}
+
 		dispatch(addUserMessage(input)); // Thêm tin nhắn của user vào Redux store
 		dispatch(sendMessage(input)); // Gửi tin nhắn đến ChatGPT API
 		setInput("");
+		// Cập nhật thời gian gửi tin nhắn cuối cùng
+		lastSentTime.current = now;
 	};
 	// Thêm sự kiện gửi khi nhấn Enter
 	const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
