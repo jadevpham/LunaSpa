@@ -66,9 +66,8 @@ const UserHeader = () => {
 												setIsLanguageDropdownOpen(false);
 												localStorage.setItem("language", lng);
 											}}
-											className={`block w-full text-left px-4 py-2 hover:bg-gray-100 ${
-												isSelected ? "bg-gray-200" : ""
-											}`}
+											className={`block w-full text-left px-4 py-2 hover:bg-gray-100 ${isSelected ? "bg-gray-200" : ""
+												}`}
 										>
 											{lngs[lng].nativeName.split(",")[0]}
 										</button>
@@ -111,7 +110,7 @@ ${isDropdownOpen ? "opacity-100 translate-y-0 scale-100" : "opacity-0 -translate
 												onClick={() => navigate("/", { replace: true })}
 												className="block w-full text-left px-4 py-2 hover:bg-gray-100"
 											>
-												Home
+												{t("Home")}
 											</button>
 										</li>
 										<li>
@@ -131,7 +130,7 @@ ${isDropdownOpen ? "opacity-100 translate-y-0 scale-100" : "opacity-0 -translate
 								className="px-6 py-2 border-1.75 border-gray-400 rounded-full hover:bg-gray-200"
 								onClick={() => navigate("auth")}
 							>
-								Login
+								{t("Login")}
 							</button>
 						)}
 					</div>

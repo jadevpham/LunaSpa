@@ -12,8 +12,10 @@ import {
 	selectFilterCriteria,
 } from "../redux/selectors";
 import { AppDispatch } from "../redux/store";
+import { useTranslation } from "react-i18next";
 
 const SearchPage = () => {
+	const { t } = useTranslation();
 	const dispatch = useDispatch<AppDispatch>();
 	const [searchParams] = useSearchParams();
 
@@ -80,7 +82,7 @@ const SearchPage = () => {
 					{/* Left Panel: Salon List */}
 					<div className="w-2/5 bg-white p-6 overflow-y-auto">
 						<div className="flex justify-between items-center mb-4">
-							<p className="text-sm text-gray-500">29 Branch</p>
+							<p className="text-sm text-gray-500">{t("29 Branch")}</p>
 						</div>
 						<div className="space-y-4">
 							{branchesToShow.length > 0 ? (
@@ -97,7 +99,7 @@ const SearchPage = () => {
 												{branch.contact.address}
 											</p>
 											<div className="mt-3">
-												<h4 className="text-lg font-bold">Services</h4>
+												<h4 className="text-lg font-bold">{t("Services")}</h4>
 												<ul className="list-disc">
 													{servicesToShow.length > 0 ? (
 														servicesToShow.map((service) => (
@@ -130,7 +132,7 @@ const SearchPage = () => {
 															</div>
 														))
 													) : (
-														<p>Không tìm thấy dịch vụ phù hợp</p>
+														<p>{t("Không tìm thấy dịch vụ phù hợp")}</p>
 													)}
 												</ul>
 											</div>
@@ -138,7 +140,7 @@ const SearchPage = () => {
 									</div>
 								))
 							) : (
-								<p>Không tìm thấy chi nhánh phù hợp</p>
+								<p>{t("Không tìm thấy chi nhánh phù hợp")}</p>
 							)}
 						</div>
 					</div>

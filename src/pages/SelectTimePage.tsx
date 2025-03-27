@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import { DayPicker } from "react-day-picker";
 import "react-calendar/dist/Calendar.css";
+import { useTranslation } from "react-i18next";
 
 interface BookTime {
 	ServiceBooking_Date: string;
@@ -13,6 +14,7 @@ interface BookTime {
 }
 
 const SelectTimePage = () => {
+	const { t } = useTranslation();
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const selectedService = useSelector(
@@ -124,7 +126,7 @@ const SelectTimePage = () => {
 	return (
 		<div className="container mx-auto shadow-xl p-8 rounded-2xl bg-white">
 			<h2 className="text-5xl font-bold mb-4 flex items-center justify-between">
-				<span>Select time</span>
+				<span>{t("Select time")}</span>
 				<button
 					onClick={() => setShowCalendar(!showCalendar)}
 					className="p-2 z-20 border border-gray-300 w-12 flex items-center justify-center rounded-full hover:bg-gray-300 transition-colors duration-300"
@@ -160,13 +162,13 @@ const SelectTimePage = () => {
 							className={`px-3 py-1 rounded-full ${!selectedDate ? "bg-blue-500 text-white" : "border"}`}
 							onClick={() => setSelectedDate(undefined)}
 						>
-							Any date
+							{t("Any date")}
 						</button>
 						<button
 							className={`px-3 py-1 rounded-full ${selectedDate?.toDateString() === new Date().toDateString() ? "bg-blue-500 text-white" : "border"}`}
 							onClick={() => setSelectedDate(new Date())}
 						>
-							Today
+							{t("Today")}
 						</button>
 						<button
 							className={`px-3 py-1 rounded-full ${selectedDate?.toDateString() === new Date(new Date().setDate(new Date().getDate() + 1)).toDateString() ? "bg-blue-500 text-white" : "border"}`}
@@ -176,7 +178,7 @@ const SelectTimePage = () => {
 								setSelectedDate(tomorrow);
 							}}
 						>
-							Tomorrow
+							{t("Tomorrow")}
 						</button>{" "}
 					</div>
 
@@ -198,24 +200,22 @@ const SelectTimePage = () => {
 			{/* days of week */}
 			<div className="flex justify-between mb-3 relative overflow-hidden">
 				<div
-					className={`grid grid-cols-7 gap-2 w-full transition-transform duration-300 ease-in-out ${
-						isSliding
+					className={`grid grid-cols-7 gap-2 w-full transition-transform duration-300 ease-in-out ${isSliding
 							? slideDirection === "right"
 								? "transform translate-x-[-100%]"
 								: "transform translate-x-[100%]"
 							: ""
-					}`}
+						}`}
 				>
 					{daysInWeek.map((day) => (
 						<button
 							key={day.format("YYYY-MM-DD")}
-							className={`container w-full max-w-[45px] my-2 mx-auto md:max-w-[55px] lg:max-w-[65px] aspect-square flex flex-col items-center justify-center rounded-full transition-all duration-300 ease-in-out ${
-								day.isBefore(today, "day")
+							className={`container w-full max-w-[45px] my-2 mx-auto md:max-w-[55px] lg:max-w-[65px] aspect-square flex flex-col items-center justify-center rounded-full transition-all duration-300 ease-in-out ${day.isBefore(today, "day")
 									? "bg-gray-300 text-gray-400 cursor-not-allowed"
 									: selectedDate && day.isSame(selectedDate, "day")
 										? "bg-gradient-to-tr from-purple-400 to-pink-300 text-white scale-105 shadow-md"
 										: "bg-gray-200 text-gray-700 hover:scale-105"
-							}`}
+								}`}
 							onClick={() => handleSelectDate(day.toDate())}
 							disabled={day.isBefore(today, "day")}
 						>
@@ -241,7 +241,7 @@ const SelectTimePage = () => {
 							loading="eager"
 						></img>
 						<p className="text-gray-500">
-							Available from: {getNextAvailableDate().format("MMM D, YYYY")}
+							{t("Available from:")} {getNextAvailableDate().format("MMM D, YYYY")}
 						</p>
 						<button
 							className="px-3 py-1 mt-2 rounded-full bg-gradient-to-tr from-purple-400 to-pink-300 text-white hover:opacity-90"
@@ -251,7 +251,7 @@ const SelectTimePage = () => {
 								handleCalendarChange(nextDate.toDate());
 							}}
 						>
-							Go to next available day
+							{t("Go to next available day")}
 						</button>
 					</div>
 				) : (

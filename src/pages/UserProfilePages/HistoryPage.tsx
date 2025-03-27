@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import { useTranslation } from "react-i18next";
 type Appointment = {
 	id: string;
 	branchName: string;
@@ -11,6 +11,7 @@ type Appointment = {
 };
 
 const HistoryPage = () => {
+	const { t } = useTranslation();
 	const [activeTab, setActiveTab] = useState<
 		"upcoming" | "completed" | "cancelled"
 	>("upcoming");
@@ -62,9 +63,9 @@ const HistoryPage = () => {
 					<p className="text-gray-600">{appointment.serviceName}</p>
 					<div className="mt-2">
 						<p className="text-sm text-gray-500">
-							Date: {new Date(appointment.date).toLocaleDateString("en-US")}
+							{t("Date:")} {new Date(appointment.date).toLocaleDateString("en-US")}
 						</p>
-						<p className="text-sm text-gray-500">Time: {appointment.time}</p>
+						<p className="text-sm text-gray-500">{t("Time:")} {appointment.time}</p>
 					</div>
 				</div>
 				<div className="text-right">
@@ -85,42 +86,39 @@ const HistoryPage = () => {
 
 	return (
 		<div className="container mx-auto p-6">
-			<h1 className="text-3xl font-bold mb-6">Booking History</h1>
+			<h1 className="text-3xl font-bold mb-6">{t("Booking History")}</h1>
 
 			{/* Custom Tabs */}
 			<div className="flex space-x-1 rounded-xl bg-gray-100 p-1 mb-6">
 				<button
 					onClick={() => setActiveTab("upcoming")}
 					className={`flex-1 rounded-lg py-2.5 text-sm font-medium leading-5 
-						${
-							activeTab === "upcoming"
-								? "bg-white shadow text-blue-700"
-								: "text-gray-600 hover:text-blue-700"
+						${activeTab === "upcoming"
+							? "bg-white shadow text-blue-700"
+							: "text-gray-600 hover:text-blue-700"
 						}`}
 				>
-					Upcoming Appointments
+					{t("Upcoming Appointments")}
 				</button>
 				<button
 					onClick={() => setActiveTab("completed")}
 					className={`flex-1 rounded-lg py-2.5 text-sm font-medium leading-5 
-						${
-							activeTab === "completed"
-								? "bg-white shadow text-blue-700"
-								: "text-gray-600 hover:text-blue-700"
+						${activeTab === "completed"
+							? "bg-white shadow text-blue-700"
+							: "text-gray-600 hover:text-blue-700"
 						}`}
 				>
-					Completed
+					{t("Completed")}
 				</button>
 				<button
 					onClick={() => setActiveTab("cancelled")}
 					className={`flex-1 rounded-lg py-2.5 text-sm font-medium leading-5 
-						${
-							activeTab === "cancelled"
-								? "bg-white shadow text-blue-700"
-								: "text-gray-600 hover:text-blue-700"
+						${activeTab === "cancelled"
+							? "bg-white shadow text-blue-700"
+							: "text-gray-600 hover:text-blue-700"
 						}`}
 				>
-					Cancelled
+					{t("Cancelled")}
 				</button>
 			</div>
 
@@ -138,7 +136,7 @@ const HistoryPage = () => {
 							))
 						) : (
 							<p className="text-gray-500 text-center py-4">
-								No upcoming appointments
+								{t("No upcoming appointments")}
 							</p>
 						)}
 					</div>
@@ -156,7 +154,7 @@ const HistoryPage = () => {
 							))
 						) : (
 							<p className="text-gray-500 text-center py-4">
-								No completed appointments
+								{t("No completed appointments")}
 							</p>
 						)}
 					</div>
@@ -174,7 +172,7 @@ const HistoryPage = () => {
 							))
 						) : (
 							<p className="text-gray-500 text-center py-4">
-								No cancelled appointments
+								{t("No cancelled appointments")}
 							</p>
 						)}
 					</div>

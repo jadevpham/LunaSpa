@@ -49,7 +49,7 @@ const Header: React.FC = () => {
 		if (filterCriteria.serviceId) {
 			// ✅ Tìm serviceName từ serviceId nếu có
 			const selectedService = servicesList.find(
-				(service) => service.id === filterCriteria.serviceId,
+				(service) => service._id === filterCriteria.serviceId,
 			);
 			if (selectedService) {
 				setSelectedServicesName(selectedService.name);
@@ -377,9 +377,8 @@ const Header: React.FC = () => {
 													setIsLanguageDropdownOpen(false);
 													localStorage.setItem("language", lng);
 												}}
-												className={`block w-full text-left px-4 py-2 hover:bg-gray-100 ${
-													isSelected ? "bg-gray-200" : ""
-												}`}
+												className={`block w-full text-left px-4 py-2 hover:bg-gray-100 ${isSelected ? "bg-gray-200" : ""
+													}`}
 											>
 												{lngs[lng].nativeName.split(",")[0]}
 											</button>
@@ -423,7 +422,7 @@ const Header: React.FC = () => {
 													onClick={() => navigate("/user/profile")}
 													className="block w-full text-left px-4 py-2 hover:bg-gray-100"
 												>
-													👤 Profile
+													👤 {t("Profile")}
 												</button>
 											</li>
 											<li>
@@ -443,7 +442,7 @@ const Header: React.FC = () => {
 									className="px-6 py-2 border-1.75 border-gray-400 rounded-full hover:bg-gray-200"
 									onClick={() => navigate("auth")}
 								>
-									Login
+									{t("Login")}
 								</button>
 							)}
 						</div>
@@ -454,7 +453,7 @@ const Header: React.FC = () => {
 					{/* Tiêu đề chính */}
 					<h1 className="text-5xl md:text-6xl font-bold leading-tight">
 						{t("Book local beauty and")}
-						<br />" wellness services"
+						<br />{t("wellness services")}
 					</h1>
 					{/* Thanh tìm kiếm */}
 					<div className="max-w-4xl mx-auto mt-8">
@@ -475,10 +474,10 @@ const Header: React.FC = () => {
 										<ul>
 											{servicesList.map((service) => (
 												<li
-													key={service.id}
+													key={service._id}
 													className="flex items-center text-left gap-3 p-3 hover:bg-gray-100 rounded-lg cursor-pointer"
 													onClick={() =>
-														handleSelectService(service.id, service.name)
+														handleSelectService(service._id, service.name)
 													}
 												>
 													<span>{service.name}</span>
@@ -543,13 +542,13 @@ const Header: React.FC = () => {
 												className={`px-3 py-1 rounded-full ${!selectedDate ? "bg-blue-500 text-white" : "border"}`}
 												onClick={() => handleSelectDate(undefined)}
 											>
-												Any date
+												{t("Any date")}
 											</button>
 											<button
 												className="border px-3 py-1 rounded-full"
 												onClick={() => handleSelectDate(new Date())}
 											>
-												Today
+												{t("Today")}
 											</button>
 											<button
 												className="border px-3 py-1 rounded-full"
@@ -559,7 +558,7 @@ const Header: React.FC = () => {
 													handleSelectDate(tomorrow);
 												}}
 											>
-												Tomorrow
+												{t("Tomorrow")}
 											</button>
 										</div>
 
@@ -612,7 +611,7 @@ const Header: React.FC = () => {
 												className="px-4 py-2 border rounded-full whitespace-nowrap"
 												onClick={() => setTimeRange("any")}
 											>
-												Any time
+												{t("Any time")}
 											</button>
 											<button
 												className={`px-4 py-2 border rounded-full ${isMorningPast ? "opacity-50 cursor-not-allowed" : ""}`}
@@ -621,7 +620,7 @@ const Header: React.FC = () => {
 												}
 												disabled={isMorningPast}
 											>
-												Morning
+												{t("Morning")}
 											</button>
 											<button
 												className={`px-4 py-2 border rounded-full ${isAfternoonPast ? "opacity-50 cursor-not-allowed" : ""}`}
@@ -630,7 +629,7 @@ const Header: React.FC = () => {
 												}
 												disabled={isAfternoonPast}
 											>
-												Afternoon
+												{t("Afternoon")}
 											</button>
 											<button
 												className={`px-4 py-2 border rounded-full ${isEveningPast ? "opacity-50 cursor-not-allowed" : ""}`}
@@ -639,7 +638,7 @@ const Header: React.FC = () => {
 												}
 												disabled={isEveningPast}
 											>
-												Evening
+												{t("Evening")}
 											</button>
 										</div>
 
@@ -679,13 +678,13 @@ const Header: React.FC = () => {
 								className="bg-black text-white px-6 py-2 rounded-full ml-2"
 								onClick={handleSearch}
 							>
-								Search
+								{t("Search")}
 							</button>
 						</div>
 					</div>
 					{/* Số lượt đặt lịch */}
 					<p className="mt-10 text-lg">
-						<span className="font-bold">311,908</span> appointments booked today
+						<span className="font-bold">311,908</span> {t("appointments booked today")}
 					</p>
 				</div>
 			</div>

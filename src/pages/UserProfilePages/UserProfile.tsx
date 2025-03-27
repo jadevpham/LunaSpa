@@ -1,6 +1,7 @@
 import React, { useEffect, useState, ChangeEvent } from "react";
 import axiosInstance from "../../axios/axiosInstance";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 interface User {
 	name: string;
@@ -41,6 +42,7 @@ const months = [
 ];
 
 const UserProfile = () => {
+	const { t } = useTranslation();
 	const [user, setUser] = useState({
 		name: "",
 		phone_number: "",
@@ -182,12 +184,12 @@ const UserProfile = () => {
 
 			{/* Form Section */}
 			<div className="md:w-2/3">
-				<h1 className="text-2xl font-bold mb-5">Edit profile details</h1>
+				<h1 className="text-2xl font-bold mb-5">{t("Edit profile details")}</h1>
 				<form>
 					{/* First and Last Name */}
 					<div className="flex flex-col md:flex-row gap-4 mb-4">
 						<div className="flex-1">
-							<label className="block mb-1">Last name</label>
+							<label className="block mb-1">{t("Last name")}</label>
 							<input
 								type="text"
 								value={user?.name}
@@ -199,7 +201,7 @@ const UserProfile = () => {
 
 					{/* Mobile Number */}
 					<div className="mb-4">
-						<label className="block mb-1">Mobile number</label>
+						<label className="block mb-1">{t("Mobile number")}</label>
 						<div className="flex gap-2">
 							<select
 								defaultValue="+84"
@@ -220,7 +222,7 @@ const UserProfile = () => {
 
 					{/* Email */}
 					<div className="mb-4">
-						<label className="block mb-1">Email address</label>
+						<label className="block mb-1">{t("Email address")}</label>
 						<input
 							type="email"
 							value={user?.email}
@@ -229,7 +231,7 @@ const UserProfile = () => {
 						/>
 					</div>
 					<div className="mb-4">
-						<label className="block mb-1">Address</label>
+						<label className="block mb-1">{t("Address")}</label>
 						<input
 							type="address"
 							value={user?.address}
@@ -241,7 +243,7 @@ const UserProfile = () => {
 					{/* Date of Birth */}
 					<div className="flex flex-col md:flex-row gap-4 mb-4">
 						<div className="flex-1">
-							<label className="block mb-1">Date of birth</label>
+							<label className="block mb-1">{t("Date of birth")}</label>
 							<div className="flex gap-2">
 								<input
 									type="text"
@@ -276,7 +278,7 @@ const UserProfile = () => {
 					className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
 					onClick={handleUpdate}
 				>
-					Save Changes
+					{t("Save Changes")}
 				</button>
 			</div>
 		</div>

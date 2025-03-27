@@ -104,10 +104,9 @@ const UserSidebar: React.FC<UserSidebarProps> = ({ onCollapse }) => {
 						<li key={index}>
 							<button
 								className={`mb-2 flex items-center px-4 py-3 transition-all duration-300 w-full rounded-lg relative
-									${
-										isActive(item.href)
-											? "bg-blue-50 text-blue-600 font-medium"
-											: "hover:bg-gray-100"
+									${isActive(item.href)
+										? "bg-blue-50 text-blue-600 font-medium"
+										: "hover:bg-gray-100"
 									}`}
 								onClick={() => handleNavigate(item.href)}
 							>

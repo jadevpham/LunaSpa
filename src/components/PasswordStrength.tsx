@@ -1,10 +1,11 @@
 import React from "react";
-
+import { useTranslation } from "react-i18next";
 interface PasswordStrengthProps {
 	password: string;
 }
 
 const PasswordStrength: React.FC<PasswordStrengthProps> = ({ password }) => {
+	const { t } = useTranslation();
 	const criteria = {
 		length: password.length >= 5 && password.length <= 50,
 		lowercase: /[a-z]/.test(password),
@@ -47,7 +48,7 @@ const PasswordStrength: React.FC<PasswordStrengthProps> = ({ password }) => {
 
 	return (
 		<div className="p-4 border rounded-lg shadow-md max-w-sm">
-			<p className="font-semibold">Password Strength: {getStrengthText()}</p>
+			<p className="font-semibold">{t("Password Strength: ")}{getStrengthText()}</p>
 
 			{/* Strength indicator bar */}
 			<div className="w-full h-2 mt-2 bg-black rounded-full overflow-hidden z-50">
@@ -64,7 +65,7 @@ const PasswordStrength: React.FC<PasswordStrengthProps> = ({ password }) => {
 					) : (
 						<i className="fa-solid fa-x"></i>
 					)}
-					Length between 5 and 50 characters
+					{t("Length between 5 and 50 characters")}
 				</li>
 				<li
 					className={criteria.lowercase ? "text-green-600 m" : "text-red-600 m"}
@@ -74,7 +75,7 @@ const PasswordStrength: React.FC<PasswordStrengthProps> = ({ password }) => {
 					) : (
 						<i className="fa-solid fa-x"></i>
 					)}
-					Contains at least one lowercase letter
+					{t("Contains at least one lowercase letter")}
 				</li>
 				<li
 					className={criteria.uppercase ? "text-green-600 m" : "text-red-600 m"}
@@ -84,7 +85,7 @@ const PasswordStrength: React.FC<PasswordStrengthProps> = ({ password }) => {
 					) : (
 						<i className="fa-solid fa-x"></i>
 					)}
-					Contains at least one uppercase letter
+					{t("Contains at least one uppercase letter")}
 				</li>
 				<li className={criteria.number ? "text-green-600 m" : "text-red-600 m"}>
 					{criteria.number ? (
@@ -92,7 +93,7 @@ const PasswordStrength: React.FC<PasswordStrengthProps> = ({ password }) => {
 					) : (
 						<i className="fa-solid fa-x"></i>
 					)}
-					Contains at least one number
+					{t("Contains at least one number")}
 				</li>
 				<li className={criteria.symbol ? "text-green-600 m" : "text-red-600 m"}>
 					{criteria.symbol ? (
@@ -100,7 +101,7 @@ const PasswordStrength: React.FC<PasswordStrengthProps> = ({ password }) => {
 					) : (
 						<i className="fa-solid fa-x"></i>
 					)}
-					Contains at least one special character
+					{t("Contains at least one special character")}
 				</li>
 			</ul>
 		</div>

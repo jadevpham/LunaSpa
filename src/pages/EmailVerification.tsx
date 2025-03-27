@@ -3,14 +3,17 @@ import { useSearchParams } from "react-router-dom";
 import axiosInstance from "../axios/axiosInstance";
 import LoadingAnimation from "../components/LoadingAnimation";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 const EmailVerification = () => {
+	const { t } = useTranslation();
 	const [message, setMessage] = useState("");
 	const [loading, setLoading] = useState(true);
 	const [searchParams] = useSearchParams();
 
 	useEffect(() => {
 		const verifyEmail = async () => {
+
 			const token = searchParams.get("token");
 			try {
 				// Add delay simulation
@@ -35,7 +38,7 @@ const EmailVerification = () => {
 		<div className="min-h-screen bg-gray-100 flex items-center justify-center">
 			<div className="bg-white p-10 rounded-xl shadow-lg max-w-md w-full">
 				<h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
-					Email Verification
+					{t("Email Verification")}
 				</h1>
 				{loading ? (
 					<div className="text-center text-gray-600">

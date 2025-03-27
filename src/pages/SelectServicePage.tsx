@@ -6,6 +6,7 @@ import { fetchProducts } from "../redux/productsSlice";
 import { toast } from "react-toastify";
 import LoadingAnimation from "../components/LoadingAnimation";
 import { fetchServices } from "../redux/servicesSlice";
+import { useTranslation } from "react-i18next";
 
 interface Duration {
 	duration_name: string;
@@ -36,6 +37,7 @@ interface Service {
 }
 
 const SelectServicePage = () => {
+	const { t } = useTranslation();
 	const dispatch = useDispatch<AppDispatch>();
 	const [selectedService, setSelectedService] = useState<Service | null>(null);
 	const selectedServices = useSelector(
@@ -119,7 +121,7 @@ const SelectServicePage = () => {
 
 	return (
 		<div className="container mx-auto shadow-xl p-8 rounded-2xl bg-white">
-			<h2 className="text-2xl font-bold mb-4">Selected Services</h2>
+			<h2 className="text-2xl font-bold mb-4">{t("Selected Services")}</h2>
 			{selectedServices && selectedServices.length > 0 ? (
 				<div className="mb-8 ">
 					<div className="grid gap-4 ">
@@ -141,12 +143,12 @@ const SelectServicePage = () => {
 									<div>
 										<h3 className="font-semibold">{service.name}</h3>
 										<p className="text-sm text-gray-500">
-											Duration: {service.selectedDuration.duration_in_minutes}{" "}
-											minutes
+											{t("Selected ServicesDuration:")} {service.selectedDuration.duration_in_minutes}{" "}
+											{t("minutes")}
 										</p>
 										<div className="flex items-center gap-1">
 											<p className="text-sm font-semibold">
-												Price: $
+												{t("Price:")} $
 												{service.selectedDuration.discount_price.toLocaleString(
 													"en-US",
 												)}
@@ -179,10 +181,10 @@ const SelectServicePage = () => {
 						className="w-10"
 						alt="No services selected"
 					></img>
-					<p className="mt-4 text-gray-500">No services selected</p>
+					<p className="mt-4 text-gray-500">{t("No services selected")}</p>
 				</div>
 			)}
-			<h2 className="text-2xl font-bold mb-4">Related Services</h2>
+			<h2 className="text-2xl font-bold mb-4">{t("Related Services")}</h2>
 			<div className="grid gap-4 max-h-[76vh] overflow-y-auto hide-scrollbar">
 				{unselectedServices?.map((service) => (
 					<div
@@ -252,7 +254,7 @@ const SelectServicePage = () => {
 							)}
 
 						<div className="mt-4">
-							<h4 className="font-semibold">Select a duration *</h4>
+							<h4 className="font-semibold">{t("Select a duration")} *</h4>
 							{selectedService.durations &&
 								selectedService.durations.map((duration) => (
 									<label
@@ -299,11 +301,10 @@ const SelectServicePage = () => {
 								}
 							}}
 							disabled={!selectedDuration}
-							className={`mt-4 ${
-								selectedDuration
-									? "bg-primary text-black hover:bg-black hover:text-white"
-									: "bg-gray-200 text-gray-500 cursor-not-allowed"
-							} border py-2 px-4 rounded-lg w-full transition-all duration-300`}
+							className={`mt-4 ${selectedDuration
+								? "bg-primary text-black hover:bg-black hover:text-white"
+								: "bg-gray-200 text-gray-500 cursor-not-allowed"
+								} border py-2 px-4 rounded-lg w-full transition-all duration-300`}
 						>
 							Choose duration
 						</button>

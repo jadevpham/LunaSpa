@@ -6,7 +6,9 @@ import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { fetchBranchDetail } from "../redux/branchDetailSlice";
 import DetailItem from "../templates/DetailItem";
 console.log("🔥 Branchetail.tsx đã được import!"); // Kiểm tra import
+import { useTranslation } from "react-i18next";
 const BranchDetail: React.FC = () => {
+	const { t } = useTranslation();
 	console.log("BranchDetail.tsx loaded");
 	const dispatch = useDispatch<AppDispatch>(); // ✅ Khai báo dispatch kiểu AppDispatch
 	const location = useLocation();
@@ -31,17 +33,17 @@ const BranchDetail: React.FC = () => {
 		dispatch(fetchBranchDetail(branchId)); //Dispatch action lấy dữ liệu
 	}, [branchId, dispatch]);
 
-	if (loading) return <p>Đang tải dữ liệu...</p>;
+	if (loading) return <p>{t("Đang tải dữ liệu...")}</p>;
 	if (error) return <p className="text-red-500">{error}</p>;
 
 	const today = new Date().toLocaleDateString("en-US", { weekday: "long" });
 	const highestBooking_countService =
 		branchDetail?.services && Array.isArray(branchDetail.services)
 			? branchDetail.services.reduce(
-					(max, service) =>
-						service.booking_count > max.booking_count ? service : max,
-					branchDetail.services[0],
-				)
+				(max, service) =>
+					service.booking_count > max.booking_count ? service : max,
+				branchDetail.services[0],
+			)
 			: null;
 	// const todayOpeningHours = highestRatedBranch?.opening_hours?.find(
 	// 	(day) => day.day === today,

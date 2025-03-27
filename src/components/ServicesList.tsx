@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { fetchServices } from "../redux/servicesSlice"; // ✅ Import action
 import { RootState, AppDispatch } from "../redux/store"; // ✅ Import RootState để lấy dữ liệu từ Redux
-
+import { useTranslation } from "react-i18next";
 // Dùng hook useSelector để lấy state từ store.ts của Redux về, hook useDispatch đưa dữ liệu lên store.ts của Redux
 import { useSelector, useDispatch } from "react-redux";
 import CardList from "../templates/CardList";
@@ -9,6 +9,7 @@ import CardItem from "../templates/CardItem";
 import { useNavigate } from "react-router-dom";
 import { addService } from "../redux/bookingSlice";
 const ServicesList: React.FC = () => {
+	const { t } = useTranslation();
 	const dispatch = useDispatch<AppDispatch>(); // ✅ Khai báo dispatch kiểu AppDispatch
 	const navigate = useNavigate();
 	// ✅ Lấy dữ liệu từ Redux Store
@@ -23,7 +24,7 @@ const ServicesList: React.FC = () => {
 		dispatch(fetchServices());
 	}, [dispatch]);
 
-	if (loading) return <p>Đang tải dữ liệu...</p>;
+	if (loading) return <p>{t("Đang tải dữ liệu...")}</p>;
 	if (error) return <p className="text-red-500">{error}</p>;
 
 	const handleSelectService = (service: any) => {
@@ -41,11 +42,11 @@ const ServicesList: React.FC = () => {
 	return (
 		<>
 			<CardList
-				title="Services"
+				title={t("Services")}
 				items={servicesList}
 				renderItem={(service) => (
 					<CardItem
-						key={service.id}
+						key={service._id}
 						// data={service}
 						name={service.name}
 						address={service.description}

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-
+import { useTranslation } from "react-i18next";
 const breadcrumbs = [
 	{ label: "Services", path: "/book/select-service" },
 	{ label: "Time", path: "/book/select-time" },
@@ -8,6 +8,7 @@ const breadcrumbs = [
 ];
 
 const BookingHeader = () => {
+	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const location = useLocation();
 	const [showModal, setShowModal] = useState(false);
@@ -51,11 +52,10 @@ const BookingHeader = () => {
 					{breadcrumbs.map((crumb, index) => (
 						<React.Fragment key={crumb.path}>
 							<span
-								className={`cursor-pointer ${
-									index <= currentStepIndex
+								className={`cursor-pointer ${index <= currentStepIndex
 										? "text-black font-semibold"
 										: "text-gray-400"
-								}`}
+									}`}
 								onClick={() =>
 									index <= currentStepIndex && navigate(crumb.path)
 								}
@@ -90,20 +90,20 @@ const BookingHeader = () => {
 			{showModal && (
 				<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
 					<div className="bg-white p-6 rounded-lg shadow-lg">
-						<h2 className="text-lg font-semibold mb-4">Confirm Cancellation</h2>
-						<p>Are you sure you want to cancel the booking process?</p>
+						<h2 className="text-lg font-semibold mb-4">{t("Confirm Cancellation")}</h2>
+						<p>{t("Are you sure you want to cancel the booking process?")}</p>
 						<div className="mt-4 flex justify-end space-x-3">
 							<button
 								className="px-4 py-2 bg-gray-200 rounded-md transition-all duration-300 hover:bg-gray-300"
 								onClick={() => setShowModal(false)}
 							>
-								No
+								{t("No")}
 							</button>
 							<button
 								className="px-4 py-2 bg-red-500 text-white rounded-md transition-all duration-300 hover:bg-red-400 "
 								onClick={confirmAbort}
 							>
-								Yes
+								{t("Yes")}
 							</button>
 						</div>
 					</div>

@@ -6,8 +6,10 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
+import { useTranslation } from "react-i18next";
 
 const BookingCart: React.FC = () => {
+	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const [isLoading, setIsLoading] = useState(false);
@@ -111,19 +113,19 @@ const BookingCart: React.FC = () => {
 							className="w-16 h-24 rounded-md object-cover shadow-md"
 						/>
 						<div className="absolute -bottom-2 -right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
-							Open
+							{t("Open")}
 						</div>
 					</div>
 					<div className="ml-4">
 						<h3 className="font-bold text-lg bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-							The Luxury Salon & Spa
+							{t("The Luxury Salon & Spa")}
 						</h3>
 						<div className="flex items-center gap-1 text-yellow-500">
 							⭐⭐⭐⭐⭐ <span className="text-gray-600 text-sm">(4.8)</span>
 						</div>
 						<p className="text-gray-500 text-sm flex items-center gap-1">
 							<i className="fas fa-location-dot text-gray-400"></i>
-							123 Beauty Street, District 1, HCMC
+							{t("123 Beauty Street, District 1, HCMC")}
 						</p>
 					</div>
 				</motion.div>
@@ -160,7 +162,7 @@ const BookingCart: React.FC = () => {
 					<div className="mt-6">
 						{/* Services Section */}
 						<h3 className="font-semibold text-gray-700 mb-3">
-							Selected Services
+							{t("Selected Services")}
 						</h3>
 						<AnimatePresence>
 							{isServiceSelected && selectedService ? (
@@ -179,7 +181,7 @@ const BookingCart: React.FC = () => {
 														{service.name}
 													</p>
 													<p className="text-sm text-gray-500">
-														{service.selectedDuration.duration_in_minutes} mins
+														{service.selectedDuration.duration_in_minutes} {t("mins")}
 													</p>
 												</div>
 												<div className="text-right">
@@ -195,7 +197,7 @@ const BookingCart: React.FC = () => {
 														onClick={() => handleRemoveService(service._id)}
 														className="text-red-500 text-xs mt-1 hover:text-red-600"
 													>
-														Remove
+														{t("Remove")}
 													</motion.button>
 												</div>
 											</div>
@@ -204,14 +206,14 @@ const BookingCart: React.FC = () => {
 								</div>
 							) : (
 								<p className="text-gray-500 text-center py-4">
-									No services selected
+									{t("No services selected")}
 								</p>
 							)}
 						</AnimatePresence>
 
 						{/* Products Section */}
 						<h3 className="font-semibold text-gray-700 mt-6 mb-3">
-							Selected Products
+							{t("Selected Products")}
 						</h3>
 						<AnimatePresence>
 							{isProductSelected && selectedProducts ? (
@@ -245,7 +247,7 @@ const BookingCart: React.FC = () => {
 														onClick={() => handleRemoveProduct(product._id)}
 														className="text-red-500 text-xs mt-1 hover:text-red-600"
 													>
-														Remove
+														{t("Remove")}
 													</motion.button>
 												</div>
 											</div>
@@ -254,7 +256,7 @@ const BookingCart: React.FC = () => {
 								</div>
 							) : (
 								<p className="text-gray-500 text-center py-4">
-									No products selected
+									{t("No products selected")}
 								</p>
 							)}
 						</AnimatePresence>
@@ -270,13 +272,13 @@ const BookingCart: React.FC = () => {
 					>
 						{totalServicePrice > 0 && (
 							<div className="flex justify-between text-gray-600">
-								<span>Services Total</span>
+								<span>{t("Services Total")}</span>
 								<span>${totalServicePrice.toLocaleString("en-US")}</span>
 							</div>
 						)}
 						{totalProductPrice > 0 && (
 							<div className="flex justify-between text-gray-600">
-								<span>Products Total</span>
+								<span>{t("Products Total")}</span>
 								<span>${totalProductPrice.toLocaleString("en-US")}</span>
 							</div>
 						)}
@@ -286,7 +288,7 @@ const BookingCart: React.FC = () => {
 				{/* Payment Info */}
 				<div className="mt-4 pt-4 bg-white">
 					<div className="flex justify-between text-gray-900 font-bold border-t pt-4">
-						<span>Order Total</span>
+						<span>{t("Order Total")}</span>
 						<span>${totalPrice.toLocaleString("en-US")}</span>
 					</div>
 
@@ -308,18 +310,17 @@ const BookingCart: React.FC = () => {
 					<motion.button
 						whileHover={{ scale: 1.02 }}
 						whileTap={{ scale: 0.98 }}
-						className={`w-full py-4 mt-4 rounded-lg text-white font-medium transition-all duration-300 ${
-							isNextEnabled
-								? "bg-gradient-to-r from-gray-900 to-gray-700 hover:from-gray-800 hover:to-gray-600"
-								: "bg-gray-400 cursor-not-allowed"
-						}`}
+						className={`w-full py-4 mt-4 rounded-lg text-white font-medium transition-all duration-300 ${isNextEnabled
+							? "bg-gradient-to-r from-gray-900 to-gray-700 hover:from-gray-800 hover:to-gray-600"
+							: "bg-gray-400 cursor-not-allowed"
+							}`}
 						onClick={handleClick}
 						disabled={!isNextEnabled || isLoading}
 					>
 						{isLoading ? (
 							<div className="flex items-center justify-center gap-2">
 								<div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-								<span>Processing...</span>
+								<span>{t("Processing...")}</span>
 							</div>
 						) : (
 							buttonLabel

@@ -7,7 +7,9 @@ import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { fetchServiceDetail } from "../redux/serviceDetailSlice";
 import DetailItem from "../templates/DetailItem";
 console.log("🔥 ServiceDetail.tsx đã được import!"); // Kiểm tra import
+import { useTranslation } from "react-i18next";
 const ServiceDetail: React.FC = () => {
+	const { t } = useTranslation();
 	console.log("ServiceDetail.tsx loaded");
 	const dispatch = useDispatch<AppDispatch>(); // ✅ Khai báo dispatch kiểu AppDispatch
 	const location = useLocation();
@@ -34,16 +36,16 @@ const ServiceDetail: React.FC = () => {
 		dispatch(fetchServiceDetail(serviceId)); //Dispatch action lấy dữ liệu
 	}, [serviceId, dispatch]);
 
-	if (loading) return <p>Đang tải dữ liệu...</p>;
+	if (loading) return <p>{t("Đang tải dữ liệu...")}</p>;
 	if (error) return <p className="text-red-500">{error}</p>;
 	const today = new Date().toLocaleDateString("en-US", { weekday: "long" });
 	// console.log("Today: ", today);
 	const highestRatedBranch =
 		serviceDetail?.branches && Array.isArray(serviceDetail.branches)
 			? serviceDetail.branches.reduce(
-					(max, branch) => (branch.rating > max.rating ? branch : max),
-					serviceDetail.branches[0],
-				)
+				(max, branch) => (branch.rating > max.rating ? branch : max),
+				serviceDetail.branches[0],
+			)
 			: null;
 	const todayOpeningHours = highestRatedBranch?.opening_hours?.find(
 		(day) => day.day === today,
@@ -63,7 +65,7 @@ const ServiceDetail: React.FC = () => {
 					<>
 						{highestRatedBranch?.name || "Không có chi nhánh nào"} -{" "}
 						<span className="bg-gradient-to-r from-green-500 to-yellow-400 bg-clip-text text-transparent font-semibold">
-							Best rating branch with {highestRatedBranch?.rating} ⭐
+							{t("Best rating branch with")} {highestRatedBranch?.rating} ⭐
 						</span>
 					</>
 				}
@@ -96,29 +98,29 @@ const ServiceDetail: React.FC = () => {
 				priceMin={
 					serviceDetail?.durations?.length
 						? serviceDetail.durations.reduce((min, d) =>
-								d.discount_price < min.discount_price ? d : min,
-							).discount_price
+							d.discount_price < min.discount_price ? d : min,
+						).discount_price
 						: 0
 				} // hiện tại duration mới chỉ có 1
 				priceMax={
 					serviceDetail?.durations?.length
 						? serviceDetail.durations.reduce((max, d) =>
-								d.discount_price > max.discount_price ? d : max,
-							).discount_price
+							d.discount_price > max.discount_price ? d : max,
+						).discount_price
 						: 0
 				}
 				durationsNameMin={
 					serviceDetail?.durations?.length
 						? serviceDetail.durations.reduce((min, d) =>
-								d.duration_in_minutes < min.duration_in_minutes ? d : min,
-							).duration_name
+							d.duration_in_minutes < min.duration_in_minutes ? d : min,
+						).duration_name
 						: "N/A"
 				}
 				durationsNameMax={
 					serviceDetail?.durations?.length
 						? serviceDetail.durations.reduce((max, d) =>
-								d.duration_in_minutes > max.duration_in_minutes ? d : max,
-							).duration_name
+							d.duration_in_minutes > max.duration_in_minutes ? d : max,
+						).duration_name
 						: "N/A"
 				}
 				address={highestRatedBranch?.contact?.address ?? "N/A"} // sau thay bằng địa chị branch

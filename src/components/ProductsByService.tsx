@@ -6,7 +6,9 @@ import { RootState, AppDispatch } from "../redux/store"; // ✅ Import RootState
 import { useSelector, useDispatch } from "react-redux";
 import CardList from "../templates/CardList";
 import CardItem from "../templates/CardItem";
+import { useTranslation } from "react-i18next";
 const ProductsByServiceList: React.FC = () => {
+	const { t } = useTranslation();
 	const dispatch = useDispatch<AppDispatch>(); // ✅ Khai báo dispatch kiểu AppDispatch
 
 	// Lấy dữ liệu từ Redux Store
@@ -25,13 +27,13 @@ const ProductsByServiceList: React.FC = () => {
 		dispatch(fetchProductsByService());
 	}, [dispatch]);
 
-	if (loading) return <p>Đang tải dữ liệu...</p>;
+	if (loading) return <p>{t("Đang tải dữ liệu...")}</p>;
 	if (error) return <p className="text-red-500">{error}</p>;
 
 	return (
 		<>
 			<CardList
-				title="Products"
+				title={t("Products")}
 				items={productsByServiceList}
 				renderItem={(productsByService) =>
 					productsByService.product?.map((product) => (

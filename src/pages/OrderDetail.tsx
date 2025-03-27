@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../axios/axiosInstance";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 // Define the interface for the order data
 interface Order {
 	customer: {
@@ -37,6 +38,7 @@ const formatPrice = (
 };
 
 const OrderDetail = () => {
+	const { t } = useTranslation();
 	const location = useLocation();
 	const navigate = useNavigate();
 	const params = useParams();
@@ -78,62 +80,62 @@ const OrderDetail = () => {
 						onClick={() => navigate(-1)}
 						className="flex items-center text-blue-600 hover:underline"
 					>
-						← Back to Profile
+						← {t("Back to Profile")}
 					</button>
 				) : (
 					""
 				)}
 			</div>
-			<h1 className="text-4xl font-bold mb-6 text-center">Order Details</h1>
+			<h1 className="text-4xl font-bold mb-6 text-center">{t("Order Details")}</h1>
 			<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 				<div className="bg-white shadow-lg rounded-lg p-6">
-					<h2 className="text-2xl font-semibold mb-4">Customer Information</h2>
+					<h2 className="text-2xl font-semibold mb-4">{t("Customer Information")}</h2>
 					<p className="flex items-center mb-2">
 						<i className="fas fa-user mr-2 text-gray-600"></i>
-						<strong>Name:</strong> {order?.customer.name}
+						<strong>{t("Name:")}</strong> {order?.customer.name}
 					</p>
 					<p className="flex items-center mb-2">
 						<i className="fas fa-envelope mr-2 text-gray-600"></i>
-						<strong>Email:</strong> {order?.customer.email}
+						<strong>{t("Email:")}</strong> {order?.customer.email}
 					</p>
 					<p className="flex items-center mb-2">
 						<i className="fas fa-phone mr-2 text-gray-600"></i>
-						<strong>Phone Number:</strong> {order?.customer.phone_number}
+						<strong>{t("Phone Number:")}</strong> {order?.customer.phone_number}
 					</p>
 					<p className="flex items-center mb-4">
 						<i className="fas fa-map-marker-alt mr-2 text-gray-600"></i>
-						<strong>Address:</strong> {order?.branch.contact.address}
+						<strong>{t("Address:")}</strong> {order?.branch.contact.address}
 					</p>
 				</div>
 
 				<div className="bg-white shadow-lg rounded-lg p-6">
-					<h2 className="text-2xl font-semibold mb-4">Order Information</h2>
+					<h2 className="text-2xl font-semibold mb-4">{t("Order Information")}</h2>
 					<p className="mb-2">
-						<strong>Status:</strong> {order?.status}
+						<strong>{t("Status:")}</strong> {order?.status}
 					</p>
 					<p className="mb-2">
-						<strong>Total Price:</strong>{" "}
+						<strong>{t("Total Price:")}</strong>{" "}
 						{formatPrice(order?.total_price, order?.transaction.currency)}
 					</p>
 					<p className="mb-4">
-						<strong>Final Price:</strong>{" "}
+						<strong>{t("Final Price:")}</strong>{" "}
 						{formatPrice(order?.final_price, order?.transaction.currency)}
 					</p>
 				</div>
 			</div>
 
 			{order?.items.length === 0 ? (
-				<div className="text-center text-red-500">No items found.</div>
+				<div className="text-center text-red-500">{t("No items found.")}</div>
 			) : (
 				<div>
-					<h2 className="text-2xl font-semibold mb-4 mt-6">Products</h2>
+					<h2 className="text-2xl font-semibold mb-4 mt-6">{t("Products")}</h2>
 					<table className="min-w-full bg-white border border-gray-300">
 						<thead>
 							<tr className="bg-gray-100">
-								<th className="py-2 px-4 border-b text-left">Item Name</th>
-								<th className="py-2 px-4 border-b text-left">Quantity</th>
+								<th className="py-2 px-4 border-b text-left">{t("Item Name")}</th>
+								<th className="py-2 px-4 border-b text-left">{t("Quantity")}</th>
 								<th className="py-2 px-4 border-b text-left">
-									Price ({order?.transaction.currency?.toUpperCase()})
+									{t("Text")}Price ({order?.transaction.currency?.toUpperCase()})
 								</th>
 							</tr>
 						</thead>
@@ -156,17 +158,17 @@ const OrderDetail = () => {
 			)}
 
 			{order?.items.length === 0 ? (
-				<div className="text-center text-red-500">No items found.</div>
+				<div className="text-center text-red-500">{t("No items found.")}</div>
 			) : (
 				<div>
-					<h2 className="text-2xl font-semibold mb-4 mt-6">Services</h2>
+					<h2 className="text-2xl font-semibold mb-4 mt-6">{t("Services")}</h2>
 					<table className="min-w-full bg-white border border-gray-300">
 						<thead>
 							<tr className="bg-gray-100">
-								<th className="py-2 px-4 border-b text-left">Item Name</th>
-								<th className="py-2 px-4 border-b text-left">Quantity</th>
+								<th className="py-2 px-4 border-b text-left">{t("Item Name")}</th>
+								<th className="py-2 px-4 border-b text-left">{t("Quantity")}</th>
 								<th className="py-2 px-4 border-b text-left">
-									Price ({order?.transaction.currency?.toUpperCase()})
+									{t("Price")} ({order?.transaction.currency?.toUpperCase()})
 								</th>
 							</tr>
 						</thead>
@@ -191,7 +193,7 @@ const OrderDetail = () => {
 								onClick={() => navigate("/")}
 								className="mt-4 px-6 py-3 text-white font-bold rounded-full transition bg-gradient-to-tr from-purple-400 to-pink-300 hover:from-pink-300 hover:to-purple-400"
 							>
-								Go to Home
+								{t("Go to Home")}
 							</button>
 						</div>
 					)}

@@ -2,8 +2,9 @@ import { useState } from "react";
 import axiosInstance from "../axios/axiosInstance";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-
+import { useTranslation } from "react-i18next";
 const ForgotPasswordPage = () => {
+	const { t } = useTranslation();
 	const [email, setEmail] = useState("");
 	const navigate = useNavigate();
 	const [isClick, setIsClick] = useState(false);
@@ -38,24 +39,24 @@ const ForgotPasswordPage = () => {
 		<div className="container mx-auto flex items-center justify-center min-h-screen bg-gray-100">
 			<div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
 				<h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
-					Forgot Password
+					{t("Forgot Password")}
 				</h1>
 				<p className="text-gray-600 text-center mb-6">
-					Please enter your email address to reset your password.
+					{t("Please enter your email address to reset your password.")}
 				</p>
 				<form onSubmit={handleSubmit} className="space-y-6">
 					<input
 						className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 						type="email"
 						onChange={handleInputChange}
-						placeholder="Email"
+						placeholder={t("Email")}
 					/>
 					<button
 						disabled={isClick}
 						className={`w-full bg-blue-500 ${!isClick && "hover:bg-blue-600"} text-white font-bold py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 ${isClick && "opacity-50 cursor-not-allowed"}`}
 						type="submit"
 					>
-						Submit
+						{t("Submit")}
 					</button>
 				</form>
 				<p className="mt-6 text-center">
@@ -63,7 +64,7 @@ const ForgotPasswordPage = () => {
 						className="text-blue-600 hover:text-blue-800 font-medium"
 						href="/auth"
 					>
-						Back to Login
+						{t("Back to Login")}
 					</a>
 				</p>
 			</div>

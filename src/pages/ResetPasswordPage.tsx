@@ -4,8 +4,10 @@ import { toast } from "react-toastify";
 import LoadingAnimation from "../components/LoadingAnimation";
 import axios from "axios";
 import PasswordStrength from "../components/PasswordStrength";
+import { useTranslation } from "react-i18next";
 
 const ResetPasswordPage = () => {
+	const { t } = useTranslation();
 	const [searchParams] = useSearchParams();
 	const token = searchParams.get("token");
 	const [loading, setLoading] = useState(true);
@@ -147,10 +149,10 @@ const ResetPasswordPage = () => {
 			{hasVerified && (
 				<div className="bg-white p-8 rounded-lg shadow-md w-96">
 					<h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
-						Reset Password
+						{t("TReset Passwordext")}
 					</h1>
 					<p className="text-gray-600 text-center mb-6">
-						Please enter your new password.
+						{t("Please enter your new password.")}
 					</p>
 					<form onSubmit={handleSubmit} className="space-y-6">
 						<div className="relative">
@@ -160,7 +162,7 @@ const ResetPasswordPage = () => {
 								value={formData.password}
 								tabIndex={1}
 								onChange={handleInputChange}
-								placeholder="Password"
+								placeholder={t("Password")}
 								className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500"
 							/>
 							<button
@@ -183,7 +185,7 @@ const ResetPasswordPage = () => {
 								tabIndex={2}
 								value={formData.confirmPassword}
 								onChange={handleInputChange}
-								placeholder="Confirm Password"
+								placeholder={t("Confirm Password")}
 								className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500"
 							/>
 							<button
@@ -203,20 +205,20 @@ const ResetPasswordPage = () => {
 							<PasswordStrength password={formData.password} />
 						)}
 						{!passwordMatch && formData.confirmPassword && (
-							<p className="text-red-500 text-sm">Passwords do not match!</p>
+							<p className="text-red-500 text-sm">{t("Passwords do not match!")}</p>
 						)}
 						<button
 							type="submit"
 							className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition-colors"
 						>
-							Reset Password
+							{t("Reset Password")}
 						</button>
 						<p className="mt-6 text-center">
 							<a
 								className="text-blue-600 hover:text-blue-800 font-medium"
 								href="/auth"
 							>
-								Back to Login
+								{t("Back to Login")}
 							</a>
 						</p>
 					</form>

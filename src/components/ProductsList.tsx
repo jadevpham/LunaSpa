@@ -1,12 +1,13 @@
 import React, { useEffect } from "react";
 import { fetchProducts } from "../redux/productsSlice"; // ✅ Import action
 import { RootState, AppDispatch } from "../redux/store"; // ✅ Import RootState để lấy dữ liệu từ Redux
-
+import { useTranslation } from "react-i18next";
 // Dùng hook useSelector để lấy state từ store.ts của Redux về, hook useDispatch đưa dữ liệu lên store.ts của Redux
 import { useSelector, useDispatch } from "react-redux";
 import CardList from "../templates/CardList";
 import CardItem from "../templates/CardItem";
 const ProductsList: React.FC = () => {
+	const { t } = useTranslation();
 	const dispatch = useDispatch<AppDispatch>(); // ✅ Khai báo dispatch kiểu AppDispatch
 
 	// ✅ Lấy dữ liệu từ Redux Store
@@ -21,18 +22,18 @@ const ProductsList: React.FC = () => {
 		dispatch(fetchProducts());
 	}, [dispatch]);
 
-	if (loading) return <p>Đang tải dữ liệu...</p>;
+	if (loading) return <p>{t("Đang tải dữ liệu...")}</p>;
 	if (error) return <p className="text-red-500">{error}</p>;
 
 	return (
 		<>
 			<CardList
-				title="Products"
+				title={t("Products")}
 				items={productsList}
 				renderItem={(product) => (
 					<CardItem
 						key={product._id}
-						data={product}
+						//data={product}
 						name={product.name}
 						address={product.description}
 						img={product.images[0]}

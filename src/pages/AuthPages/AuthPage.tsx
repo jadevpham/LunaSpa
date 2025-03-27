@@ -241,7 +241,7 @@ const AuthPage = () => {
 							onSubmit={handleSignIn}
 							className="flex flex-col items-center text-center  justify-center p-10 h-full"
 						>
-							<h1 className="font-bold text-xl">Sign In</h1>
+							<h1 className="font-bold text-xl">{t("Sign In")}</h1>
 							<div className="flex gap-3 my-4">
 								<a
 									href={facebookOAuthUrl}
@@ -256,13 +256,13 @@ const AuthPage = () => {
 									<i className="fab fa-google-plus-g"></i>
 								</a>
 							</div>
-							<span className="text-sm">or use your account</span>
+							<span className="text-sm">{t("or use your account")}</span>
 							<input
 								type="email"
 								name="email"
 								value={formData.email}
 								onChange={handleInputChange}
-								placeholder="Email"
+								placeholder={t("Email")}
 								className="w-full p-3 my-2 bg-gray-200 rounded focus:ring-2 focus:ring-purple-400 focus:outline-none transition"
 								tabIndex={1}
 							/>
@@ -272,7 +272,7 @@ const AuthPage = () => {
 									name="password"
 									value={formData.password}
 									onChange={handleInputChange}
-									placeholder="Password"
+									placeholder={t("Password")}
 									className="w-full p-3 my-2 bg-gray-200 rounded focus:ring-2 focus:ring-purple-400 focus:outline-none transition"
 									tabIndex={2}
 								/>
@@ -300,19 +300,18 @@ const AuthPage = () => {
 							<button
 								type="submit"
 								disabled={isSigninDisabled}
-								className={`mt-4 px-6 py-3 text-white font-bold rounded-full transition ${
-									isSigninDisabled
-										? "bg-gray-400 cursor-not-allowed"
-										: "bg-gradient-to-tr from-purple-400 to-pink-300 hover:from-pink-300 hover:to-purple-400"
-								}`}
+								className={`mt-4 px-6 py-3 text-white font-bold rounded-full transition ${isSigninDisabled
+									? "bg-gray-400 cursor-not-allowed"
+									: "bg-gradient-to-tr from-purple-400 to-pink-300 hover:from-pink-300 hover:to-purple-400"
+									}`}
 							>
-								Sign in
+								{t("Sign in")}
 							</button>
 							<button
 								onClick={handleChangeForm}
 								className="mt-4 text-blue-500 fixed bottom-4 "
 							>
-								Don't have an account? Sign Up
+								{t("Don't have an account? Sign Up")}
 							</button>
 						</form>
 					</div>
@@ -322,7 +321,7 @@ const AuthPage = () => {
 							onSubmit={handleSignUp}
 							className="flex flex-col items-center text-center p-10 h-full justify-center"
 						>
-							<h1 className="font-bold text-xl">Create Account</h1>
+							<h1 className="font-bold text-xl">{t("Create Account")}</h1>
 							<div className="flex gap-3 my-4">
 								<a
 									href={facebookOAuthUrl}
@@ -338,14 +337,14 @@ const AuthPage = () => {
 								</a>
 							</div>
 							<span className="text-sm">
-								or use your email for registration
+								{t("or use your email for registration")}
 							</span>
 							<input
 								type="email"
 								name="email"
 								value={formData.email}
 								onChange={handleInputChange}
-								placeholder="Email"
+								placeholder={t("Email")}
 								className="w-full p-3 my-2 bg-gray-200 rounded focus:ring-2 focus:ring-purple-400 focus:outline-none transition"
 							/>
 							<div className="relative w-full my-2">
@@ -354,7 +353,7 @@ const AuthPage = () => {
 									name="password"
 									value={formData.password}
 									onChange={handleInputChange}
-									placeholder="Password"
+									placeholder={t("Password")}
 									className="w-full p-3 my-2 bg-gray-200 rounded focus:ring-2 focus:ring-purple-400 focus:outline-none transition"
 								/>
 								<button
@@ -378,7 +377,7 @@ const AuthPage = () => {
 											name="confirmPassword"
 											value={formData.confirmPassword}
 											onChange={handleInputChange}
-											placeholder="Confirm Password"
+											placeholder={t("Confirm Password")}
 											className="w-full p-3 my-2 bg-gray-200 rounded focus:ring-2 focus:ring-purple-400 focus:outline-none transition"
 										/>
 										<button
@@ -396,7 +395,7 @@ const AuthPage = () => {
 									</div>
 									{!passwordMatch && formData.confirmPassword && (
 										<p className="text-red-500 text-sm">
-											Passwords do not match!
+											{t("Passwords do not match!")}
 										</p>
 									)}
 								</>
@@ -404,19 +403,18 @@ const AuthPage = () => {
 							<button
 								type="submit"
 								disabled={isSignUpDisabled}
-								className={`mt-4 px-6 py-3 text-white font-bold rounded-full ${
-									isSignUpDisabled
-										? "bg-gray-400 cursor-not-allowed"
-										: "bg-gradient-to-tr from-purple-400 to-pink-300 hover:from-pink-300 hover:to-purple-400"
-								}`}
+								className={`mt-4 px-6 py-3 text-white font-bold rounded-full ${isSignUpDisabled
+									? "bg-gray-400 cursor-not-allowed"
+									: "bg-gradient-to-tr from-purple-400 to-pink-300 hover:from-pink-300 hover:to-purple-400"
+									}`}
 							>
-								Sign Up
+								{t("Sign Up")}
 							</button>
 							<button
 								onClick={handleChangeForm}
 								className="mt-4 text-green-500 fixed bottom-4"
 							>
-								Already have an account? Login
+								{t("Already have an account? Login")}
 							</button>
 						</form>
 					</div>

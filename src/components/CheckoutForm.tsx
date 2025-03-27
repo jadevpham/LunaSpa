@@ -7,6 +7,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../axios/axiosInstance";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 // Define the props type for CheckoutForm
 interface CheckoutFormProps {
 	orderId: string;
@@ -17,6 +18,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
 	orderId,
 	clientSecret,
 }) => {
+	const { t } = useTranslation();
 	const stripe = useStripe();
 	const elements = useElements();
 	const navigate = useNavigate();
@@ -168,9 +170,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
 			onSubmit={handleSubmit}
 		>
 			<div className="mb-6">
-				<h3 className="text-[#32325d] mb-2">Card Information</h3>
+				<h3 className="text-[#32325d] mb-2">{t("Card Information")}</h3>
 				<p className="text-[#6b7c93] mt-0">
-					Please enter your card information
+					{t("Please enter your card information")}
 				</p>
 			</div>
 
@@ -187,7 +189,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
 					className="mr-2"
 				/>
 				<label htmlFor="save-card" className="text-[#32325d] cursor-pointer">
-					Save this card information for next time
+					{t("Save this card information for next time")}
 				</label>
 			</div>
 
@@ -198,7 +200,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
 				{isProcessing ? (
 					<span className="flex items-center justify-center">
 						<div className="mr-2 w-5 h-5 border-3 border-white border-opacity-30 rounded-full border-t-white animate-spin"></div>
-						Processing...
+						{t("Processing...")}
 					</span>
 				) : (
 					`Pay Now`

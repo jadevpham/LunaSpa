@@ -4,8 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { setPaymentMethod } from "../redux/bookingSlice";
 import { RootState } from "../redux/store";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 const ConfirmBookingPage = () => {
+	const { t } = useTranslation();
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const paymentMethod = useSelector(
@@ -65,21 +67,21 @@ const ConfirmBookingPage = () => {
 
 	return (
 		<div className="container mx-auto shadow-xl p-8 rounded-2xl bg-white">
-			<h2 className="text-5xl font-bold mb-6">Review and Confirm</h2>
+			<h2 className="text-5xl font-bold mb-6">{t("Review and Confirm")}</h2>
 
 			{/* payment method */}
 			<div className="bg-gray-100 p-6 rounded-lg mb-4">
-				<h3 className="font-semibold text-lg mb-2">Payment Method</h3>
+				<h3 className="font-semibold text-lg mb-2">{t("Payment Method")}</h3>
 				<select
 					className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
 					value={paymentMethod?._id || ""}
 					onChange={handlePaymentChange}
 				>
 					<option value="" disabled>
-						Select your payment method
+						{t("Select your payment method")}
 					</option>
-					<option value="Bank">Bank</option>
-					<option value="Cash">Cash on Arrival</option>
+					<option value="Bank">{t("Bank")}</option>
+					<option value="Cash">{t("Cash on Arrival")}</option>
 				</select>
 			</div>
 
@@ -103,7 +105,7 @@ const ConfirmBookingPage = () => {
 			</div> */}
 
 			<div className="bg-gray-100 p-6 rounded-lg">
-				<h3 className="font-semibold text-lg mb-2">Booking Notes</h3>
+				<h3 className="font-semibold text-lg mb-2">{t("Booking Notes")}</h3>
 				<textarea
 					placeholder="Add any notes for your booking..."
 					className="w-full p-3 border rounded-lg h-20 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"

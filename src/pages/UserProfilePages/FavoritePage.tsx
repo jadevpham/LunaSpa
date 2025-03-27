@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../axios/axiosInstance";
 import { toast } from "react-toastify";
-
+import { useTranslation } from "react-i18next";
 type Duration = {
 	discount_price: number;
 	duration_in_minutes: number;
@@ -40,6 +40,7 @@ type FavoriteItem = {
 };
 
 const FavoritePage = () => {
+	const { t } = useTranslation();
 	const [activeTab, setActiveTab] = useState<"services" | "products">(
 		"services",
 	);
@@ -310,31 +311,29 @@ const FavoritePage = () => {
 
 	return (
 		<div className="container mx-auto p-6">
-			<h1 className="text-3xl font-bold mb-6">My Favorites</h1>
+			<h1 className="text-3xl font-bold mb-6">{t("My Favorites")}</h1>
 
 			{/* Tabs */}
 			<div className="flex space-x-1 rounded-xl bg-gray-100 p-1 mb-6">
 				<button
 					onClick={() => setActiveTab("services")}
 					className={`flex-1 rounded-lg py-2.5 text-sm font-medium leading-5 
-            ${
-							activeTab === "services"
-								? "bg-white shadow text-blue-700"
-								: "text-gray-600 hover:text-blue-700"
+            ${activeTab === "services"
+							? "bg-white shadow text-blue-700"
+							: "text-gray-600 hover:text-blue-700"
 						}`}
 				>
-					Favorite Services
+					{t("Favorite Services")}
 				</button>
 				<button
 					onClick={() => setActiveTab("products")}
 					className={`flex-1 rounded-lg py-2.5 text-sm font-medium leading-5 
-            ${
-							activeTab === "products"
-								? "bg-white shadow text-blue-700"
-								: "text-gray-600 hover:text-blue-700"
+            ${activeTab === "products"
+							? "bg-white shadow text-blue-700"
+							: "text-gray-600 hover:text-blue-700"
 						}`}
 				>
-					Favorite Products
+					{t("Favorite Products")}
 				</button>
 			</div>
 
@@ -347,7 +346,7 @@ const FavoritePage = () => {
 						))
 					) : (
 						<p className="col-span-full text-center text-gray-500 py-8">
-							No favorite services yet
+							{t("No favorite services yet")}
 						</p>
 					)}
 				</div>
@@ -361,7 +360,7 @@ const FavoritePage = () => {
 						))
 					) : (
 						<p className="col-span-full text-center text-gray-500 py-8">
-							No favorite products yet
+							{t("No favorite products yet")}
 						</p>
 					)}
 				</div>

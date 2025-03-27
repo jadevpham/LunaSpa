@@ -4,7 +4,9 @@ import type { RootState, AppDispatch } from "../redux/store"; // Import kiểu t
 import { sendMessage, addUserMessage } from "../redux/chatSlice";
 import type { ChatMessage } from "../redux/chatSlice";
 import { MessageCircle, X } from "lucide-react"; // Import icon
+import { useTranslation } from "react-i18next";
 export default function Chatbox() {
+	const { t } = useTranslation();
 	const [input, setInput] = useState("");
 	const dispatch = useDispatch<AppDispatch>(); // Định kiểu AppDispatch
 	const { messages, loading } = useSelector((state: RootState) => state.chat);
@@ -86,12 +88,13 @@ export default function Chatbox() {
 
 			{/* Chatbox */}
 			<div
-				className={`fixed bottom-16 right-5 w-80 bg-white shadow-xl rounded-lg border border-gray-300 transition-all ${
-					isOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10 pointer-events-none"
-				}`}
+				className={`fixed bottom-16 right-5 w-80 bg-white shadow-xl rounded-lg border border-gray-300 transition-all ${isOpen
+					? "opacity-100 translate-y-0"
+					: "opacity-0 translate-y-10 pointer-events-none"
+					}`}
 			>
 				<div className="p-4 border-b bg-blue-500 text-white rounded-t-lg flex justify-between items-center">
-					<h3 className="text-lg font-semibold">Chatbot Hỗ Trợ</h3>
+					<h3 className="text-lg font-semibold">{t("Chatbot Hỗ Trợ")}</h3>
 					<button onClick={() => setIsOpen(false)} className="text-white">
 						<X size={20} />
 					</button>
@@ -100,16 +103,15 @@ export default function Chatbox() {
 					{messages.map((msg, index) => (
 						<div
 							key={index}
-							className={`p-2 rounded-lg max-w-[75%] ${
-								msg.role === "user"
-									? "bg-blue-500 text-white self-end ml-auto"
-									: "bg-gray-200 text-black"
-							}`}
+							className={`p-2 rounded-lg max-w-[75%] ${msg.role === "user"
+								? "bg-blue-500 text-white self-end ml-auto"
+								: "bg-gray-200 text-black"
+								}`}
 						>
 							<p>{msg.content}</p>
 						</div>
 					))}
-					{loading && <p className="text-gray-500">Đang phản hồi...</p>}
+					{loading && <p className="text-gray-500">{t("Đang phản hồi...")}</p>}
 				</div>
 				<div className="flex p-2 border-t bg-gray-100 rounded-b-lg">
 					<input
@@ -117,14 +119,14 @@ export default function Chatbox() {
 						value={input}
 						onChange={(e) => setInput(e.target.value)}
 						onKeyDown={handleKeyDown}
-						placeholder="Nhập tin nhắn..."
+						placeholder={t("Nhập tin nhắn...")}
 					/>
 					<button
 						className="px-4 bg-blue-500 text-white rounded-r-lg disabled:bg-gray-400"
 						onClick={handleSendMessage}
 						disabled={loading}
 					>
-						Send
+						{t("Send")}
 					</button>
 				</div>
 			</div>

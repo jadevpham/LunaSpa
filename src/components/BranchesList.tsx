@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { fetchBranches } from "../redux/branchesSlice"; // ✅ Import action
 import { RootState, AppDispatch } from "../redux/store"; // ✅ Import RootState để lấy dữ liệu từ Redux
-
+import { useTranslation } from "react-i18next";
 // Dùng hook useSelector để lấy state từ store.ts của Redux về, hook useDispatch đưa dữ liệu lên store.ts của Redux
 import { useSelector, useDispatch } from "react-redux";
 import CardList from "../templates/CardList";
@@ -9,6 +9,7 @@ import CardItem from "../templates/CardItem";
 import { useNavigate } from "react-router-dom";
 import { Star, Phone } from "lucide-react";
 const BranchesList: React.FC = () => {
+	const { t } = useTranslation();
 	// state cần quan tâm ở đây là mảng các Branches lấy từ api
 	// Tuy nhiên đối với Branches (lấy data từ call api theo redux) thì dùng nhiều ở components ở các cấp khác nhau, phải truyền props xuống nên phải dùng hooks useSelector
 	// Thay vì dùng hook useState để quản lý state thì dùng useSelector của redux để lấy dữ liệu/quản lý state về từ store.ts của Redux
@@ -30,7 +31,7 @@ const BranchesList: React.FC = () => {
 		dispatch(fetchBranches());
 	}, [dispatch]);
 
-	if (loading) return <p>Đang tải dữ liệu...</p>;
+	if (loading) return <p>{t("Đang tải dữ liệu...")}</p>;
 	if (error) return <p className="text-red-500">{error}</p>;
 
 	const handleSelectBranch = (branch: any) => {
@@ -47,7 +48,7 @@ const BranchesList: React.FC = () => {
 	return (
 		<>
 			<CardList
-				title="Branches"
+				title={t("Branches")}
 				items={branchesList}
 				renderItem={(branch) => (
 					<CardItem

@@ -8,8 +8,10 @@ import { addProduct, setProducts } from "../redux/bookingSlice";
 import { toast } from "react-toastify";
 import CardList from "../templates/CardList";
 import CardItem from "../templates/CardItem";
+import { useTranslation } from "react-i18next";
 
 const BookingLayout = () => {
+	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const [showModal, setShowModal] = useState(false);
@@ -192,14 +194,14 @@ const BookingLayout = () => {
 			{showModal && (
 				<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
 					<div className="bg-white p-6 rounded-lg shadow-lg">
-						<h2 className="text-lg font-semibold mb-4">Session timeout</h2>
-						<p>Please book your services again</p>
+						<h2 className="text-lg font-semibold mb-4">{t("Session timeout")}</h2>
+						<p>{t("Please book your services again")}</p>
 						<div className="mt-4 flex justify-end space-x-3">
 							<button
 								className="px-4 py-2 bg-red-500 text-white rounded-md transition-all duration-300 hover:bg-red-400 "
 								onClick={handleToHome}
 							>
-								Home
+								{t("Home")}
 							</button>
 						</div>
 					</div>
@@ -212,7 +214,7 @@ const BookingLayout = () => {
 							{selectedProduct.name}
 						</h2>
 						<p className="mb-4">
-							Select quantity (Max: {selectedProduct.quantity})
+							{t("Select quantity")} (Max: {selectedProduct.quantity})
 						</p>
 
 						<div className="flex items-center justify-center space-x-4 mb-6">
@@ -245,13 +247,13 @@ const BookingLayout = () => {
 								className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-400"
 								onClick={() => setShowQuantityModal(false)}
 							>
-								Cancel
+								{t("Cancel")}
 							</button>
 							<button
 								className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-400"
 								onClick={handleConfirmAdd}
 							>
-								Add
+								{t("Add")}
 							</button>
 						</div>
 					</div>

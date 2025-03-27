@@ -5,6 +5,7 @@ import { Elements } from "@stripe/react-stripe-js";
 import CheckoutForm from "../components/CheckoutForm";
 import axiosInstance from "../axios/axiosInstance";
 import { loadStripe } from "@stripe/stripe-js";
+import { useTranslation } from "react-i18next";
 // import { StripeElementsOptions } from "@stripe/react-stripe-js";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
@@ -16,6 +17,7 @@ const formatPrice = (price: number) => {
 };
 
 const PaymentPage: React.FC = () => {
+	const { t } = useTranslation();
 	const [clientSecret, setClientSecret] = useState<string | undefined>(
 		undefined,
 	);
@@ -115,42 +117,42 @@ const PaymentPage: React.FC = () => {
 	const options = useMemo(() => {
 		return clientSecret
 			? {
-					clientSecret,
-					appearance,
-				}
+				clientSecret,
+				appearance,
+			}
 			: undefined;
 	}, [clientSecret]);
 
 	return (
 		<div className="p-6 bg-gray-100 flex justify-center gap-6">
 			<div className="w-2/3 bg-white p-6 rounded-lg shadow-lg flex flex-col items-center">
-				<h1 className="text-3xl font-bold mb-6 text-center">Booking Review</h1>
+				<h1 className="text-3xl font-bold mb-6 text-center">{t("Booking Review")}</h1>
 
 				<div className="mb-6 p-4 border rounded-lg w-full max-w-[800px] bg-white shadow-md flex flex-col items-start">
 					<h2 className="text-2xl font-semibold mb-2 text-blue-600">
-						Branch Information
+						{t("Branch Information")}
 					</h2>
 					{selectedBranch && selectedTime ? (
 						<div className="flex justify-between w-full">
 							<div className="flex flex-col">
 								<p className="text-lg font-medium">
-									Name:
+									{t("Name:")}
 									<span className="font-normal">{selectedBranch?.name}</span>
 								</p>
 								<p className="text-lg font-medium">
-									Address:
+									{t("Address:")}
 									<span className="font-normal">{selectedBranch?.address}</span>
 								</p>
 							</div>
 							<div className="flex flex-col items-end">
 								<p className="text-lg font-medium">
-									Date:
+									{t("Date:")}
 									<span className="font-normal">
 										{selectedTime?.ServiceBooking_Date}
 									</span>
 								</p>
 								<p className="text-lg font-medium">
-									Time:
+									{t("Time:")}
 									<span className="font-normal">
 										{selectedTime?.ServiceBooking_Time}
 									</span>
@@ -158,38 +160,38 @@ const PaymentPage: React.FC = () => {
 							</div>
 						</div>
 					) : (
-						<p className="text-red-500">No branch selected.</p>
+						<p className="text-red-500">{t("No branch selected.")}</p>
 					)}
 				</div>
 
 				<div className="mb-6 p-4 border rounded-lg w-full max-w-[800px] bg-white shadow-md flex flex-col items-start">
 					<h2 className="text-2xl font-semibold mb-2 text-blue-600">
-						Selected Services
+						{t("Selected Services")}
 					</h2>
 					{selectedService && selectedService.length > 0 ? (
 						selectedService.map((service) => (
 							<div key={service._id} className="mb-2 border-b pb-2">
 								<p className="text-lg font-medium">
-									Name: <span className="font-normal">{service.name}</span>
+									{t("Text")}Name: <span className="font-normal">{service.name}</span>
 								</p>
 								<p className="text-lg font-medium">
-									Price:{" "}
+									{t("Text")}Price:{" "}
 									<span className="font-normal">
 										{formatPrice(service.selectedDuration.discount_price)} -{" "}
 										{""}
-										{service.selectedDuration.duration_in_minutes} minutes
+										{service.selectedDuration.duration_in_minutes} {t("minutes")}
 									</span>
 								</p>
 							</div>
 						))
 					) : (
-						<p className="text-red-500">No services selected.</p>
+						<p className="text-red-500">{t("No services selected.")}</p>
 					)}
 				</div>
 
 				<div className="mb-6 p-4 border rounded-lg w-full max-w-[800px] bg-white shadow-md flex flex-col items-start">
 					<h2 className="text-2xl font-semibold mb-2 text-blue-600">
-						Selected Products
+						{t("Selected Products")}
 					</h2>
 
 					{selectedProducts && selectedProducts.length > 0 ? (
@@ -198,22 +200,22 @@ const PaymentPage: React.FC = () => {
 								<div className="flex justify-between relative">
 									<div className="">
 										<p className="text-lg font-medium">
-											Name: <span className="font-normal">{product.name}</span>
+											{t("Name:")} <span className="font-normal">{product.name}</span>
 										</p>
 										<p className="text-lg font-medium">
-											Price:
+											{t("Price:")}
 											<span className="font-normal">
 												{formatPrice(product.discount_price)}
 											</span>
 										</p>
 										<p className="text-lg font-medium">
-											Quantity:{" "}
+											{t("Quantity:")}{" "}
 											<span className="font-normal">{product.quantity}</span>
 										</p>
 									</div>
 									<div className="flex justify-end">
 										<p className="text-lg font-medium absolute right-0 bottom-0">
-											Total Price:
+											{t("Total Price:")}
 											<span className="font-normal">
 												{formatPrice(product.discount_price * product.quantity)}
 											</span>
@@ -223,12 +225,12 @@ const PaymentPage: React.FC = () => {
 							</div>
 						))
 					) : (
-						<p className="text-red-500">No products selected.</p>
+						<p className="text-red-500">{t("No products selected.")}</p>
 					)}
 				</div>
 
 				<h2 className="text-2xl font-bold mt-4 text-right w-full absolute bottom-6 right-6 text-green-500">
-					Total Price: {formatPrice(totalPrice)}
+					{t("Total Price:")} {formatPrice(totalPrice)}
 				</h2>
 			</div>
 			<div className="w-1/3">
