@@ -49,7 +49,7 @@ const ServicesList: React.FC = () => {
 						// data={service}
 						name={service.name}
 						address={service.description}
-						img={service.images}
+						img={service.images[0]}
 						category={service.service_category?.name || "unknown"}
 						star={service.view_count}
 						vote={service.booking_count}

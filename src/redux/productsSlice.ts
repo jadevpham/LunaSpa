@@ -6,9 +6,14 @@ type ProductsItemType = {
 	name: string;
 	price: number;
 	discount_price: number;
-	images: string;
+	images: string[];
 	quantity: number;
 	description: string;
+	product_category: {
+		_id: string;
+		name: string;
+		description: string;
+	};
 };
 
 type ProductsState = {
