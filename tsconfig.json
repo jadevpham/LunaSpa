@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
     "noUnusedLocals": false,
-    "noUnusedParameters": false
+    "noUnusedParameters": false,
+    "moduleResolution": "node"
   },
   "files": [],
   "references": [
