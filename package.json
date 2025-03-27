@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "start": "npx tailwindcss -i ./src/input.css -o ./src/output.css minify --watch",
     "format": "prettier --write '**/*.{js,jsx,ts,tsx}'",
-    "start-all": "concurrently \"npm run format\" \"npm run dev\" \"npm start\""
+    "start-all": "concurrently \"npm run format\" \"npm run dev\" \"npm start\"",
+    "vercel-build": "tsc --version && npm run build"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.5.1",
