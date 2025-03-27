@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../axios/axiosInstance";
+import axiosInstance from "../../axios/axiosInstance";
 import { toast } from "react-toastify";
-import { useAuth } from "../auth-middlewares/useAuth";
+import { useAuth } from "../../auth-middlewares/useAuth";
 import { useTranslation } from "react-i18next";
 
 const AuthPage = () => {
@@ -66,6 +66,11 @@ const AuthPage = () => {
 		}
 	};
 
+	const handleChangeForm = (e: React.FormEvent) => {
+		e.preventDefault();
+		setIsSignUp(!isSignUp);
+	};
+
 	const handleSignIn = async (e: React.FormEvent) => {
 		e.preventDefault();
 		if (!validateEmail(formData.email)) {
@@ -80,8 +85,10 @@ const AuthPage = () => {
 			};
 
 			const response = await axiosInstance.post("/accounts/login", userData);
+			// console.log(response.data.result.user_profile.account);
 			if (response.data.result) {
-				const user = response.data.result.user;
+				const user = response.data.result.user_profile.account;
+				const user_profile_id = response.data.result.user_profile._id;
 				const access_token = response.data.result.access_token;
 				const refresh_token = response.data.result.refresh_token;
 
@@ -100,33 +107,34 @@ const AuthPage = () => {
 					return;
 				}
 
-				login(access_token, refresh_token, user);
-				toast.success("Sign-in successful");
-
 				const role = user.roles[0].role_name;
 				switch (role) {
-					case "user":
+					case "User":
 						navigate("/", { replace: true });
-						break;
-					case "staff":
-						navigate("/staff", { replace: true });
-						break;
-					case "admin":
-						navigate("/admin", { replace: true });
+						login(access_token, refresh_token, user, user_profile_id);
+						toast.success("Sign-in successful");
 						break;
 					default:
-						navigate("/", { replace: true });
+						navigate("/auth", { replace: true });
+						toast.error("Sign-in failed. Please try again.");
 				}
 			}
-		} catch (error: any) {
-			const errors = error.response?.data?.errors;
-			if (errors) {
-				Object.keys(errors).forEach((field) => {
-					const message = errors[field]?.msg;
-					if (message) {
-						toast.error(message);
-					}
-				});
+		} catch (error: unknown) {
+			if (error instanceof Error && "response" in error) {
+				const axiosError = error as {
+					response?: { data?: { errors?: Record<string, { msg: string }> } };
+				};
+				const errors = axiosError.response?.data?.errors;
+				if (errors) {
+					Object.keys(errors).forEach((field) => {
+						const message = errors[field]?.msg;
+						if (message) {
+							toast.error(message);
+						}
+					});
+				} else {
+					toast.error("Sign-in failed. Please try again.");
+				}
 			} else {
 				toast.error("Sign-in failed. Please try again.");
 			}
@@ -151,21 +159,25 @@ const AuthPage = () => {
 				// console.log(response.data.result);
 				toast.success("Sign-up successful. Please verify your email.");
 			}
-		} catch (error: any) {
-			const errors = error.response?.data?.errors;
-			if (errors) {
-				Object.keys(errors).forEach((field) => {
-					const message = errors[field]?.msg;
-					if (message) {
-						toast.error(message);
-					}
-				});
-			} else {
-				console.error("Unknown error during sign-up");
+		} catch (error: unknown) {
+			if (error instanceof Error && "response" in error) {
+				const axiosError = error as {
+					response?: { data?: { errors?: Record<string, { msg: string }> } };
+				};
+				const errors = axiosError.response?.data?.errors;
+				if (errors) {
+					Object.keys(errors).forEach((field) => {
+						const message = errors[field]?.msg;
+						if (message) {
+							toast.error(message);
+						}
+					});
+				} else {
+					console.error("Unknown error during sign-up");
+				}
 			}
 		}
 	};
-
 	const getGoogleAuthUrl = () => {
 		const { VITE_GOOGLE_CLIENT_ID, VITE_GOOGLE_REDIRECT_URI } = import.meta.env;
 		const url = `https://accounts.google.com/o/oauth2/v2/auth`;
@@ -205,22 +217,26 @@ const AuthPage = () => {
 	const facebookOAuthUrl = getFacebookAuthUrl();
 
 	return (
-		<div className="grid grid-cols-1 lg:grid-cols-3">
+		<div
+			className="relative flex items-center justify-center h-screen bg-cover bg-center"
+			style={{
+				backgroundImage: `url('../../public/730500-spa-wallpaper.jpg')`,
+			}}
+		>
 			{/* Form */}
-			<div className="flex items-center justify-center h-screen bg-gray-100 col-span-2">
-				<div
-					className={`relative w-[768px] max-w-full min-h-[500px] bg-white shadow-2xl rounded-2xl overflow-hidden transition-all duration-500 ${isSignUp ? "right-panel-active" : ""}`}
+			<div className="flex items-center justify-center absolute inset-0 bg-gray-900 bg-opacity-20 [perspective:1000px]">
+				<button
+					className={`absolute top-5 left-5 text-2xl z-50 cursor-pointer text-black hover:text-gray-800`}
+					onClick={() => navigate("/")}
 				>
-					<button
-						className={`absolute top-5 left-5 text-2xl z-50 cursor-pointer text-gray-600 hover:text-gray-800`}
-						onClick={() => navigate("/")}
-					>
-						<i className="fa-solid fa-arrow-left"></i>
-					</button>
-					{/* Sign In Form */}
-					<div
-						className={`absolute top-0 left-0 w-1/2 h-full transition-all duration-500 ${isSignUp ? "translate-x-full opacity-0 z-0" : "translate-x-0 opacity-100 z-10"}`}
-					>
+					<i className="fa-solid fa-arrow-left"></i>
+				</button>
+				<div
+					className={`relative w-[468px] max-w-full min-h-[550px] shadow-2xl rounded-[90px] transition-transform duration-500 [transform-style:preserve-3d]
+      ${isSignUp ? "[transform:rotateY(180deg)]" : ""}`}
+				>
+					{/* Front - Login Form */}
+					<div className="absolute top-0 left-0 w-full h-full bg-white bg-opacity-90 shadow-2xl [backface-visibility:hidden] rounded-tl-[90px] rounded-br-[90px] rounded-tr-[20px] rounded-bl-[20px]">
 						<form
 							onSubmit={handleSignIn}
 							className="flex flex-col items-center text-center  justify-center p-10 h-full"
@@ -247,7 +263,7 @@ const AuthPage = () => {
 								value={formData.email}
 								onChange={handleInputChange}
 								placeholder="Email"
-								className="w-full p-3 my-2 bg-gray-200 rounded"
+								className="w-full p-3 my-2 bg-gray-200 rounded focus:ring-2 focus:ring-purple-400 focus:outline-none transition"
 								tabIndex={1}
 							/>
 							<div className="relative w-full">
@@ -257,7 +273,7 @@ const AuthPage = () => {
 									value={formData.password}
 									onChange={handleInputChange}
 									placeholder="Password"
-									className="bg-gray-200 rounded w-full p-3"
+									className="w-full p-3 my-2 bg-gray-200 rounded focus:ring-2 focus:ring-purple-400 focus:outline-none transition"
 									tabIndex={2}
 								/>
 								<button
@@ -284,21 +300,24 @@ const AuthPage = () => {
 							<button
 								type="submit"
 								disabled={isSigninDisabled}
-								className={`mt-4 px-6 py-3 text-white font-bold rounded-full ${
+								className={`mt-4 px-6 py-3 text-white font-bold rounded-full transition ${
 									isSigninDisabled
 										? "bg-gray-400 cursor-not-allowed"
-										: "bg-gradient-to-tr from-purple-400 to-pink-300"
+										: "bg-gradient-to-tr from-purple-400 to-pink-300 hover:from-pink-300 hover:to-purple-400"
 								}`}
 							>
 								Sign in
 							</button>
+							<button
+								onClick={handleChangeForm}
+								className="mt-4 text-blue-500 fixed bottom-4 "
+							>
+								Don't have an account? Sign Up
+							</button>
 						</form>
 					</div>
-
-					{/* Sign Up Form */}
-					<div
-						className={`absolute top-0 left-0 w-1/2 h-full transition-all duration-500 ${isSignUp ? "translate-x-full opacity-100 z-10" : "translate-x-0 opacity-0 z-0"}`}
-					>
+					{/* Back - Register Form */}
+					<div className="absolute top-0 left-0 w-full h-full bg-white bg-opacity-90 rounded-lg shadow-lg [transform:rotateY(180deg)] [backface-visibility:hidden] rounded-tl-[20px] rounded-br-[20px] rounded-tr-[90px] rounded-bl-[90px]">
 						<form
 							onSubmit={handleSignUp}
 							className="flex flex-col items-center text-center p-10 h-full justify-center"
@@ -327,7 +346,7 @@ const AuthPage = () => {
 								value={formData.email}
 								onChange={handleInputChange}
 								placeholder="Email"
-								className="w-full p-3 my-2 bg-gray-200 rounded"
+								className="w-full p-3 my-2 bg-gray-200 rounded focus:ring-2 focus:ring-purple-400 focus:outline-none transition"
 							/>
 							<div className="relative w-full my-2">
 								<input
@@ -336,7 +355,7 @@ const AuthPage = () => {
 									value={formData.password}
 									onChange={handleInputChange}
 									placeholder="Password"
-									className="bg-gray-200 rounded w-full p-3"
+									className="w-full p-3 my-2 bg-gray-200 rounded focus:ring-2 focus:ring-purple-400 focus:outline-none transition"
 								/>
 								<button
 									className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:outline-double"
@@ -360,7 +379,7 @@ const AuthPage = () => {
 											value={formData.confirmPassword}
 											onChange={handleInputChange}
 											placeholder="Confirm Password"
-											className="bg-gray-200 rounded w-full p-3"
+											className="w-full p-3 my-2 bg-gray-200 rounded focus:ring-2 focus:ring-purple-400 focus:outline-none transition"
 										/>
 										<button
 											className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:outline-double"
@@ -388,58 +407,32 @@ const AuthPage = () => {
 								className={`mt-4 px-6 py-3 text-white font-bold rounded-full ${
 									isSignUpDisabled
 										? "bg-gray-400 cursor-not-allowed"
-										: "bg-gradient-to-tr from-purple-400 to-pink-300"
+										: "bg-gradient-to-tr from-purple-400 to-pink-300 hover:from-pink-300 hover:to-purple-400"
 								}`}
 							>
 								Sign Up
 							</button>
+							<button
+								onClick={handleChangeForm}
+								className="mt-4 text-green-500 fixed bottom-4"
+							>
+								Already have an account? Login
+							</button>
 						</form>
-					</div>
-
-					{/* Overlay */}
-					<div
-						className={`absolute top-0 left-1/2 w-1/2 h-full  text-black flex flex-col justify-center items-center transition-transform duration-500 ${isSignUp ? "-translate-x-full rounded-r-xl bg-gradient-to-r from-white to-purple-100" : "translate-x-0 rounded-l-xl bg-gradient-to-r from-purple-100  to-white"}`}
-					>
-						{isSignUp ? (
-							<div className="text-center">
-								<h1 className="text-2xl font-bold">Welcome Back!</h1>
-								<p className="my-4">
-									To keep connected with us please login with your personal info
-								</p>
-								<button
-									onClick={() => setIsSignUp(false)}
-									className="px-6 py-3 border border-gray-400 text-black rounded-full hover:bg-gray-300"
-								>
-									Sign In
-								</button>
-							</div>
-						) : (
-							<div className="text-center">
-								<h1 className="text-2xl font-bold">Hello, Friend!</h1>
-								<p className="my-4">
-									Enter your personal details and start your journey with us
-								</p>
-								<button
-									onClick={() => setIsSignUp(true)}
-									className="px-6 py-3 border border-gray-400 text-black rounded-full hover:bg-gray-300"
-								>
-									Sign Up
-								</button>
-							</div>
-						)}
 					</div>
 				</div>
 			</div>
 
 			{/* image */}
-			<div className="hidden lg:block col-span-1">
+			{/* <div className="hidden lg:block col-span-2">
 				<img
 					src="../../public/730500-spa-wallpaper.jpg"
 					alt="auth"
-					className="object-cover max-h-screen w-full h-full"
+					className="object-cover max-h-screen w-full h-full transform transition-transform duration-500 hover:scale-105"
 				/>
-			</div>
+			</div> */}
 		</div>
 	);
 };
+
 export default AuthPage;

@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 
 type ProductsItemType = {
-	id: string;
+	_id: string;
 	name: string;
 	price: number;
 	discount_price: number;

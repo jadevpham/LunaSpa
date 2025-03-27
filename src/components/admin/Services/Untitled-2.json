@@ -1,0 +1,142 @@
+{
+  "message": "Lấy danh sách dịch vụ thành công",
+  "result": [
+    {
+      "_id": "67d3c8f8e299109b8d7f93a3",
+      "name": "Facial Mask Therapy",
+      "description": "A deep facial care service that includes cleansing, exfoliation, steaming, and applying a mask tailored to your skin type, helping to brighten the skin, reduce acne, and prevent aging.",
+      "images": [
+        "https://lunaspa.s3.ap-southeast-1.amazonaws.com/dbc39788c0391995cb7c2d811.jpg"
+      ],
+      "booking_count": 35,
+      "view_count": 152,
+      "created_at": "2025-03-14T08:00:00.000Z",
+      "updated_at": "2025-03-21T01:30:39.551Z",
+      "durations": [
+        {
+          "duration_name": "60 minutes",
+          "price": 750000,
+          "discount_price": 700000,
+          "sub_description": "Skin care treatment 5",
+          "duration_in_minutes": 60
+        }
+      ],
+      "service_category": {
+        "_id": "67cd79df8d84f38f7341a0cb",
+        "name": "Massage Therapies",
+        "description": "Relaxation and therapeutic massage services: body massage, hot stone massage, foot massage, detox massage.",
+        "created_at": "2023-10-01T08:00:00.000Z",
+        "updated_at": "2024-01-15T14:30:00.000Z"
+      }
+    },
+    {
+      "_id": "67cdd8528d84f38f7341a0f7",
+      "name": "Relaxing Hot Stone Body Massage",
+      "description": "Full-body massage using natural hot stones to reduce stress, relieve muscle pain, and improve blood circulation.",
+      "images": [
+        "https://lunaspa.s3.ap-southeast-1.amazonaws.com/dbc39788c0391995cb7c2d816.jpg"
+      ],
+      "booking_count": 45,
+      "view_count": 134,
+      "created_at": "2024-01-10T08:00:00.000Z",
+      "updated_at": "2025-03-21T06:51:33.014Z",
+      "durations": [
+        {
+          "duration_name": "60 minutes",
+          "price": 650000,
+          "discount_price": 500000,
+          "sub_description": "Includes collagen mask for skin rejuvenation",
+          "duration_in_minutes": 60
+        }
+      ],
+      "service_category": {
+        "_id": "67cd79df8d84f38f7341a0cb",
+        "name": "Massage Therapies",
+        "description": "Relaxation and therapeutic massage services: body massage, hot stone massage, foot massage, detox massage.",
+        "created_at": "2023-10-01T08:00:00.000Z",
+        "updated_at": "2024-01-15T14:30:00.000Z"
+      }
+    },
+    {
+      "_id": "67d3c8f8e299109b8d7f93a6",
+      "name": "Aromatherapy Treatment",
+      "description": "Using natural essential oils like lavender, orange, and peppermint to stimulate the senses, reduce stress, balance the mind, and promote overall relaxation.",
+      "images": [
+        "https://lunaspa.s3.ap-southeast-1.amazonaws.com/dbc39788c0391995cb7c2d80a.jpg"
+      ],
+      "booking_count": 38,
+      "view_count": 186,
+      "created_at": "2025-03-14T08:00:00.000Z",
+      "updated_at": "2025-03-20T20:39:30.792Z",
+      "durations": [
+        {
+          "duration_name": "60 minutes",
+          "price": 900000,
+          "discount_price": 850000,
+          "sub_description": "Skin care treatment 8",
+          "duration_in_minutes": 60
+        }
+      ],
+      "service_category": {
+        "_id": "67cd79df8d84f38f7341a0cb",
+        "name": "Massage Therapies",
+        "description": "Relaxation and therapeutic massage services: body massage, hot stone massage, foot massage, detox massage.",
+        "created_at": "2023-10-01T08:00:00.000Z",
+        "updated_at": "2024-01-15T14:30:00.000Z"
+      }
+    },
+    {
+      "_id": "67d3c8f8e299109b8d7f93a4",
+      "name": "Herbal Foot Soak",
+      "description": "Soaking feet in warm water infused with natural herbs to relax, reduce fatigue, stimulate blood circulation, and soften the skin.",
+      "images": [
+        "https://lunaspa.s3.ap-southeast-1.amazonaws.com/dbc39788c0391995cb7c2d80e.jpg"
+      ],
+      "booking_count": 36,
+      "view_count": 195,
+      "created_at": "2025-03-14T08:00:00.000Z",
+      "updated_at": "2025-03-20T19:38:29.254Z",
+      "durations": [
+        {
+          "duration_name": "60 minutes",
+          "price": 800000,
+          "discount_price": 750000,
+          "sub_description": "Skin care treatment 6",
+          "duration_in_minutes": 60
+        }
+      ]
+    },
+    {
+      "_id": "67d3c8f8e299109b8d7f93a7",
+      "name": "Full Body Care",
+      "description": "A service that includes body exfoliation, full-body masks with ingredients like mineral mud, seaweed, or chocolate, to nourish the skin, detoxify, and firm the body.",
+      "images": [
+        "https://lunaspa.s3.ap-southeast-1.amazonaws.com/dbc39788c0391995cb7c2d809.jpg"
+      ],
+      "booking_count": 39,
+      "view_count": 192,
+      "created_at": "2025-03-14T08:00:00.000Z",
+      "updated_at": "2025-03-21T01:31:19.616Z",
+      "durations": [
+        {
+          "duration_name": "60 minutes",
+          "price": 950000,
+          "discount_price": 900000,
+          "sub_description": "Skin care treatment 9",
+          "duration_in_minutes": 60
+        }
+      ],
+      "service_category": {
+        "_id": "67cd79df8d84f38f7341a0cb",
+        "name": "Massage Therapies",
+        "description": "Relaxation and therapeutic massage services: body massage, hot stone massage, foot massage, detox massage.",
+        "created_at": "2023-10-01T08:00:00.000Z",
+        "updated_at": "2024-01-15T14:30:00.000Z"
+      }
+    }
+  ],
+  "total_count": 10,
+  "page": 1,
+  "limit": 5,
+  "total_pages": 2
+}

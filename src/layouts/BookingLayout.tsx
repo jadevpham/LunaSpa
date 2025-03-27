@@ -4,7 +4,7 @@ import BookingHeader from "../components/BookingHeader";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
-import { addProduct } from "../redux/bookingSlice";
+import { addProduct, setProducts } from "../redux/bookingSlice";
 import { toast } from "react-toastify";
 import CardList from "../templates/CardList";
 import CardItem from "../templates/CardItem";
@@ -13,23 +13,73 @@ const BookingLayout = () => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const [showModal, setShowModal] = useState(false);
+	const [showQuantityModal, setShowQuantityModal] = useState(false);
+	const [selectedProduct, setSelectedProduct] = useState<any>(null);
+	const [quantity, setQuantity] = useState(1);
 	const productsList = useSelector(
 		(state: RootState) => state.products.productsList,
 	);
+	console.log(productsList);
 	const selectedProducts = useSelector(
 		(state: RootState) => state.booking.selectedProducts,
 	);
 
 	const handleAddProduct = (product: any) => {
-		dispatch(addProduct(product));
-		toast.success("Product added successfully");
+		const existingProduct = selectedProducts?.find(
+			(item) => item._id === product._id,
+		);
+
+		if (existingProduct) {
+			setSelectedProduct(product);
+			setQuantity(existingProduct.quantity);
+		} else {
+			setSelectedProduct(product);
+			setQuantity(1);
+		}
+
+		setShowQuantityModal(true);
 	};
-	const unselectedProducts = productsList.filter(
-		(product) =>
-			!selectedProducts?.some(
-				(selectedProduct) => selectedProduct.id === product.id,
-			),
-	);
+
+	const handleConfirmAdd = () => {
+		const existingProductIndex = selectedProducts?.findIndex(
+			(item) => item._id === selectedProduct._id,
+		);
+
+		if (existingProductIndex !== -1 && selectedProducts) {
+			const updatedProducts = [...selectedProducts];
+			updatedProducts[existingProductIndex as number] = {
+				...selectedProduct,
+				quantity,
+			};
+
+			dispatch(setProducts(updatedProducts));
+			toast.success("Product quantity updated");
+		} else {
+			dispatch(addProduct({ ...selectedProduct, quantity }));
+			toast.success("Product added successfully");
+		}
+
+		setShowQuantityModal(false);
+	};
+
+	const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const value = parseInt(e.target.value) || 0;
+		if (value >= 0 && value <= selectedProduct?.quantity) {
+			setQuantity(value);
+		}
+	};
+
+	const handleIncrement = () => {
+		if (quantity < selectedProduct?.quantity) {
+			setQuantity((prev) => prev + 1);
+		}
+	};
+
+	const handleDecrement = () => {
+		if (quantity > 1) {
+			setQuantity((prev) => prev - 1);
+		}
+	};
 
 	const handleToHome = () => {
 		navigate("/", { replace: true });
@@ -41,10 +91,8 @@ const BookingLayout = () => {
 		if (localStorage.getItem("sessionExpired") === "true") {
 			handleToHome();
 		}
-
 		const timeoutDuration = 10 * 60 * 1000;
 		const sessionStart = localStorage.getItem("sessionStart");
-
 		if (sessionStart) {
 			const elapsedTime = Date.now() - parseInt(sessionStart, 10);
 			if (elapsedTime >= timeoutDuration) {
@@ -67,6 +115,20 @@ const BookingLayout = () => {
 		}
 	}, []);
 
+	useEffect(() => {
+		const handleKeyDown = (event: KeyboardEvent) => {
+			if (event.key === "Escape") {
+				setShowModal(false);
+				setShowQuantityModal(false);
+			}
+		};
+
+		window.addEventListener("keydown", handleKeyDown);
+		return () => {
+			window.removeEventListener("keydown", handleKeyDown);
+		};
+	}, []);
+
 	return (
 		<div className="container mx-auto relative min-h-screen">
 			{/* Header */}
@@ -86,11 +148,11 @@ const BookingLayout = () => {
 				{/* Product List */}
 				<CardList
 					title="Recommended products"
-					items={unselectedProducts}
+					items={productsList}
 					customClass="bg-white rounded-lg shadow-xl"
 					renderItem={(product) => (
 						<CardItem
-							key={product.id}
+							key={product._id}
 							name={product.name}
 							address={product.price.toLocaleString("en-US")}
 							img={product.images[0]}
@@ -115,6 +177,58 @@ const BookingLayout = () => {
 								onClick={handleToHome}
 							>
 								Home
+							</button>
+						</div>
+					</div>
+				</div>
+			)}
+			{showQuantityModal && selectedProduct && (
+				<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+					<div className="bg-white p-6 rounded-lg shadow-lg w-96">
+						<h2 className="text-lg font-semibold mb-4">
+							{selectedProduct.name}
+						</h2>
+						<p className="mb-4">
+							Select quantity (Max: {selectedProduct.quantity})
+						</p>
+
+						<div className="flex items-center justify-center space-x-4 mb-6">
+							<button
+								onClick={handleDecrement}
+								className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300"
+							>
+								-
+							</button>
+
+							<input
+								type="number"
+								value={quantity}
+								onChange={handleQuantityChange}
+								className="w-20 text-center border rounded-md py-2"
+								min="1"
+								max={selectedProduct.quantity}
+							/>
+
+							<button
+								onClick={handleIncrement}
+								className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300"
+							>
+								+
+							</button>
+						</div>
+
+						<div className="flex justify-end space-x-3">
+							<button
+								className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-400"
+								onClick={() => setShowQuantityModal(false)}
+							>
+								Cancel
+							</button>
+							<button
+								className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-400"
+								onClick={handleConfirmAdd}
+							>
+								Add
 							</button>
 						</div>
 					</div>

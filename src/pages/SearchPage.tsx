@@ -93,7 +93,9 @@ const SearchPage = () => {
 												className="w-full h-48 object-cover rounded-2xl"
 											/>
 											<h3 className="mt-3 text-xl font-bold">{branch.name}</h3>
-											<p className="text-sm text-gray-500">{branch.contact.address}</p>
+											<p className="text-sm text-gray-500">
+												{branch.contact.address}
+											</p>
 											<div className="mt-3">
 												<h4 className="text-lg font-bold">Services</h4>
 												<ul className="list-disc">

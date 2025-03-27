@@ -1,27 +1,38 @@
 import { useDispatch, useSelector } from "react-redux";
 import { addService, removeService } from "../redux/bookingSlice";
-import axios from "axios";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AppDispatch, RootState } from "../redux/store";
 import { fetchProducts } from "../redux/productsSlice";
 import { toast } from "react-toastify";
 import LoadingAnimation from "../components/LoadingAnimation";
+import { fetchServices } from "../redux/servicesSlice";
 
 interface Duration {
-	label: string;
-	value: number;
+	duration_name: string;
 	price: number;
+	discount_price: number;
+	duration_in_minutes: number;
+	sub_description: string;
 }
 
 interface Service {
-	Service_ID: string;
-	Service_Name: string;
-	Service_Description: string;
-	Service_Image: string;
-	Service_Price: number;
-	Service_Duration: Duration[];
-	Service_TypeID: string;
-	Service_IncludeProduct_ID: string;
+	_id: string;
+	name: string;
+	description: string;
+	images: string[];
+	service_category: {
+		name: string;
+		_id: string;
+	};
+	view_count: number;
+	booking_count: number;
+	status: number;
+	durations: Duration[];
+	devices: {
+		name: string;
+		description: string;
+		status: number;
+	}[];
 }
 
 const SelectServicePage = () => {
@@ -31,53 +42,61 @@ const SelectServicePage = () => {
 		(state: RootState) => state.booking.selectedService,
 	);
 	const [isModalOpen, setIsModalOpen] = useState(false);
-	const [services, setServices] = useState<Service[]>([]);
+	const services = useSelector(
+		(state: RootState) => state.services.servicesList,
+	);
+
+	console.log(selectedServices);
 	const [selectedDuration, setSelectedDuration] = useState<Duration | null>(
 		null,
 	);
 
 	const loading = useSelector((state: RootState) => state.products.loading);
 	const error = useSelector((state: RootState) => state.products.error);
-
-	// ✅ Gọi API khi component mount
-
+	const handleCloseModal = useCallback(() => setIsModalOpen(false), []);
 	useEffect(() => {
-		const fetchServices = async () => {
-			try {
-				const response = await axios.get(
-					"https://67b1f201bc0165def8cc4f1e.mockapi.io/services",
-				);
-				setServices(response.data);
-			} catch (error) {
-				console.error("Error fetching services:", error);
-			}
-		};
 		dispatch(fetchProducts());
-		fetchServices();
+		dispatch(fetchServices());
 	}, [dispatch]);
 
-	const handleCloseModal = () => setIsModalOpen(false);
+	useEffect(() => {
+		const handleKeyDown = (event: KeyboardEvent) => {
+			if (event.key === "Escape") {
+				handleCloseModal();
+			}
+		};
+
+		window.addEventListener("keydown", handleKeyDown);
+
+		return () => {
+			window.removeEventListener("keydown", handleKeyDown);
+		};
+	}, [handleCloseModal]);
+
 	const handleOpenService = (service: Service) => {
 		setSelectedService(service);
-		setSelectedDuration(service.Service_Duration[0] || null);
+		setSelectedDuration(
+			service.durations.length > 0 ? service.durations[0] : null,
+		);
 		setIsModalOpen(true);
 	};
+
 	if (loading) return <LoadingAnimation />;
 	if (error) return <p className="text-red-500">{error}</p>;
-	const handleSelectDuration = (duration: number, price: number) => {
+
+	const handleSelectDuration = (duration: Duration) => {
 		if (selectedService) {
 			const updatedService = {
 				...selectedService,
-				Service_Duration: duration,
-				Service_Price: price,
+				selectedDuration: duration,
 			};
 
 			const isServiceSelected = selectedServices?.some(
-				(service) => service.Service_ID === updatedService.Service_ID,
+				(service) => service._id === updatedService._id,
 			);
 
 			if (isServiceSelected) {
-				dispatch(removeService(updatedService.Service_ID));
+				dispatch(removeService(updatedService._id));
 			}
 
 			dispatch(addService(updatedService));
@@ -91,12 +110,12 @@ const SelectServicePage = () => {
 		toast.warn("Service removed successfully");
 	};
 
-	const unselectedServices = services.filter(
-		(service) =>
-			!selectedServices?.some(
-				(selectedService) => selectedService.Service_ID === service.Service_ID,
-			),
-	);
+	const unselectedServices = services?.filter((service) => {
+		const isSelected = !selectedServices?.some(
+			(selectedService) => selectedService._id === service._id,
+		);
+		return isSelected;
+	});
 
 	return (
 		<div className="container mx-auto shadow-xl p-8 rounded-2xl bg-white">
@@ -106,26 +125,44 @@ const SelectServicePage = () => {
 					<div className="grid gap-4 ">
 						{selectedServices.map((service) => (
 							<div
-								key={service.Service_ID}
+								key={service._id}
 								className="bg-white rounded-lg shadow p-3 flex gap-4"
 							>
 								<img
-									src={service.Service_Image}
-									alt={service.Service_Name}
+									src={
+										Array.isArray(service.images)
+											? service.images[0]
+											: service.images
+									}
+									alt={service.name}
 									className="w-24 h-24 object-cover rounded"
 								/>
 								<div className="flex-1 flex justify-between items-center">
 									<div>
-										<h3 className="font-semibold">{service.Service_Name}</h3>
+										<h3 className="font-semibold">{service.name}</h3>
 										<p className="text-sm text-gray-500">
-											Duration: {service.Service_Duration} minutes
+											Duration: {service.selectedDuration.duration_in_minutes}{" "}
+											minutes
 										</p>
-										<p className="text-sm font-semibold">
-											Price: ${service?.Service_Price.toLocaleString("en-US")}
-										</p>
+										<div className="flex items-center gap-1">
+											<p className="text-sm font-semibold">
+												Price: $
+												{service.selectedDuration.discount_price.toLocaleString(
+													"en-US",
+												)}
+											</p>
+											<p className="text-xs line-through text-gray-500">
+												{service.selectedDuration.price.toLocaleString("en-US")}
+											</p>
+										</div>
+										{service.selectedDuration.sub_description && (
+											<p className="text-sm text-gray-600">
+												{service.selectedDuration.sub_description}
+											</p>
+										)}
 									</div>
 									<button
-										onClick={() => handleRemoveService(service.Service_ID)}
+										onClick={() => handleRemoveService(service._id)}
 										className="text-red-500 hover:text-red-700"
 									>
 										<i className="fa-solid fa-trash"></i>
@@ -147,22 +184,31 @@ const SelectServicePage = () => {
 			)}
 			<h2 className="text-2xl font-bold mb-4">Related Services</h2>
 			<div className="grid gap-4 max-h-[76vh] overflow-y-auto hide-scrollbar">
-				{unselectedServices.map((service) => (
+				{unselectedServices?.map((service) => (
 					<div
-						key={service.Service_ID}
+						key={service._id}
 						className="bg-white rounded-lg shadow p-3 flex gap-4"
 						onClick={() => handleOpenService(service)}
 					>
 						<img
-							src={service.Service_Image}
-							alt={service.Service_Name}
+							src={
+								Array.isArray(service.images)
+									? service.images[0]
+									: service.images
+							}
+							alt={service.name}
 							className="w-24 h-24 object-cover rounded"
 						/>
 						<div className="flex-1 flex justify-between items-center">
 							<div>
-								<h3 className="font-semibold">{service.Service_Name}</h3>
+								<h3 className="font-semibold">{service.name}</h3>
 								<p className="text-sm text-gray-500">
-									{service.Service_Duration.map((d) => d.label).join(", ")}
+									{service.durations
+										.filter((duration) => duration.duration_in_minutes > 0)
+										.map(
+											(duration) => `${duration.duration_in_minutes} minutes`,
+										)
+										.join(", ")}
 								</p>
 							</div>
 						</div>
@@ -187,44 +233,77 @@ const SelectServicePage = () => {
 						>
 							<i className="fa-solid fa-xmark text-2xl mx-2"></i>
 						</button>
-						<h3 className="text-xl font-bold mb-4">
-							{selectedService.Service_Name}
-						</h3>
-						<p className="text-gray-600">
-							{selectedService.Service_Description}
-						</p>
+						<h3 className="text-xl font-bold mb-4">{selectedService.name}</h3>
+						<p className="text-gray-600">{selectedService.description}</p>
+
+						{/* Service Images Gallery */}
+						{Array.isArray(selectedService.images) &&
+							selectedService.images.length > 0 && (
+								<div className="mt-4 flex gap-2 overflow-x-auto">
+									{selectedService.images.map((img, index) => (
+										<img
+											key={index}
+											src={img}
+											alt={`${selectedService.name} image ${index + 1}`}
+											className="w-20 h-20 object-cover rounded"
+										/>
+									))}
+								</div>
+							)}
+
 						<div className="mt-4">
 							<h4 className="font-semibold">Select a duration *</h4>
-							{selectedService.Service_Duration.map((option) => (
-								<label
-									key={option.value}
-									className="block p-3 border rounded-lg mt-2 cursor-pointer hover:bg-gray-100"
-								>
-									<input
-										type="radio"
-										name="duration"
-										value={option.value}
-										checked={selectedDuration?.value === option.value}
-										onChange={() => setSelectedDuration(option)}
-										className="mr-2"
-									/>
-									{option.label} - ${option.price.toLocaleString("en-US")}
-								</label>
-							))}
+							{selectedService.durations &&
+								selectedService.durations.map((duration) => (
+									<label
+										key={duration.duration_in_minutes}
+										className="block p-3 border rounded-lg mt-2 cursor-pointer hover:bg-gray-100"
+									>
+										<input
+											type="radio"
+											name="duration"
+											value={duration.duration_in_minutes}
+											checked={
+												selectedDuration?.duration_in_minutes ===
+												duration.duration_in_minutes
+											}
+											onChange={() => setSelectedDuration(duration)}
+											className="mr-2"
+										/>
+										{duration.duration_in_minutes} minutes - $
+										{duration.discount_price.toLocaleString("en-US")}
+										<span className="ml-1 text-gray-500 line-through text-sm">
+											{duration.price.toLocaleString("en-US")}
+										</span>
+										{duration.discount_price < duration.price && (
+											<span className="ml-2 text-green-600">
+												(Save $
+												{(
+													duration.price - duration.discount_price
+												).toLocaleString("en-US")}
+												)
+											</span>
+										)}
+										{duration.sub_description && (
+											<p className="text-sm text-gray-500 ml-6 mt-1">
+												{duration.sub_description}
+											</p>
+										)}
+									</label>
+								))}
 						</div>
 						<button
 							onClick={() => {
-								const selectedOption = selectedService.Service_Duration.find(
-									(option) => option.value === selectedDuration?.value,
-								);
-								if (selectedOption) {
-									handleSelectDuration(
-										selectedOption.value,
-										selectedOption.price,
-									);
+								if (selectedDuration) {
+									handleSelectDuration(selectedDuration);
 								}
 							}}
-							className="mt-4 bg-primary text-black border py-2 px-4 rounded-lg w-full transition-all duration-300 hover:bg-black hover:text-white"
+							disabled={!selectedDuration}
+							className={`mt-4 ${
+								selectedDuration
+									? "bg-primary text-black hover:bg-black hover:text-white"
+									: "bg-gray-200 text-gray-500 cursor-not-allowed"
+							} border py-2 px-4 rounded-lg w-full transition-all duration-300`}
 						>
 							Choose duration
 						</button>

@@ -1,5 +1,11 @@
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import AuthPage from "./pages/AuthPage";
+import {
+	BrowserRouter,
+	Routes,
+	Route,
+	useLocation,
+	Navigate,
+} from "react-router-dom";
+import AuthPage from "./pages/AuthPages/AuthPage";
 import { AuthProvider } from "./auth-middlewares/authContext";
 import ProtectedRoute from "./auth-middlewares/protectedRoute";
 import AuthRedirectHandler from "./auth-middlewares/authRedirectHandler";
@@ -12,7 +18,7 @@ import SelectTimePage from "./pages/SelectTimePage";
 import ConfirmBookingPage from "./pages/ConfirmBookingPage";
 import HomePage from "./pages/HomePage";
 import SearchPage from "./pages/SearchPage";
-import BookingReviewPage from "./pages/BookingReviewPage";
+import PaymentPage from "./pages/PaymentPage";
 import { useEffect } from "react";
 // import UserProfile from "./pages/UserProfile";
 // import BookingHistory from "./pages/BookingHistory";
@@ -20,7 +26,29 @@ import EmailVerification from "./pages/EmailVerification";
 import NotFoundPage from "./pages/_404Page";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import OrdersPage from "./pages/AdminPages/Orders/OrdersPage";
+import AdminLayout from "./layouts/AdminLayout";
+import UsersPage from "./pages/AdminPages/Users/UsersPage";
+import RevenuesPage from "./pages/AdminPages/Revenue/RevenuesPage";
+import DashboardPage from "./pages/AdminPages/Revenue/DashboardPage";
+import CreateNewUser from "./pages/AdminPages/Users/CreateNewUser";
+import UsersManagementPage from "./pages/AdminPages/Users/UsersManagementPage";
+import ServicesManagement from "./pages/AdminPages/Services/ServicesManagement";
+import CreateNewService from "./pages/AdminPages/Services/CreateNewService";
+import CategoriesManagement from "./pages/AdminPages/Categories/CategoriesManagement";
+import CreateNewCategory from "./pages/AdminPages/Categories/CreateNewCategory";
+import BranchesManagement from "./pages/AdminPages/Branches/BranchesManagement";
+import CreateNewBranch from "./pages/AdminPages/Branches/CreateNewBranch";
+import DevicesManagement from "./pages/AdminPages/Devices/DevicesManagement";
+import AuthPageAdminStaff from "./pages/AuthPages/AuthPageAdminStaff";
 import ServiceDetail from "./pages/ServiceDetail";
+import OrderDetail from "./pages/OrderDetail";
+import UserProfileLayout from "./layouts/UserProfileLayout";
+import UserProfile from "./pages/UserProfilePages/UserProfile";
+import AppointmentPage from "./pages/UserProfilePages/AppointmentPage";
+import FavoritePage from "./pages/UserProfilePages/FavoritePage";
+import HistoryPage from "./pages/UserProfilePages/HistoryPage";
+import ProductsManagement from "./pages/AdminPages/Products/ProductsManagement";
 import BranchDetail from "./pages/BranchDetail";
 
 const RouteHandler = () => {
@@ -36,32 +64,76 @@ const RouteHandler = () => {
 	return (
 		<Routes>
 			<Route path="/" element={<HomePage />} />
-			<Route path="/auth/*" element={<AuthPage />} />
+			<Route path="/auth" element={<AuthPage />} />
+			<Route path="/auth/admin-staff" element={<AuthPageAdminStaff />} />
 			<Route path="/unauthorized" element={<NotFoundPage />} />
 			<Route path="/email-verifications" element={<EmailVerification />} />
 			<Route path="/forgot-password" element={<ForgotPasswordPage />} />
 			<Route path="/reset-password" element={<ResetPasswordPage />} />
 
-			<Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
-				{/* <Route path="/admin" element={<BookingHistory />} /> */}
-			</Route>
+			<Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
+				<Route path="/admin/" element={<AdminLayout />}>
+					<Route index element={<Navigate to="dashboard" replace />} />
+					<Route path="dashboard" element={<DashboardPage />} />
+					<Route path="orders" element={<OrdersPage />} />
+					<Route path="users" element={<UsersPage />} />
+					<Route path="revenues" element={<RevenuesPage />} />
+					<Route path="devices" element={<DevicesManagement />} />
 
-			<Route element={<ProtectedRoute allowedRoles={["user", "admin"]} />}>
-				{/* <Route path="/user-profile" element={<UserProfile />} /> */}
-			</Route>
-
-			<Route
-				element={
-					<ProtectedRoute allowedRoles={["user"]} requireVerified={true} />
-				}
-			>
-				<Route path="/book/*" element={<BookingLayout />}>
-					<Route path="select-service" element={<SelectServicePage />} />
-					<Route path="select-time" element={<SelectTimePage />} />
-					<Route path="confirm" element={<ConfirmBookingPage />} />
+					<Route path="users">
+						{/* <Route index element={<UsersPage />} /> */}
+						<Route path="user-management" element={<UsersManagementPage />} />
+						<Route path="create-user" element={<CreateNewUser />} />
+					</Route>
+					<Route path="services">
+						<Route path="service-management" element={<ServicesManagement />} />
+						<Route path="create-service" element={<CreateNewService />} />
+					</Route>
+					<Route path="categories">
+						<Route
+							path="category-management"
+							element={<CategoriesManagement />}
+						/>
+						<Route path="create-category" element={<CreateNewCategory />} />
+					</Route>
+					<Route path="branches">
+						<Route path="branch-management" element={<BranchesManagement />} />
+						<Route path="create-branch" element={<CreateNewBranch />} />
+					</Route>
+					<Route path="products">
+						<Route path="product-management" element={<ProductsManagement />} />
+						{/* <Route path="create-product" element={<CreateNewBranch />} /> */}
+					</Route>
 				</Route>
 			</Route>
-			<Route path="/review-booking" element={<BookingReviewPage />} />
+
+			<Route path="order-detail/:orderId" element={<OrderDetail />} />
+
+			<Route element={<ProtectedRoute allowedRoles={["User", "Admin"]} />}>
+				<Route path="/user/*" element={<UserProfileLayout />}>
+					<Route path="profile" element={<UserProfile />} />
+					<Route path="appointment" element={<AppointmentPage />} />
+					<Route path="favorites" element={<FavoritePage />} />
+					<Route path="histories" element={<HistoryPage />} />
+				</Route>
+			</Route>
+
+			{/* <Route
+				element={
+					<ProtectedRoute
+						allowedRoles={["User", "Admin"]}
+						requireVerified={true}
+					/>
+				}
+			> */}
+			<Route path="/book/*" element={<BookingLayout />}>
+				<Route index element={<Navigate to="select-service" replace />} />
+				<Route path="select-service" element={<SelectServicePage />} />
+				<Route path="select-time" element={<SelectTimePage />} />
+				<Route path="confirm" element={<ConfirmBookingPage />} />
+			</Route>
+			{/* </Route> */}
+			<Route path="/payment" element={<PaymentPage />} />
 
 			<Route path="/login/*" element={<AuthRedirectHandler />} />
 			<Route path="*" element={<NotFoundPage />} />
