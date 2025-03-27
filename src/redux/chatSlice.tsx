@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios, { AxiosError } from "axios";
 
 // Định nghĩa kiểu dữ liệu cho một tin nhắn
-interface ChatMessage {
+export interface ChatMessage {
 	role: "user" | "assistant";
 	content: string;
 }
@@ -24,7 +24,7 @@ const initialState: ChatState = {
 // Action gửi tin nhắn đến OpenAI
 export const sendMessage = createAsyncThunk(
 	"chat/sendMessage",
-	async (message: string, { rejectWithValue }) => {
+	async (messages: ChatMessage[], { rejectWithValue }) => {
 		try {
 			const apiKey = import.meta.env.VITE_CHATGPT_KEY;
 
@@ -36,7 +36,7 @@ export const sendMessage = createAsyncThunk(
 				"https://api.openai.com/v1/chat/completions",
 				{
 					model: "gpt-4o",
-					messages: [{ role: "user", content: message }],
+					messages: messages,
 				},
 				{
 					headers: {
@@ -72,7 +72,7 @@ const chatSlice = createSlice({
 			.addCase(sendMessage.fulfilled, (state, action) => {
 				state.messages.push(action.payload);
 				state.loading = false;
-				state.messages.push({ role: "user", content: action.meta.arg });
+				// state.messages.push({ role: "user", content: action.meta.arg });
 			})
 			.addCase(sendMessage.pending, (state) => {
 				state.loading = true;
