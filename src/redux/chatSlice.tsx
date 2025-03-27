@@ -24,23 +24,23 @@ const initialState: ChatState = {
 // Action gửi tin nhắn đến OpenAI
 export const sendMessage = createAsyncThunk(
 	"chat/sendMessage",
-	async (message: string) => {
+	async (message: string, { rejectWithValue }) => {
 		try {
 			const apiKey = import.meta.env.VITE_CHATGPT_KEY;
 
 			if (!apiKey) {
 				throw new Error("API Key không tồn tại. Kiểm tra file .env.");
 			}
-			await new Promise((resolve) => setTimeout(resolve, 2000));
+
 			const response = await axios.post(
-				"http://localhost:8010/proxy/v1/chat/completions",
+				"https://api.openai.com/v1/chat/completions",
 				{
-					model: "gpt-3.5-turbo",
+					model: "gpt-4o",
 					messages: [{ role: "user", content: message }],
 				},
 				{
 					headers: {
-						// Authorization: `Bearer ${apiKey}`,
+						Authorization: `Bearer ${apiKey}`,
 						"Content-Type": "application/json",
 					},
 					// httpsAgent: new (require("https").Agent)({ rejectUnauthorized: false }),
@@ -52,6 +52,7 @@ export const sendMessage = createAsyncThunk(
 		} catch (error: any) {
 			console.error("Lỗi gọi API:", error.response?.data || error.message);
 			console.log(error.response?.data);
+
 			throw error;
 		}
 	},
@@ -71,12 +72,15 @@ const chatSlice = createSlice({
 			.addCase(sendMessage.fulfilled, (state, action) => {
 				state.messages.push(action.payload);
 				state.loading = false;
+				state.messages.push({ role: "user", content: action.meta.arg });
 			})
 			.addCase(sendMessage.pending, (state) => {
 				state.loading = true;
+				state.error = null;
 			})
 			.addCase(sendMessage.rejected, (state, action) => {
 				state.loading = false;
+				state.error = action.payload as string;
 				console.error("API call failed:", action.error.message);
 			});
 	},
