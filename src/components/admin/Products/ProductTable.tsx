@@ -44,7 +44,7 @@ function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 
 type Order = "asc" | "desc";
 
-function getComparator<Key extends keyof unknown>(
+function getComparator<Key extends keyof Service>(
 	order: Order,
 	orderBy: Key,
 ): (
@@ -98,22 +98,23 @@ export default function ProductTable() {
 	const [totalPages, setTotalPages] = useState(1);
 	const [totalCount, setTotalCount] = useState(0);
 
-	const [selectedService, setSelectedService] = useState<Service | null>(null);
-	const [isModalOpen, setIsModalOpen] = useState(false);
+	// const [selectedService, setSelectedService] = useState<Service | null>(null);
+	// const [isModalOpen, setIsModalOpen] = useState(false);
 
 	const handleEdit = (service: Service) => {
-		setSelectedService(service);
-		setIsModalOpen(true);
+		console.log(service);
+		// setSelectedService(service);
+		// setIsModalOpen(true);
 	};
 
-	const handleSave = (updatedService: Service) => {
-		setRows((prevRows) =>
-			prevRows.map((row) =>
-				row._id === updatedService._id ? updatedService : row,
-			),
-		);
-		setIsModalOpen(false);
-	};
+	// const handleSave = (updatedService: Service) => {
+	// 	setRows((prevRows) =>
+	// 		prevRows.map((row) =>
+	// 			row._id === updatedService._id ? updatedService : row,
+	// 		),
+	// 	);
+	// 	setIsModalOpen(false);
+	// };
 	function RowMenu({ row }: { row: Service }) {
 		// console.log(row);
 		return (

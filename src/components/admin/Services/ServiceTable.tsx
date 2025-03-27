@@ -45,7 +45,7 @@ function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 
 type Order = "asc" | "desc";
 
-function getComparator<Key extends keyof unknown>(
+function getComparator<Key extends keyof Service>(
 	order: Order,
 	orderBy: Key,
 ): (

@@ -45,18 +45,19 @@ const AppointmentPage = () => {
 					<div className="space-y-4">
 						{booking.selectedService.map((service) => (
 							<div
-								key={service.Service_ID}
+								key={service._id}
 								className="flex justify-between items-center border-b pb-4"
 							>
 								<div>
-									<p className="font-medium">{service.Service_Name}</p>
-									<p className="text-gray-600">{service.Service_Description}</p>
+									<p className="font-medium">{service.name}</p>
+									<p className="text-gray-600">{service.description}</p>
 									<p className="text-sm text-gray-500">
-										Duration: {service.Service_Duration} minutes
+										Duration: {service.selectedDuration.duration_in_minutes}{" "}
+										minutes
 									</p>
 								</div>
 								<p className="font-semibold">
-									{service.Service_Price.toLocaleString()}đ
+									{service.selectedDuration.discount_price.toLocaleString()}đ
 								</p>
 							</div>
 						))}

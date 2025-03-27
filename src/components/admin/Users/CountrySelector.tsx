@@ -6,6 +6,12 @@ import FormLabel from "@mui/joy/FormLabel";
 import ListItemDecorator from "@mui/joy/ListItemDecorator";
 import Typography from "@mui/joy/Typography";
 
+interface CountryType {
+	code: string;
+	label: string;
+	phone: string;
+	suggested?: boolean;
+}
 export default function CountrySelector(props: FormControlProps) {
 	const { sx, ...other } = props;
 	return (
@@ -18,7 +24,7 @@ export default function CountrySelector(props: FormControlProps) {
 				size="sm"
 				autoHighlight
 				isOptionEqualToValue={(option, value) => option.code === value.code}
-				defaultValue={{ code: "TH", label: "Thailand", phone: "66" }}
+				defaultValue={[countries.find((country) => country.code === "TH")!]}
 				options={countries}
 				renderOption={(optionProps, option) => (
 					<AutocompleteOption {...optionProps}>
@@ -51,13 +57,6 @@ export default function CountrySelector(props: FormControlProps) {
 			/>
 		</FormControl>
 	);
-}
-
-interface CountryType {
-	code: string;
-	label: string;
-	phone: string;
-	suggested?: boolean;
 }
 
 // From https://bitbucket.org/atlassian/atlaskit-mk-2/raw/4ad0e56649c3e6c973e226b7efaeb28cb240ccb0/packages/core/select/src/data/countries.js

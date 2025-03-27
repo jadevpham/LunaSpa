@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState, useEffect, Fragment } from "react";
 import { ColorPaletteProp } from "@mui/joy/styles";
 import Avatar from "@mui/joy/Avatar";
 import Box from "@mui/joy/Box";
@@ -33,190 +33,64 @@ import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
+import axiosInstance from "../../../axios/axiosInstance";
 
-const rows = [
-	{
-		id: "INV-1234",
-		date: "Feb 3, 2023",
-		status: "Refunded",
-		customer: {
-			initial: "O",
-			name: "Olivia Ryhe",
-			email: "olivia@email.com",
-		},
-	},
-	{
-		id: "INV-1233",
-		date: "Feb 3, 2023",
-		status: "Paid",
-		customer: {
-			initial: "S",
-			name: "Steve Hampton",
-			email: "steve.hamp@email.com",
-		},
-	},
-	{
-		id: "INV-1232",
-		date: "Feb 3, 2023",
-		status: "Refunded",
-		customer: {
-			initial: "C",
-			name: "Ciaran Murray",
-			email: "ciaran.murray@email.com",
-		},
-	},
-	{
-		id: "INV-1231",
-		date: "Feb 3, 2023",
-		status: "Refunded",
-		customer: {
-			initial: "M",
-			name: "Maria Macdonald",
-			email: "maria.mc@email.com",
-		},
-	},
-	{
-		id: "INV-1230",
-		date: "Feb 3, 2023",
-		status: "Cancelled",
-		customer: {
-			initial: "C",
-			name: "Charles Fulton",
-			email: "fulton@email.com",
-		},
-	},
-	{
-		id: "INV-1229",
-		date: "Feb 3, 2023",
-		status: "Cancelled",
-		customer: {
-			initial: "J",
-			name: "Jay Hooper",
-			email: "hooper@email.com",
-		},
-	},
-	{
-		id: "INV-1228",
-		date: "Feb 3, 2023",
-		status: "Refunded",
-		customer: {
-			initial: "K",
-			name: "Krystal Stevens",
-			email: "k.stevens@email.com",
-		},
-	},
-	{
-		id: "INV-1227",
-		date: "Feb 3, 2023",
-		status: "Paid",
-		customer: {
-			initial: "S",
-			name: "Sachin Flynn",
-			email: "s.flyn@email.com",
-		},
-	},
-	{
-		id: "INV-1226",
-		date: "Feb 3, 2023",
-		status: "Cancelled",
-		customer: {
-			initial: "B",
-			name: "Bradley Rosales",
-			email: "brad123@email.com",
-		},
-	},
-	{
-		id: "INV-1225",
-		date: "Feb 3, 2023",
-		status: "Paid",
-		customer: {
-			initial: "O",
-			name: "Olivia Ryhe",
-			email: "olivia@email.com",
-		},
-	},
-	{
-		id: "INV-1224",
-		date: "Feb 3, 2023",
-		status: "Cancelled",
-		customer: {
-			initial: "S",
-			name: "Steve Hampton",
-			email: "steve.hamp@email.com",
-		},
-	},
-	{
-		id: "INV-1223",
-		date: "Feb 3, 2023",
-		status: "Paid",
-		customer: {
-			initial: "C",
-			name: "Ciaran Murray",
-			email: "ciaran.murray@email.com",
-		},
-	},
-	{
-		id: "INV-1221",
-		date: "Feb 3, 2023",
-		status: "Refunded",
-		customer: {
-			initial: "M",
-			name: "Maria Macdonald",
-			email: "maria.mc@email.com",
-		},
-	},
-	{
-		id: "INV-1220",
-		date: "Feb 3, 2023",
-		status: "Paid",
-		customer: {
-			initial: "C",
-			name: "Charles Fulton",
-			email: "fulton@email.com",
-		},
-	},
-	{
-		id: "INV-1219",
-		date: "Feb 3, 2023",
-		status: "Cancelled",
-		customer: {
-			initial: "J",
-			name: "Jay Hooper",
-			email: "hooper@email.com",
-		},
-	},
-	{
-		id: "INV-1218",
-		date: "Feb 3, 2023",
-		status: "Cancelled",
-		customer: {
-			initial: "K",
-			name: "Krystal Stevens",
-			email: "k.stevens@email.com",
-		},
-	},
-	{
-		id: "INV-1217",
-		date: "Feb 3, 2023",
-		status: "Paid",
-		customer: {
-			initial: "S",
-			name: "Sachin Flynn",
-			email: "s.flyn@email.com",
-		},
-	},
-	{
-		id: "INV-1216",
-		date: "Feb 3, 2023",
-		status: "Cancelled",
-		customer: {
-			initial: "B",
-			name: "Bradley Rosales",
-			email: "brad123@email.com",
-		},
-	},
-];
+type Customer = {
+	_id: string;
+	email: string;
+	name: string;
+	phone_number: string;
+	address: string;
+};
 
+type Item = {
+	_id: string;
+	order_id: string;
+	item_type: string;
+	item_id: string;
+	item_name: string;
+	price: number;
+	discount_price: number;
+	quantity: number;
+	slot_id: string | null;
+	staff_profile_id: string | null;
+	start_time: string | null;
+	end_time: string | null;
+	note: string | null;
+};
+
+type OrderType = {
+	_id: string;
+	customer_account_id: string;
+	branch_id: string;
+	created_at: string;
+	updated_at: string;
+	booking_time: string | null;
+	start_time: string | null;
+	end_time: string | null;
+	status: string;
+	total_price: number;
+	discount_amount: number;
+	final_price: number;
+	payment_method: string;
+	transaction_id: string | null;
+	note: string;
+	customer: Customer;
+	branch: {
+		_id: string;
+		name: string;
+		description: string;
+		rating: number;
+		contact: {
+			phone: string;
+			email: string;
+			address: string;
+		};
+		created_at: string;
+		updated_at: string;
+	};
+	items: Item[];
+};
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 	if (b[orderBy] < a[orderBy]) {
 		return -1;
@@ -229,7 +103,7 @@ function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 
 type Order = "asc" | "desc";
 
-function getComparator<Key extends keyof unknown>(
+function getComparator<Key extends keyof (typeof rows)[number]>(
 	order: Order,
 	orderBy: Key,
 ): (
@@ -261,11 +135,53 @@ function RowMenu() {
 	);
 }
 export default function OrderTable() {
-	const [order, setOrder] = React.useState<Order>("desc");
-	const [selected, setSelected] = React.useState<readonly string[]>([]);
-	const [open, setOpen] = React.useState(false);
+	const [order, setOrder] = useState<Order>("desc");
+	const [selected, setSelected] = useState<readonly string[]>([]);
+	const [open, setOpen] = useState(false);
+	const [rows, setRows] = useState<OrderType[]>([]);
+	const [searchTerm, setSearchTerm] = useState("");
+	const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
+	const [selectedCount, setSelectedCount] = useState(0);
+	const [currentPage, setCurrentPage] = useState(1);
+	const [itemsPerPage, setItemsPerPage] = useState(10);
+	const [totalPages, setTotalPages] = useState(1);
+	const [totalCount, setTotalCount] = useState(0);
+
+	// const [selectedService, setSelectedService] = useState<OrderType | null>(
+	// 	null,
+	// );
+	// const [isModalOpen, setIsModalOpen] = useState(false);
+
+	const getOrders = async () => {
+		const params = new URLSearchParams();
+		if (typeof itemsPerPage === "number" && !isNaN(itemsPerPage)) {
+			params.append("limit", itemsPerPage.toString());
+		}
+		if (typeof currentPage === "number" && !isNaN(currentPage)) {
+			params.append("page", currentPage.toString());
+		}
+		if (searchTerm) {
+			params.append("search", searchTerm);
+		}
+		try {
+			const orderResponse = await axiosInstance.get("/orders");
+			console.log(orderResponse);
+			setSelectedCount(orderResponse.data.total_count);
+			setTotalCount(orderResponse.data.total_count);
+			setTotalPages(orderResponse.data.total_pages);
+			setRows(orderResponse.data.result.data);
+			console.log(rows);
+		} catch (error) {
+			console.error("Error fetching data:", error);
+			// Handle error (e.g., show a notification)
+		}
+	};
+
+	useEffect(() => {
+		getOrders();
+	}, [debouncedSearchTerm, currentPage, itemsPerPage]);
 	const renderFilters = () => (
-		<React.Fragment>
+		<Fragment>
 			<FormControl size="sm">
 				<FormLabel>Status</FormLabel>
 				<Select
@@ -300,10 +216,10 @@ export default function OrderTable() {
 					<Option value="jay">Jay Hoper</Option>
 				</Select>
 			</FormControl>
-		</React.Fragment>
+		</Fragment>
 	);
 	return (
-		<React.Fragment>
+		<Fragment>
 			<Sheet
 				className="SearchAndFilters-mobile"
 				sx={{ display: { xs: "flex", sm: "none" }, my: 1, gap: 1 }}
@@ -400,7 +316,7 @@ export default function OrderTable() {
 									checked={selected.length === rows.length}
 									onChange={(event) => {
 										setSelected(
-											event.target.checked ? rows.map((row) => row.id) : [],
+											event.target.checked ? rows.map((row) => row._id) : [],
 										);
 									}}
 									color={
@@ -432,28 +348,28 @@ export default function OrderTable() {
 											: { "& svg": { transform: "rotate(180deg)" } },
 									]}
 								>
-									Invoice
+									ID
 								</Link>
 							</th>
 							<th style={{ width: 140, padding: "12px 6px" }}>Date</th>
 							<th style={{ width: 140, padding: "12px 6px" }}>Status</th>
 							<th style={{ width: 240, padding: "12px 6px" }}>Customer</th>
-							<th style={{ width: 140, padding: "12px 6px" }}> </th>
+							<th style={{ width: 140, padding: "12px 6px" }}>Total Price</th>
 						</tr>
 					</thead>
 					<tbody>
-						{[...rows].sort(getComparator(order, "id")).map((row) => (
-							<tr key={row.id}>
+						{[...rows].sort(getComparator(order, "_id")).map((row) => (
+							<tr key={row._id}>
 								<td style={{ textAlign: "center", width: 120 }}>
 									<Checkbox
 										size="sm"
-										checked={selected.includes(row.id)}
-										color={selected.includes(row.id) ? "primary" : undefined}
+										checked={selected.includes(row._id)}
+										color={selected.includes(row._id) ? "primary" : undefined}
 										onChange={(event) => {
 											setSelected((ids) =>
 												event.target.checked
-													? ids.concat(row.id)
-													: ids.filter((itemId) => itemId !== row.id),
+													? ids.concat(row._id)
+													: ids.filter((itemId) => itemId !== row._id),
 											);
 										}}
 										slotProps={{ checkbox: { sx: { textAlign: "left" } } }}
@@ -461,10 +377,10 @@ export default function OrderTable() {
 									/>
 								</td>
 								<td>
-									<Typography level="body-xs">{row.id}</Typography>
+									<Typography level="body-xs">{row._id}</Typography>
 								</td>
 								<td>
-									<Typography level="body-xs">{row.date}</Typography>
+									<Typography level="body-xs">{row.created_at}</Typography>
 								</td>
 								<td>
 									<Chip
@@ -490,7 +406,6 @@ export default function OrderTable() {
 								</td>
 								<td>
 									<Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-										<Avatar size="sm">{row.customer.initial}</Avatar>
 										<div>
 											<Typography level="body-xs">
 												{row.customer.name}
@@ -556,6 +471,6 @@ export default function OrderTable() {
 					Next
 				</Button>
 			</Box>
-		</React.Fragment>
+		</Fragment>
 	);
 }

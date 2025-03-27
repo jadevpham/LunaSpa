@@ -5,6 +5,7 @@ import { Elements } from "@stripe/react-stripe-js";
 import CheckoutForm from "../components/CheckoutForm";
 import axiosInstance from "../axios/axiosInstance";
 import { loadStripe } from "@stripe/stripe-js";
+// import { StripeElementsOptions } from "@stripe/react-stripe-js";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
@@ -15,7 +16,10 @@ const formatPrice = (price: number) => {
 };
 
 const PaymentPage: React.FC = () => {
-	const [clientSecret, setClientSecret] = useState<string>("");
+	const [clientSecret, setClientSecret] = useState<string | undefined>(
+		undefined,
+	);
+
 	const [orderId, setOrderId] = useState<string>("");
 	const [orderCreated, setOrderCreated] = useState(false);
 
@@ -27,7 +31,6 @@ const PaymentPage: React.FC = () => {
 		selectedPaymentMethod,
 	} = useSelector((state: RootState) => state.booking);
 
-	// Tính tổng giá dịch vụ bằng useMemo
 	const totalServicePrice = useMemo(() => {
 		return (
 			selectedService?.reduce(
@@ -37,7 +40,6 @@ const PaymentPage: React.FC = () => {
 		);
 	}, [selectedService]);
 
-	// Tính tổng giá sản phẩm bằng useMemo
 	const totalProductPrice = useMemo(() => {
 		return (
 			selectedProducts?.reduce(
@@ -47,13 +49,11 @@ const PaymentPage: React.FC = () => {
 		);
 	}, [selectedProducts]);
 
-	// Tổng giá trị cần thanh toán
 	const totalPrice = useMemo(
 		() => totalServicePrice + totalProductPrice,
 		[totalServicePrice, totalProductPrice],
 	);
 
-	// Tạo danh sách sản phẩm để gửi API
 	const items = useMemo(() => {
 		return (
 			selectedProducts?.map((product) => ({
@@ -65,26 +65,10 @@ const PaymentPage: React.FC = () => {
 	}, [selectedProducts]);
 
 	useEffect(() => {
-		if (orderCreated || !items.length || clientSecret) return; // Ngăn gọi API nếu đã có clientSecret
+		if (orderCreated || !items.length || clientSecret) return;
 
 		const createOrder = async () => {
 			try {
-				// 1. Get product information from API
-				// if (!selectedProducts || selectedProducts.length === 0) return;
-
-				// const productIds = selectedProducts.map((p) => p._id); // Get list of IDs
-				// const productResponse = await axiosInstance.post("/products/check", {
-				// 	productIds,
-				// });
-				// if (!productResponse.data || !productResponse.data.result) {
-				// 	setError("Product not found");
-				// 	setLoading(false);
-				// 	return;
-				// }
-
-				// const productData = productResponse.data.result;
-				// setUpdatedProducts(productData);
-
 				const orderResponse = await axiosInstance.post("/orders/products", {
 					branch_id: selectedBranch?._id,
 					items,
@@ -117,7 +101,7 @@ const PaymentPage: React.FC = () => {
 	}, [orderCreated, selectedBranch, items, clientSecret]);
 
 	const appearance = {
-		theme: "stripe",
+		theme: "stripe" as const,
 		variables: {
 			colorPrimary: "#6772e5",
 			colorBackground: "#ffffff",
@@ -128,13 +112,14 @@ const PaymentPage: React.FC = () => {
 		},
 	};
 
-	const options = useMemo(
-		() => ({
-			clientSecret,
-			appearance,
-		}),
-		[clientSecret],
-	);
+	const options = useMemo(() => {
+		return clientSecret
+			? {
+					clientSecret,
+					appearance,
+				}
+			: undefined;
+	}, [clientSecret]);
 
 	return (
 		<div className="p-6 bg-gray-100 flex justify-center gap-6">
@@ -247,7 +232,7 @@ const PaymentPage: React.FC = () => {
 				</h2>
 			</div>
 			<div className="w-1/3">
-				{clientSecret && (
+				{clientSecret && options && (
 					<Elements stripe={stripePromise} options={options}>
 						<CheckoutForm orderId={orderId} clientSecret={clientSecret} />
 					</Elements>
@@ -256,5 +241,4 @@ const PaymentPage: React.FC = () => {
 		</div>
 	);
 };
-
 export default PaymentPage;

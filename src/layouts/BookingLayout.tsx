@@ -14,7 +14,20 @@ const BookingLayout = () => {
 	const dispatch = useDispatch();
 	const [showModal, setShowModal] = useState(false);
 	const [showQuantityModal, setShowQuantityModal] = useState(false);
-	const [selectedProduct, setSelectedProduct] = useState<any>(null);
+	interface Product {
+		_id: string;
+		name: string;
+		price: number;
+		discount_price: number;
+		quantity: number;
+		images: string[];
+		description: string;
+		category_id: string;
+		star: number;
+		vote: number;
+	}
+
+	const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 	const [quantity, setQuantity] = useState(1);
 	const productsList = useSelector(
 		(state: RootState) => state.products.productsList,
@@ -24,7 +37,7 @@ const BookingLayout = () => {
 		(state: RootState) => state.booking.selectedProducts,
 	);
 
-	const handleAddProduct = (product: any) => {
+	const handleAddProduct = (product: Product) => {
 		const existingProduct = selectedProducts?.find(
 			(item) => item._id === product._id,
 		);
@@ -50,6 +63,11 @@ const BookingLayout = () => {
 			updatedProducts[existingProductIndex as number] = {
 				...selectedProduct,
 				quantity,
+				discount_price: selectedProduct.discount_price || 0,
+				description: selectedProduct.description || "",
+				category_id: selectedProduct.category_id || "",
+				star: selectedProduct.star || 0,
+				vote: selectedProduct.vote || 0,
 			};
 
 			dispatch(setProducts(updatedProducts));
@@ -160,7 +178,12 @@ const BookingLayout = () => {
 							star={product.price}
 							vote={product.price}
 							onClick={() => {
-								handleAddProduct(product);
+								handleAddProduct({
+									...product,
+									category_id: product.product_category?._id || "",
+									star: 0, // Default value since 'star' is not part of ProductsItemType
+									vote: 0, // Default value since 'vote' is not part of ProductsItemType
+								});
 							}}
 						/>
 					)}

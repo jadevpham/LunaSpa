@@ -1,7 +1,6 @@
 import React, { useEffect, useState, ChangeEvent } from "react";
 import axiosInstance from "../../axios/axiosInstance";
 import { toast } from "react-toastify";
-import axios from "axios";
 
 interface User {
 	name: string;
@@ -52,7 +51,6 @@ const UserProfile = () => {
 		avatar: "",
 	});
 
-	const [imgString, setImgString] = useState<[]>();
 	useEffect(() => {
 		const storedUser = localStorage.getItem("user");
 		if (storedUser) {
@@ -139,7 +137,6 @@ const UserProfile = () => {
 			);
 			console.log(response.data);
 			if (response.status === 200) {
-				setImgString(response.data.result[0].url);
 				setUser((prev) => ({
 					...prev,
 					avatar: response.data.result[0].url,
