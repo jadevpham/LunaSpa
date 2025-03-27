@@ -6,12 +6,14 @@ import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import { DayPicker } from "react-day-picker";
 import "react-calendar/dist/Calendar.css";
+import axiosInstance from "../axios/axiosInstance";
 
-interface BookTime {
-	ServiceBooking_Date: string;
-	ServiceBooking_Time: string;
+interface StaffSlot {
+	_id: string;
+	start_time: string;
+	end_time: string;
+	status: string;
 }
-
 const SelectTimePage = () => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
@@ -24,6 +26,8 @@ const SelectTimePage = () => {
 		today.toDate(),
 	);
 	const [selectedTime, setSelectedTime] = useState<string | null>(null);
+	const [timeSlots, setTimeSlots] = useState<StaffSlot[]>([]);
+	const [isLoading, setIsLoading] = useState(false);
 	const [currentWeekStart, setCurrentWeekStart] = useState(
 		today.startOf("week"),
 	);
@@ -38,21 +42,39 @@ const SelectTimePage = () => {
 	);
 
 	const [showCalendar, setShowCalendar] = useState(false);
+	const handleSelectTime = (slot: StaffSlot) => {
+		if (selectedDate) {
+			setSelectedTime(slot.start_time);
+			const selectedTime = {
+				ServiceBooking_Date: dayjs(selectedDate).format("YYYY-MM-DD"),
+				ServiceBooking_Time: dayjs(slot.start_time).format("HH:mm"),
+			};
+			dispatch(setTime(selectedTime));
+		}
+	};
 
+	const fetchTimeSlots = async (date: Date) => {
+		setIsLoading(true);
+		try {
+			// Chuyển đổi date sang định dạng ISO 8601 (UTC)
+			const formattedDate = dayjs(date).toISOString();
+			const response = await axiosInstance.get(
+				`/staff-slots/?date=${formattedDate}`,
+			);
+			setTimeSlots(response.data.result.data);
+		} catch (error) {
+			console.error("Error fetching time slots:", error);
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	useEffect(() => {
+		if (selectedDate) {
+			fetchTimeSlots(selectedDate);
+		}
+	}, [selectedDate]);
 	// Danh sách thời gian đang fake fixed
-	const timeSlots = [
-		{ time: "11:00", price: 150000 },
-		{ time: "11:15", price: 150000 },
-		{ time: "11:30", price: 150000 },
-		{ time: "11:45", price: 150000 },
-		{ time: "12:00", price: 180000 },
-		{ time: "12:15", price: 180000 },
-		{ time: "12:30", price: 180000 },
-		{ time: "12:45", price: 180000 },
-		{ time: "13:00", price: 150000 },
-		{ time: "13:15", price: 150000 },
-		{ time: "13:30", price: 150000 },
-	];
 
 	// Giả lập ngày không có slot (ví dụ: thứ 7 và chủ nhật không có slot)
 	const hasTimeSlots = (date: Date) => {
@@ -67,16 +89,6 @@ const SelectTimePage = () => {
 	};
 
 	// Chọn giờ
-	const handleSelectTime = (time: string) => {
-		if (selectedDate) {
-			setSelectedTime(time);
-			const selectedTime: BookTime = {
-				ServiceBooking_Date: dayjs(selectedDate).format("YYYY-MM-DD"),
-				ServiceBooking_Time: time,
-			};
-			dispatch(setTime(selectedTime));
-		}
-	};
 
 	const handlePrevWeek = () => {
 		if (currentWeekStart.isAfter(today.startOf("week"))) {
@@ -255,21 +267,47 @@ const SelectTimePage = () => {
 						</button>
 					</div>
 				) : (
-					timeSlots.map((slot) => (
-						<button
-							key={slot.time}
-							className={`block w-full p-3 transition-all duration-300 rounded text-left ${selectedTime === slot.time ? "border-2 border-purple-300 bg-gradient-to-tr from-purple-400 to-pink-300 text-white rounded-xl" : "bg-white text-black border rounded-xl"}`}
-							onClick={() => handleSelectTime(slot.time)}
-						>
-							<div className="flex justify-between items-center">
-								<span>
-									<i className="fa-regular fa-clock"></i>
-									{slot.time}
-								</span>
-								<span>${slot.price.toLocaleString("en-US")}</span>
-							</div>
-						</button>
-					))
+					<div className="mt-5 space-y-3">
+						{isLoading ? (
+							<p className="text-center text-gray-500">Loading time slots...</p>
+						) : timeSlots.length === 0 ? (
+							<p className="text-center text-gray-500">
+								No available time slots.
+							</p>
+						) : (
+							timeSlots.map((slot) => (
+								<button
+									key={slot._id}
+									className={`block w-full p-3 transition-all duration-300 rounded text-left ${
+										selectedTime === slot.start_time
+											? "border-2 border-purple-300 bg-gradient-to-tr from-purple-400 to-pink-300 text-white rounded-xl"
+											: "bg-white text-black border rounded-xl"
+									}`}
+									onClick={() => handleSelectTime(slot)}
+									disabled={slot.status !== "available"}
+								>
+									<div className="flex justify-between items-center">
+										<span>
+											<i className="fa-regular fa-clock"></i>{" "}
+											{dayjs(slot.start_time).format("HH:mm")} -{" "}
+											{dayjs(slot.end_time).format("HH:mm")}
+										</span>
+										<span
+											className={`${
+												slot.status === "available"
+													? "text-green-500"
+													: "text-red-500"
+											}`}
+										>
+											{slot.status === "available"
+												? "Available"
+												: "Unavailable"}
+										</span>
+									</div>
+								</button>
+							))
+						)}
+					</div>
 				)}
 			</div>
 		</div>

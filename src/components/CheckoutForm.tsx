@@ -122,15 +122,15 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
 		// Confirm payment
 		const { error } = await stripe.confirmPayment({
 			elements,
-			redirect: "always",
+			redirect: "if_required",
 			confirmParams: {
-				return_url: `${window.location.origin}/payment-success`, // Add a valid return URL
+				return_url: `${window.location.origin}/order-detail/${orderId}`, // Add return_url
 				payment_method_data: {
 					billing_details: {
 						name: "Customer Luna Spa",
 					},
-					// save_payment_method: saveCard, // Removed as it's not a valid property
 				},
+				setup_future_usage: saveCard ? "off_session" : undefined,
 			},
 		});
 

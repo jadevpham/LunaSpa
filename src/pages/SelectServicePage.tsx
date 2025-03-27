@@ -13,6 +13,7 @@ interface Duration {
 	discount_price: number;
 	duration_in_minutes: number;
 	sub_description: string;
+	index: number; // Ensure consistency with the Duration interface in bookingSlice.tsx
 }
 
 interface Service {
@@ -46,7 +47,7 @@ const SelectServicePage = () => {
 		(state: RootState) => state.services.servicesList,
 	);
 
-	console.log(selectedServices);
+	// console.log(selectedServices);
 	const [selectedDuration, setSelectedDuration] = useState<Duration | null>(
 		null,
 	);
@@ -86,19 +87,30 @@ const SelectServicePage = () => {
 
 	const handleSelectDuration = (duration: Duration) => {
 		if (selectedService) {
-			const updatedService = {
-				...selectedService,
-				selectedDuration: duration,
-			};
-
-			const isServiceSelected = selectedServices?.some(
-				(service) => service._id === updatedService._id,
+			// Sắp xếp durations theo duration_in_minutes để đảm bảo index luôn từ thấp đến cao
+			const sortedDurations = [...selectedService.durations].sort(
+				(a, b) => a.duration_in_minutes - b.duration_in_minutes,
 			);
 
-			if (isServiceSelected) {
-				dispatch(removeService(updatedService._id));
-			}
+			// Tìm index của duration được chọn trong danh sách đã sắp xếp
+			const index = sortedDurations.findIndex(
+				(d) => d.duration_in_minutes === duration.duration_in_minutes,
+			);
 
+			const updatedService = {
+				...selectedService,
+				selectedDuration: {
+					...duration,
+					index, // Thêm giá trị index vào duration
+				},
+			};
+
+			// Xóa tất cả các dịch vụ đã chọn trước đó
+			selectedServices.forEach((service) => {
+				dispatch(removeService(service._id));
+			});
+
+			// Thêm dịch vụ mới với duration có index
 			dispatch(addService(updatedService));
 			toast.success("Service added successfully");
 			setIsModalOpen(false);
@@ -126,7 +138,15 @@ const SelectServicePage = () => {
 						{selectedServices.map((service) => (
 							<div
 								key={service._id}
-								className="bg-white rounded-lg shadow p-3 flex gap-4"
+								className="bg-white rounded-lg shadow p-3 flex gap-4 cursor-pointer"
+								onClick={() => {
+									setSelectedService({
+										...service,
+										durations: service.durations || [], // Ensure durations is always defined
+									});
+									setSelectedDuration(service.selectedDuration);
+									setIsModalOpen(true);
+								}}
 							>
 								<img
 									src={
@@ -162,7 +182,10 @@ const SelectServicePage = () => {
 										)}
 									</div>
 									<button
-										onClick={() => handleRemoveService(service._id)}
+										onClick={(e) => {
+											e.stopPropagation(); // Ngăn chặn sự kiện mở modal
+											handleRemoveService(service._id); // Xóa dịch vụ
+										}}
 										className="text-red-500 hover:text-red-700"
 									>
 										<i className="fa-solid fa-trash"></i>
@@ -188,7 +211,15 @@ const SelectServicePage = () => {
 					<div
 						key={service._id}
 						className="bg-white rounded-lg shadow p-3 flex gap-4"
-						onClick={() => handleOpenService(service)}
+						onClick={() =>
+							handleOpenService({
+								...service,
+								durations: service.durations.map((duration, idx) => ({
+									...duration,
+									index: idx,
+								})),
+							})
+						}
 					>
 						<img
 							src={
@@ -216,7 +247,13 @@ const SelectServicePage = () => {
 							className=""
 							onClick={(e) => {
 								e.stopPropagation();
-								handleOpenService(service);
+								handleOpenService({
+									...service,
+									durations: service.durations.map((duration, idx) => ({
+										...duration,
+										index: idx,
+									})),
+								});
 							}}
 						>
 							<i className="fa-solid fa-plus text-gray-500 bg-white text-lg border rounded-lg p-1 "></i>

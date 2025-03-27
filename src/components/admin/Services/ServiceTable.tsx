@@ -32,6 +32,7 @@ import { Fragment, useEffect, useState, useCallback, useMemo } from "react";
 import { Avatar } from "@mui/joy";
 import axiosInstance from "../../../axios/axiosInstance";
 import EditServiceModal from "./EditServiceModal";
+import { toast } from "react-toastify";
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 	if (b[orderBy] < a[orderBy]) {
@@ -109,9 +110,43 @@ export default function UserTable() {
 	const [selectedService, setSelectedService] = useState<Service | null>(null);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
+	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+	const [serviceToDelete, setServiceToDelete] = useState<Service | null>(null);
+
 	const handleEdit = (service: Service) => {
 		setSelectedService(service);
 		setIsModalOpen(true);
+	};
+
+	const handleDeleteClick = (service: Service) => {
+		setServiceToDelete(service);
+		setIsDeleteModalOpen(true);
+	};
+
+	const confirmDelete = () => {
+		if (serviceToDelete) {
+			axiosInstance
+				.delete(`/services/${serviceToDelete._id}`)
+				.then(() => {
+					setRows((prevRows) =>
+						prevRows.filter((row) => row._id !== serviceToDelete._id),
+					);
+					toast.success("Service deleted successfully");
+				})
+				.catch((error) => {
+					console.error("Error deleting service:", error);
+					toast.error("Failed to delete service");
+				})
+				.finally(() => {
+					setIsDeleteModalOpen(false);
+					setServiceToDelete(null);
+				});
+		}
+	};
+
+	const cancelDelete = () => {
+		setIsDeleteModalOpen(false);
+		setServiceToDelete(null);
 	};
 
 	const handleSave = (updatedService: Service) => {
@@ -136,10 +171,10 @@ export default function UserTable() {
 				</MenuButton>
 				<Menu size="sm" sx={{ minWidth: 140 }}>
 					<MenuItem onClick={() => handleEdit(row)}>Edit</MenuItem>
-					<MenuItem>Rename</MenuItem>
-					<MenuItem>Move</MenuItem>
 					<Divider />
-					<MenuItem color="danger">Delete</MenuItem>
+					<MenuItem onClick={() => handleDeleteClick(row)} color="danger">
+						Delete
+					</MenuItem>
 				</Menu>
 			</Dropdown>
 		);
@@ -166,14 +201,13 @@ export default function UserTable() {
 			setCategories(categoriesResponse.data.result.serviceCategories);
 			setTotalCount(servicesResponse.data.total_count);
 			setTotalPages(servicesResponse.data.total_pages);
-			setRows(servicesResponse.data.result);
+			setRows(servicesResponse.data.result.data);
 		} catch (error) {
 			console.error("Error fetching data:", error);
 			// Handle error (e.g., show a notification)
 		}
 	};
 
-	console.log(rows);
 	useEffect(() => {
 		getCategoriesAndServices();
 	}, []);
@@ -458,7 +492,7 @@ export default function UserTable() {
 								/>
 							</th>
 							<th style={{ width: 100, padding: "12px 6px" }}>Image</th>
-							<th style={{ width: 200, padding: "12px 6px" }}>
+							<th style={{ width: 160, padding: "12px 6px" }}>
 								<Link
 									underline="none"
 									color="primary"
@@ -482,7 +516,7 @@ export default function UserTable() {
 									Name
 								</Link>
 							</th>
-							<th style={{ width: 140, padding: "12px 6px" }}>Durations</th>
+							<th style={{ width: 170, padding: "12px 6px" }}>Durations</th>
 							<th style={{ width: 140, padding: "12px 6px" }}>Booking count</th>
 							<th style={{ width: 140, padding: "12px 6px" }}>View count</th>
 							<th style={{ width: 140, padding: "12px 6px" }}>Created at</th>
@@ -514,14 +548,14 @@ export default function UserTable() {
 									<Typography level="body-xs">{row.name}</Typography>
 								</td>
 								<td>
-									<Typography level="body-xs">
-										{row.durations
-											.map(
-												(duration) =>
-													`${duration.duration_name} - ${duration.price} VND`,
-											)
-											.join(", ")}
-									</Typography>
+									<td>
+										<Typography level="body-xs">
+											{` ${Math.min(...row.durations.map((d) => d.duration_in_minutes))} mins - ${Math.max(...row.durations.map((d) => d.duration_in_minutes))} mins`}
+										</Typography>
+										<Typography level="body-xs">
+											{` ${Math.min(...row.durations.map((d) => d.price)).toLocaleString()} VND - ${Math.max(...row.durations.map((d) => d.price)).toLocaleString()} VND`}
+										</Typography>
+									</td>
 								</td>
 								<td>
 									<Typography level="body-xs">{row.booking_count}</Typography>
@@ -542,9 +576,6 @@ export default function UserTable() {
 								</td>
 								<td>
 									<Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-										<Link level="body-xs" component="button">
-											Download
-										</Link>
 										<RowMenu row={row} />
 									</Box>
 								</td>
@@ -598,11 +629,27 @@ export default function UserTable() {
 				service={selectedService}
 				isOpen={isModalOpen}
 				onClose={() => {
-					console.log("Modal closed");
 					setIsModalOpen(false);
 				}}
 				onSave={handleSave}
 			/>
+			<Modal open={isDeleteModalOpen} onClose={cancelDelete}>
+				<ModalDialog>
+					<ModalClose />
+					<Typography level="h4">Confirm Deletion</Typography>
+					<Typography>
+						Are you sure you want to delete {serviceToDelete?.name}?
+					</Typography>
+					<div className="flex justify-end gap-2 mt-4">
+						<Button variant="plain" color="neutral" onClick={cancelDelete}>
+							Cancel
+						</Button>
+						<Button variant="solid" color="danger" onClick={confirmDelete}>
+							Delete
+						</Button>
+					</div>
+				</ModalDialog>
+			</Modal>
 		</Fragment>
 	);
 }

@@ -27,7 +27,7 @@ const AdminLayout = () => {
 						display: "flex",
 						flexDirection: "column",
 						minWidth: 0,
-						height: "100dvh",
+						height: "100vh",
 						gap: 1,
 					}}
 				>

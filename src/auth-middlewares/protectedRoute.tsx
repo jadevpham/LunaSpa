@@ -13,7 +13,7 @@ const ProtectedRoute = ({
 }) => {
 	const { role, isAuthenticated, isLoading, verify } = useAuth();
 	const [hasShownToast, setHasShownToast] = useState(false);
-
+	const { logout } = useAuth();
 	console.log("Protected Route:", { role, isAuthenticated, isLoading, verify });
 
 	if (isLoading) {
@@ -24,6 +24,7 @@ const ProtectedRoute = ({
 		if (!hasShownToast) {
 			toast.error("Please login to continue");
 			setHasShownToast(true);
+			logout();
 		}
 		return <Navigate to="/auth" replace />;
 	}
@@ -32,6 +33,7 @@ const ProtectedRoute = ({
 		if (!hasShownToast) {
 			toast.error("Your account has been deleted");
 			setHasShownToast(true);
+			logout();
 		}
 		return <Navigate to="/auth" replace />;
 	}
@@ -40,6 +42,7 @@ const ProtectedRoute = ({
 		if (!hasShownToast) {
 			toast.error("Your account has been banned");
 			setHasShownToast(true);
+			logout();
 		}
 		return <Navigate to="/auth" replace />;
 	}
