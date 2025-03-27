@@ -21,7 +21,6 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
 	const elements = useElements();
 	const navigate = useNavigate();
 
-	const [message, setMessage] = useState<string | null>(null);
 	const [isProcessing, setIsProcessing] = useState<boolean>(false);
 	const [saveCard, setSaveCard] = useState<boolean>(false);
 
@@ -37,7 +36,18 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
 				case "succeeded":
 					toast.success("Payment completed successfully!");
 					// Handle order status update after successful payment
-					confirmPaymentSuccess(paymentIntent.id, paymentIntent.payment_method);
+					if (typeof paymentIntent.payment_method === "string") {
+						confirmPaymentSuccess(
+							paymentIntent.id,
+							paymentIntent.payment_method,
+						);
+					} else {
+						console.error(
+							"Payment method is not a string:",
+							paymentIntent.payment_method,
+						);
+						toast.error("Invalid payment method. Please try again.");
+					}
 					break;
 				case "processing":
 					toast.info("Your payment is being processed.");
@@ -110,18 +120,22 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
 		setIsProcessing(true);
 
 		// Confirm payment
-		const { error, paymentIntent } = await stripe.confirmPayment({
+		const { error } = await stripe.confirmPayment({
 			elements,
-			redirect: "if_required",
+			redirect: "always",
 			confirmParams: {
+				return_url: `${window.location.origin}/payment-success`, // Add a valid return URL
 				payment_method_data: {
 					billing_details: {
 						name: "Customer Luna Spa",
 					},
-					save_payment_method: saveCard,
+					// save_payment_method: saveCard, // Removed as it's not a valid property
 				},
 			},
 		});
+
+		// Retrieve the payment intent status separately
+		const paymentIntent = await stripe.retrievePaymentIntent(clientSecret);
 
 		if (error) {
 			if (error.type === "card_error" || error.type === "validation_error") {
@@ -129,12 +143,15 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
 			} else {
 				toast.error("An unexpected error occurred");
 			}
-		} else if (paymentIntent && paymentIntent.status === "succeeded") {
+		} else if (
+			paymentIntent?.paymentIntent &&
+			paymentIntent.paymentIntent.status === "succeeded"
+		) {
 			toast.success("Payment successful! Updating order...");
 			// Call function to update order
 			await confirmPaymentSuccess(
-				paymentIntent.id,
-				paymentIntent.payment_method,
+				paymentIntent.paymentIntent?.id,
+				paymentIntent.paymentIntent?.payment_method as string,
 			);
 		}
 
@@ -160,14 +177,6 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
 			<div className="mb-5">
 				<PaymentElement />
 			</div>
-
-			{message && (
-				<div
-					className={`text-[#32325d] text-lg leading-5 p-4 rounded mb-5 ${message.includes("successful") ? "bg-[#f0fff4] border border-[#c6f6d5]" : message.includes("processing") ? "bg-[#e3f2fd] border border-[#bbdefb]" : "bg-[#fff5f5] border border-[#fed7d7] text-[#e53e3e]"}`}
-				>
-					{message}
-				</div>
-			)}
 
 			<div className="my-5 flex items-center">
 				<input

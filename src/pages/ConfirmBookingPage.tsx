@@ -42,7 +42,9 @@ const ConfirmBookingPage = () => {
 		toast.info(`Payment method changed to ${selectedMethod}`);
 	};
 
-	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+	const handleInputChange = (
+		e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+	) => {
 		setBookingNotes(e.target.value);
 		dispatch(
 			setPaymentMethod({

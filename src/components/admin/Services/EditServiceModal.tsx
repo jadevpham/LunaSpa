@@ -40,7 +40,6 @@ const EditServiceModal: React.FC<EditServiceModalProps> = ({
 	service,
 	isOpen,
 	onClose,
-	onSave,
 }) => {
 	const [editedService, setEditedService] = useState<Service | null>(service);
 	const [isAccordionOpen, setIsAccordionOpen] = useState(false);
@@ -68,9 +67,16 @@ const EditServiceModal: React.FC<EditServiceModalProps> = ({
 		}
 	};
 
-	const handleDurationChange = (index: number, field: string, value: any) => {
+	const handleDurationChange = (
+		index: number,
+		field: keyof Service["durations"][number],
+		value: string | number,
+	) => {
 		const updatedDurations = [...editedService.durations];
-		updatedDurations[index][field] = value;
+		updatedDurations[index] = {
+			...updatedDurations[index],
+			[field]: value,
+		};
 		setEditedService({ ...editedService, durations: updatedDurations });
 	};
 
@@ -125,11 +131,11 @@ const EditServiceModal: React.FC<EditServiceModalProps> = ({
 
 	const handleDeviceChange = (
 		index: number,
-		field: keyof Service["devices"],
+		field: keyof Service["devices"][number],
 		value: string | number,
 	) => {
 		const updatedDevices = [...editedService.devices];
-		updatedDevices[index][field] = value;
+		(updatedDevices[index] as unknown)[field] = value;
 		setEditedService({ ...editedService, devices: updatedDevices });
 	};
 
