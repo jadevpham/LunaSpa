@@ -130,6 +130,7 @@ const ServiceDetail: React.FC = () => {
 				day={todayDay}
 				opening_hours={todayOpening} //sau thay bằng giờ của branch
 				close_hours={todayClosing}
+				slotTime={["s1","2","3"]}
 			/>
 			<ProductsByServiceList serviceId={serviceId} />
 			<Footer />
