@@ -90,19 +90,21 @@ const OrderDetail = () => {
 					<h2 className="text-2xl font-semibold mb-4">Customer Information</h2>
 					<p className="flex items-center mb-2">
 						<i className="fas fa-user mr-2 text-gray-600"></i>
-						<strong>Name:</strong> {order?.customer.name}
+						<strong className="mr-2">Name:</strong> {order?.customer.name}
 					</p>
 					<p className="flex items-center mb-2">
 						<i className="fas fa-envelope mr-2 text-gray-600"></i>
-						<strong>Email:</strong> {order?.customer.email}
+						<strong className="mr-2">Email:</strong> {order?.customer.email}
 					</p>
 					<p className="flex items-center mb-2">
 						<i className="fas fa-phone mr-2 text-gray-600"></i>
-						<strong>Phone Number:</strong> {order?.customer.phone_number}
+						<strong className="mr-2">Phone Number:</strong>{" "}
+						{order?.customer.phone_number}
 					</p>
 					<p className="flex items-center mb-4">
 						<i className="fas fa-map-marker-alt mr-2 text-gray-600"></i>
-						<strong>Address:</strong> {order?.branch.contact.address}
+						<strong className="mr-2">Address:</strong>{" "}
+						{order?.branch.contact.address}
 					</p>
 				</div>
 

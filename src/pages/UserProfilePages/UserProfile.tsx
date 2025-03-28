@@ -14,6 +14,14 @@ interface User {
 	address: string;
 	gender: string;
 	avatar: string;
+	conditions?: Condition[];
+}
+
+interface Condition {
+	_id: string;
+	name: string;
+	description: string;
+	instructions?: string;
 }
 
 type HandleInputChange = (field: keyof User, value: string) => void;
@@ -49,6 +57,7 @@ const UserProfile = () => {
 		gender: "",
 		address: "",
 		avatar: "",
+		conditions: [],
 	});
 
 	useEffect(() => {
@@ -77,6 +86,26 @@ const UserProfile = () => {
 			}
 		}
 	}, []);
+
+	// Sử dụng mock data để kiểm tra UI
+	useEffect(() => {
+		const getProfile = async () => {
+			try {
+				const response = await axiosInstance.get("/accounts/me");
+				const userData = response.data.result;
+				// setUser(userData.user_profile.account);
+				setUser((prev) => ({
+					...prev,
+					conditions: userData.user_profile.conditions,
+				}));
+			} catch (error) {
+				console.error("Error fetching user profile:", error);
+			}
+		};
+
+		getProfile();
+	}, []);
+
 	const handleInputChange: HandleInputChange = (field, value) => {
 		setUser((prev) => ({ ...prev, [field]: value }));
 	};
@@ -98,10 +127,7 @@ const UserProfile = () => {
 				// avatar: imgString,
 			};
 
-			console.log("Updated user data:", updatedUser);
-
 			const response = await axiosInstance.patch("/accounts/me", updatedUser);
-			console.log("User updated successfully:", response);
 			if (response.status === 200) {
 				toast.success("User updated successfully");
 			}
@@ -152,132 +178,178 @@ const UserProfile = () => {
 	};
 
 	return (
-		<div className="container mx-auto p-5 max-w-4xl flex flex-col md:flex-row gap-8">
-			{/* Avatar Section */}
-			<div className="flex flex-col items-center md:w-1/3 justify-center relative">
-				<div className="relative">
-					<img
-						src={
-							user?.avatar ||
-							"../../public/spa-avatar-flat-cartoon-design-this-illustration-avatar-woman-immersed-spa_198565-9639.avif"
-						}
-						alt="User Avatar"
-						className="w-48 h-48 rounded-full border border-gray-300 mb-4"
-					/>
-					<label
-						htmlFor="avatar-upload"
-						className="absolute bottom-7 right-7 bg-white rounded-full cursor-pointer hover:bg-gray-200 w-10 h-10 flex items-center justify-center shadow-md"
-					>
-						<i className="fa-solid fa-pen"></i>
-					</label>
-					<input
-						id="avatar-upload"
-						type="file"
-						accept="image/*"
-						className="hidden"
-						onChange={handleAvatarChange}
-					/>
+		<div className="container mx-auto p-5 max-w-4xl flex flex-col gap-8">
+			{/* Top Section: Avatar and Form */}
+			<div className="flex flex-col md:flex-row gap-8">
+				{/* Avatar Section */}
+				<div className="flex flex-col items-center md:w-1/3 justify-center relative">
+					<div className="relative">
+						<img
+							src={
+								user?.avatar ||
+								"../../public/spa-avatar-flat-cartoon-design-this-illustration-avatar-woman-immersed-spa_198565-9639.avif"
+							}
+							alt="User Avatar"
+							className="w-48 h-48 rounded-full border border-gray-300 mb-4"
+						/>
+						<label
+							htmlFor="avatar-upload"
+							className="absolute bottom-7 right-7 bg-white rounded-full cursor-pointer hover:bg-gray-200 w-10 h-10 flex items-center justify-center shadow-md"
+						>
+							<i className="fa-solid fa-pen"></i>
+						</label>
+						<input
+							id="avatar-upload"
+							type="file"
+							accept="image/*"
+							className="hidden"
+							onChange={handleAvatarChange}
+						/>
+					</div>
 				</div>
-			</div>
 
-			{/* Form Section */}
-			<div className="md:w-2/3">
-				<h1 className="text-2xl font-bold mb-5">Edit profile details</h1>
-				<form>
-					{/* First and Last Name */}
-					<div className="flex flex-col md:flex-row gap-4 mb-4">
-						<div className="flex-1">
-							<label className="block mb-1">Last name</label>
-							<input
-								type="text"
-								value={user?.name}
-								onChange={(e) => handleInputChange("name", e.target.value)}
-								className="w-full p-2 border border-gray-300 rounded"
-							/>
-						</div>
-					</div>
-
-					{/* Mobile Number */}
-					<div className="mb-4">
-						<label className="block mb-1">Mobile number</label>
-						<div className="flex gap-2">
-							<select
-								defaultValue="+84"
-								className="p-2 border border-gray-300 rounded"
-							>
-								<option value="+84">+84</option>
-							</select>
-							<input
-								type="text"
-								value={user?.phone_number}
-								onChange={(e) =>
-									handleInputChange("phone_number", e.target.value)
-								}
-								className="flex-1 p-2 border border-gray-300 rounded"
-							/>
-						</div>
-					</div>
-
-					{/* Email */}
-					<div className="mb-4">
-						<label className="block mb-1">Email address</label>
-						<input
-							type="email"
-							value={user?.email}
-							onChange={(e) => handleInputChange("email", e.target.value)}
-							className="w-full p-2 border border-gray-300 rounded"
-						/>
-					</div>
-					<div className="mb-4">
-						<label className="block mb-1">Address</label>
-						<input
-							type="address"
-							value={user?.address}
-							onChange={(e) => handleInputChange("address", e.target.value)}
-							className="w-full p-2 border border-gray-300 rounded"
-						/>
-					</div>
-
-					{/* Date of Birth */}
-					<div className="flex flex-col md:flex-row gap-4 mb-4">
-						<div className="flex-1">
-							<label className="block mb-1">Date of birth</label>
-							<div className="flex gap-2">
+				{/* Form Section */}
+				<div className="md:w-2/3">
+					<h1 className="text-2xl font-bold mb-5">Edit profile details</h1>
+					<form>
+						{/* First and Last Name */}
+						<div className="flex flex-col md:flex-row gap-4 mb-4">
+							<div className="flex-1">
+								<label className="block mb-1">Last name</label>
 								<input
 									type="text"
-									placeholder="Day"
-									value={user.date_of_birth.day}
-									onChange={(e) => handleDobChange("day", e.target.value)}
-									className="w-1/3 p-2 border border-gray-300 rounded"
-								/>
-								<select
-									value={user.date_of_birth.month}
-									onChange={(e) => handleDobChange("month", e.target.value)}
-									className="w-1/3 p-2 border border-gray-300 rounded"
-								>
-									{months.map((month) => (
-										<option key={month.value} value={month.value}>
-											{month.label}
-										</option>
-									))}
-								</select>
-								<input
-									type="text"
-									placeholder="Year"
-									value={user.date_of_birth.year}
-									onChange={(e) => handleDobChange("year", e.target.value)}
-									className="w-1/3 p-2 border border-gray-300 rounded"
+									value={user?.name}
+									onChange={(e) => handleInputChange("name", e.target.value)}
+									className="w-full p-2 border border-gray-300 rounded"
 								/>
 							</div>
 						</div>
+
+						{/* Mobile Number */}
+						<div className="mb-4">
+							<label className="block mb-1">Mobile number</label>
+							<div className="flex gap-2">
+								<select
+									defaultValue="+84"
+									className="p-2 border border-gray-300 rounded"
+								>
+									<option value="+84">+84</option>
+								</select>
+								<input
+									type="text"
+									value={user?.phone_number}
+									onChange={(e) =>
+										handleInputChange("phone_number", e.target.value)
+									}
+									className="flex-1 p-2 border border-gray-300 rounded"
+								/>
+							</div>
+						</div>
+
+						{/* Email */}
+						<div className="mb-4">
+							<label className="block mb-1">Email address</label>
+							<input
+								type="email"
+								value={user?.email}
+								onChange={(e) => handleInputChange("email", e.target.value)}
+								className="w-full p-2 border border-gray-300 rounded"
+							/>
+						</div>
+						<div className="mb-4">
+							<label className="block mb-1">Address</label>
+							<input
+								type="address"
+								value={user?.address}
+								onChange={(e) => handleInputChange("address", e.target.value)}
+								className="w-full p-2 border border-gray-300 rounded"
+							/>
+						</div>
+
+						{/* Date of Birth */}
+						<div className="flex flex-col md:flex-row gap-4 mb-4">
+							<div className="flex-1">
+								<label className="block mb-1">Date of birth</label>
+								<div className="flex gap-2">
+									<input
+										type="text"
+										placeholder="Day"
+										value={user.date_of_birth.day}
+										onChange={(e) => handleDobChange("day", e.target.value)}
+										className="w-1/3 p-2 border border-gray-300 rounded"
+									/>
+									<select
+										value={user.date_of_birth.month}
+										onChange={(e) => handleDobChange("month", e.target.value)}
+										className="w-1/3 p-2 border border-gray-300 rounded"
+									>
+										{months.map((month) => (
+											<option key={month.value} value={month.value}>
+												{month.label}
+											</option>
+										))}
+									</select>
+									<input
+										type="text"
+										placeholder="Year"
+										value={user.date_of_birth.year}
+										onChange={(e) => handleDobChange("year", e.target.value)}
+										className="w-1/3 p-2 border border-gray-300 rounded"
+									/>
+								</div>
+							</div>
+						</div>
+					</form>
+					<button
+						className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+						onClick={handleUpdate}
+					>
+						Save Changes
+					</button>
+				</div>
+			</div>
+
+			{/* Bottom Section: Conditions */}
+			<div className="mt-8">
+				<h2 className="text-xl font-bold mb-4">
+					Allergy or Condition Information
+				</h2>
+				{user.conditions && user.conditions.length > 0 ? (
+					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-48 overflow-x-auto">
+						{user.conditions.map((condition) => (
+							<div
+								key={condition._id}
+								className="p-4 border border-gray-300 rounded-lg shadow-sm bg-white min-w-[250px]"
+							>
+								<h3 className="text-lg font-semibold text-blue-600">
+									{condition.name}
+								</h3>
+								<p className="text-sm text-gray-600 mt-2">
+									{condition.description}
+								</p>
+								{condition.instructions && (
+									<p className="text-sm text-gray-500 mt-2">
+										<strong>Instructions:</strong> {condition.instructions}
+									</p>
+								)}
+								<p className="text-xs text-gray-400 mt-4">
+									Last updated:{" "}
+									{new Date(condition.updated_at).toLocaleDateString()}
+								</p>
+							</div>
+						))}
 					</div>
-				</form>
-				<button
-					className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-					onClick={handleUpdate}
+				) : (
+					<p className="text-gray-500">
+						No allergy or condition information provided.
+					</p>
+				)}
+				{/* <button
+					className="mt-6 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+					onClick={() => console.log("Navigate to edit conditions")}
 				>
-					Save Changes
-				</button>
+					Edit Conditions
+				</button> */}
 			</div>
 		</div>
 	);

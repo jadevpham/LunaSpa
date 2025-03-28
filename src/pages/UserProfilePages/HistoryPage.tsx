@@ -1,79 +1,101 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axiosInstance from "../../axios/axiosInstance";
+
+type Contact = {
+	phone: string;
+	email: string;
+	address: string;
+};
+type Branch = {
+	_id: string;
+	name: string;
+	contact: Contact;
+	phone_number: string;
+	email: string;
+	rating: number;
+};
+
+type Item = {
+	discount_price: number;
+	end_time: string | null;
+	item_id: string;
+	item_name: string;
+	item_type: string;
+	note: string;
+	order_id: string;
+	price: number;
+	quantity: number;
+	slot_id: string | null;
+	staff_profile_id: string | null;
+	start_time: string | null;
+	_id: string;
+};
 
 type Appointment = {
-	id: string;
-	branchName: string;
+	_id: string;
+	branch: Branch;
 	serviceName: string;
-	date: string;
 	time: string;
-	status: "completed" | "cancelled" | "upcoming";
-	price: number;
+	status: "confirmed" | "cancelled" | "pending";
+	total_price: number;
+	created_at: string;
+	updated_at: string;
+	items: Item[];
 };
 
 const HistoryPage = () => {
 	const [activeTab, setActiveTab] = useState<
-		"upcoming" | "completed" | "cancelled"
-	>("upcoming");
-	const [appointments] = useState<{
-		completed: Appointment[];
-		cancelled: Appointment[];
-		upcoming: Appointment[];
-	}>({
-		completed: [
-			{
-				id: "1",
-				branchName: "Downtown Branch",
-				serviceName: "Hair Cut & Styling",
-				date: "2024-03-20",
-				time: "10:00 AM",
-				status: "completed",
-				price: 350000,
-			},
-		],
-		cancelled: [
-			{
-				id: "2",
-				branchName: "City Center Branch",
-				serviceName: "Massage Therapy",
-				date: "2024-03-15",
-				time: "2:00 PM",
-				status: "cancelled",
-				price: 500000,
-			},
-		],
-		upcoming: [
-			{
-				id: "3",
-				branchName: "Riverside Branch",
-				serviceName: "Facial Treatment",
-				date: "2024-03-25",
-				time: "3:30 PM",
-				status: "upcoming",
-				price: 450000,
-			},
-		],
-	});
+		"confirmed" | "pending" | "cancelled"
+	>("confirmed");
+	const [appointments, setAppointments] = useState<Appointment[]>([]);
 
+	useEffect(() => {
+		const user = localStorage.getItem("user");
+
+		const account_id = JSON.parse(user)._id;
+		const getOrdersHistory = async () => {
+			try {
+				const response = await axiosInstance.get(
+					`/orders?customer_id=${account_id}&status=${activeTab}`,
+				);
+				if (response.data.result.data) {
+					setAppointments(response.data.result.data);
+				} else {
+					setAppointments([]);
+				}
+			} catch (error) {
+				console.error("Error fetching orders:", error);
+				setAppointments([]);
+			}
+		};
+		getOrdersHistory();
+	}, [activeTab]);
+	console.log(appointments);
 	const AppointmentCard = ({ appointment }: { appointment: Appointment }) => (
 		<div className="bg-white rounded-lg shadow-md p-4 mb-4">
 			<div className="flex justify-between items-start">
 				<div>
-					<h3 className="font-semibold text-lg">{appointment.branchName}</h3>
+					<h3 className="font-semibold text-lg">{appointment.branch.name}</h3>
 					<p className="text-gray-600">{appointment.serviceName}</p>
 					<div className="mt-2">
 						<p className="text-sm text-gray-500">
-							Date: {new Date(appointment.date).toLocaleDateString("en-US")}
+							Date: {new Date(appointment.created_at).toLocaleDateString()}
 						</p>
 						<p className="text-sm text-gray-500">Time: {appointment.time}</p>
+						<p className="text-sm text-gray-500">
+							{appointment.items.map((item) => item.item_name).join(", ")}
+						</p>
 					</div>
 				</div>
 				<div className="text-right">
-					<p className="font-semibold">${appointment.price.toLocaleString()}</p>
+					<p className="font-semibold">
+						${appointment.total_price.toLocaleString()}
+					</p>
 					<span
 						className={`inline-block px-2 py-1 rounded-full text-xs mt-2 
-							${appointment.status === "completed" ? "bg-green-100 text-green-800" : ""}
+							${appointment.status === "confirmed" ? "bg-green-100 text-green-800" : ""}
 							${appointment.status === "cancelled" ? "bg-red-100 text-red-800" : ""}
-							${appointment.status === "upcoming" ? "bg-blue-100 text-blue-800" : ""}`}
+							${appointment.status === "pending" ? "bg-blue-100 text-blue-800" : ""}`}
 					>
 						{appointment.status.charAt(0).toUpperCase() +
 							appointment.status.slice(1)}
@@ -90,10 +112,10 @@ const HistoryPage = () => {
 			{/* Custom Tabs */}
 			<div className="flex space-x-1 rounded-xl bg-gray-100 p-1 mb-6">
 				<button
-					onClick={() => setActiveTab("upcoming")}
+					onClick={() => setActiveTab("pending")}
 					className={`flex-1 rounded-lg py-2.5 text-sm font-medium leading-5 
 						${
-							activeTab === "upcoming"
+							activeTab === "pending"
 								? "bg-white shadow text-blue-700"
 								: "text-gray-600 hover:text-blue-700"
 						}`}
@@ -101,10 +123,10 @@ const HistoryPage = () => {
 					Upcoming Appointments
 				</button>
 				<button
-					onClick={() => setActiveTab("completed")}
+					onClick={() => setActiveTab("confirmed")}
 					className={`flex-1 rounded-lg py-2.5 text-sm font-medium leading-5 
 						${
-							activeTab === "completed"
+							activeTab === "confirmed"
 								? "bg-white shadow text-blue-700"
 								: "text-gray-600 hover:text-blue-700"
 						}`}
@@ -127,12 +149,12 @@ const HistoryPage = () => {
 			{/* Tab Content */}
 			<div className="mt-4">
 				{/* Upcoming Appointments */}
-				{activeTab === "upcoming" && (
+				{activeTab === "confirmed" && (
 					<div>
-						{appointments.upcoming.length > 0 ? (
-							appointments.upcoming.map((appointment) => (
+						{appointments.length > 0 ? (
+							appointments.map((appointment) => (
 								<AppointmentCard
-									key={appointment.id}
+									key={appointment._id}
 									appointment={appointment}
 								/>
 							))
@@ -145,18 +167,18 @@ const HistoryPage = () => {
 				)}
 
 				{/* Completed Appointments */}
-				{activeTab === "completed" && (
+				{activeTab === "pending" && (
 					<div>
-						{appointments.completed.length > 0 ? (
-							appointments.completed.map((appointment) => (
+						{appointments.length > 0 ? (
+							appointments.map((appointment) => (
 								<AppointmentCard
-									key={appointment.id}
+									key={appointment._id}
 									appointment={appointment}
 								/>
 							))
 						) : (
 							<p className="text-gray-500 text-center py-4">
-								No completed appointments
+								No pending appointments
 							</p>
 						)}
 					</div>
@@ -165,10 +187,10 @@ const HistoryPage = () => {
 				{/* Cancelled Appointments */}
 				{activeTab === "cancelled" && (
 					<div>
-						{appointments.cancelled.length > 0 ? (
-							appointments.cancelled.map((appointment) => (
+						{appointments.length > 0 ? (
+							appointments.map((appointment) => (
 								<AppointmentCard
-									key={appointment.id}
+									key={appointment._id}
 									appointment={appointment}
 								/>
 							))

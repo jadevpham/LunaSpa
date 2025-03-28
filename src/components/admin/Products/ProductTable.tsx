@@ -31,6 +31,8 @@ import { format } from "date-fns";
 import { Fragment, useEffect, useState, useCallback, useMemo } from "react";
 import { Avatar } from "@mui/joy";
 import axiosInstance from "../../../axios/axiosInstance";
+import { toast } from "react-toastify";
+import EditProductModal from "./EditProductModal";
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 	if (b[orderBy] < a[orderBy]) {
@@ -44,7 +46,7 @@ function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 
 type Order = "asc" | "desc";
 
-function getComparator<Key extends keyof Service>(
+function getComparator<Key extends keyof Product>(
 	order: Order,
 	orderBy: Key,
 ): (
@@ -64,22 +66,17 @@ type Category = {
 	_id: string;
 };
 
-type Service = {
+type Product = {
 	_id: string;
 	name: string;
 	description: string;
 	images: string[];
-	service_category: {
-		name: string;
-		_id: string;
-	};
 	price: number;
 	discount_price: number;
 	quantity: number;
-	product_status: number;
+	category: Category;
 	created_at: string;
 	updated_at: string;
-	product_category: Category;
 };
 
 export default function ProductTable() {
@@ -87,7 +84,7 @@ export default function ProductTable() {
 	const [selected, setSelected] = useState<readonly string[]>([]);
 	const [open, setOpen] = useState(false);
 
-	const [rows, setRows] = useState<Service[]>([]);
+	const [rows, setRows] = useState<Product[]>([]);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
 	const [selectedCount, setSelectedCount] = useState(0);
@@ -98,24 +95,58 @@ export default function ProductTable() {
 	const [totalPages, setTotalPages] = useState(1);
 	const [totalCount, setTotalCount] = useState(0);
 
-	// const [selectedService, setSelectedService] = useState<Service | null>(null);
-	// const [isModalOpen, setIsModalOpen] = useState(false);
+	const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+	const [isModalOpen, setIsModalOpen] = useState(false);
 
-	const handleEdit = (service: Service) => {
-		console.log(service);
-		// setSelectedService(service);
-		// setIsModalOpen(true);
+	const handleEdit = (product: Product) => {
+		console.log(product);
+		setSelectedProduct(product);
+		setIsModalOpen(true);
 	};
 
-	// const handleSave = (updatedService: Service) => {
-	// 	setRows((prevRows) =>
-	// 		prevRows.map((row) =>
-	// 			row._id === updatedService._id ? updatedService : row,
-	// 		),
-	// 	);
-	// 	setIsModalOpen(false);
-	// };
-	function RowMenu({ row }: { row: Service }) {
+	const handleSave = (updatedProduct: Product) => {
+		setRows((prevRows) =>
+			prevRows.map((row) =>
+				row._id === updatedProduct._id ? updatedProduct : row,
+			),
+		);
+		setIsModalOpen(false);
+	};
+
+	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+	const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+
+	const handleDeleteClick = (service: Product) => {
+		setProductToDelete(service);
+		setIsDeleteModalOpen(true);
+	};
+
+	const confirmDelete = () => {
+		if (productToDelete) {
+			axiosInstance
+				.delete(`/products/${productToDelete._id}`)
+				.then(() => {
+					setRows((prevRows) =>
+						prevRows.filter((row) => row._id !== productToDelete._id),
+					);
+					toast.success("Service deleted successfully");
+				})
+				.catch((error) => {
+					console.error("Error deleting service:", error);
+					toast.error("Failed to delete service");
+				})
+				.finally(() => {
+					setIsDeleteModalOpen(false);
+					setProductToDelete(null);
+				});
+		}
+	};
+
+	const cancelDelete = () => {
+		setIsDeleteModalOpen(false);
+		setProductToDelete(null);
+	};
+	function RowMenu({ row }: { row: Product }) {
 		// console.log(row);
 		return (
 			<Dropdown>
@@ -129,10 +160,10 @@ export default function ProductTable() {
 				</MenuButton>
 				<Menu size="sm" sx={{ minWidth: 140 }}>
 					<MenuItem onClick={() => handleEdit(row)}>Edit</MenuItem>
-					<MenuItem>Rename</MenuItem>
-					<MenuItem>Move</MenuItem>
 					<Divider />
-					<MenuItem color="danger">Delete</MenuItem>
+					<MenuItem onClick={() => handleDeleteClick(row)} color="danger">
+						Delete
+					</MenuItem>
 				</Menu>
 			</Dropdown>
 		);
@@ -381,7 +412,7 @@ export default function ProductTable() {
 				}}
 			>
 				<FormControl sx={{ flex: 1 }} size="sm">
-					<FormLabel>Search for user</FormLabel>
+					<FormLabel>Search for product</FormLabel>
 					<Input
 						size="sm"
 						placeholder="Search"
@@ -588,6 +619,32 @@ export default function ProductTable() {
 					</Select>
 				</FormControl>
 			</Box>
+			<EditProductModal
+				product={selectedProduct}
+				isOpen={isModalOpen}
+				onClose={() => {
+					setIsModalOpen(false);
+				}}
+				onSave={handleSave}
+			/>
+
+			<Modal open={isDeleteModalOpen} onClose={cancelDelete}>
+				<ModalDialog>
+					<ModalClose />
+					<Typography level="h4">Confirm Deletion</Typography>
+					<Typography>
+						Are you sure you want to delete {productToDelete?.name}?
+					</Typography>
+					<div className="flex justify-end gap-2 mt-4">
+						<Button variant="plain" color="neutral" onClick={cancelDelete}>
+							Cancel
+						</Button>
+						<Button variant="solid" color="danger" onClick={confirmDelete}>
+							Delete
+						</Button>
+					</div>
+				</ModalDialog>
+			</Modal>
 		</Fragment>
 	);
 }

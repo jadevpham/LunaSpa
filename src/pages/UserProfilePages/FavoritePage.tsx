@@ -57,15 +57,15 @@ const FavoritePage = () => {
 				const response = await axiosInstance.get(
 					`/favorites/user-profiles/${userProfileId}?limit=10&page=1`,
 				);
-				// toast.log(response.data.result.data);
+				// console.log(response.data.result.data);
 				const services = response.data.result.data.filter(
 					(item: FavoriteItem) => item.item_type.toString() === "service",
 				);
-				// toast.log(services.map((service: FavoriteItem) => service.item_info));
+				// console.log(services.map((service: FavoriteItem) => service.item_info));
 				const products = response.data.result.data.filter(
 					(item: FavoriteItem) => item.item_type.toString() === "product",
 				);
-				// toast.log(products.map((product: FavoriteItem) => product.item_info));
+				// console.log(products.map((product: FavoriteItem) => product));
 				setFavoriteServices(
 					services.map((service: FavoriteItem) => service.item_info as Service),
 				);

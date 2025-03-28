@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../../../axios/axiosInstance";
+import { toast } from "react-toastify";
 
 interface Service {
 	_id: string;
@@ -40,6 +41,7 @@ const EditServiceModal: React.FC<EditServiceModalProps> = ({
 	service,
 	isOpen,
 	onClose,
+	onSave,
 }) => {
 	const [editedService, setEditedService] = useState<Service | null>(service);
 	const [isAccordionOpen, setIsAccordionOpen] = useState(false);
@@ -112,7 +114,11 @@ const EditServiceModal: React.FC<EditServiceModalProps> = ({
 					`/services/${editedService._id}`,
 					serviceToUpdate, // Gửi đối tượng đã loại bỏ
 				);
-				console.log(response);
+				if (response.status !== 200) {
+					throw new Error("Failed to update service");
+				}
+				toast.success("Updated successfully");
+				onSave(response.data.result);
 			} catch (error) {
 				console.log(error);
 			}
@@ -228,7 +234,7 @@ const EditServiceModal: React.FC<EditServiceModalProps> = ({
 								<input
 									type="number"
 									placeholder="Price"
-									value={duration.price}
+									value={duration.price ? duration.price : ""}
 									onChange={(e) =>
 										handleDurationChange(index, "price", Number(e.target.value))
 									}
@@ -237,7 +243,7 @@ const EditServiceModal: React.FC<EditServiceModalProps> = ({
 								<input
 									type="number"
 									placeholder="Discount Price"
-									value={duration.discount_price}
+									value={duration.discount_price ? duration.discount_price : ""}
 									onChange={(e) =>
 										handleDurationChange(
 											index,
@@ -250,7 +256,11 @@ const EditServiceModal: React.FC<EditServiceModalProps> = ({
 								<input
 									type="number"
 									placeholder="Duration in Minutes"
-									value={duration.duration_in_minutes}
+									value={
+										duration.duration_in_minutes
+											? duration.duration_in_minutes
+											: ""
+									}
 									onChange={(e) =>
 										handleDurationChange(
 											index,
