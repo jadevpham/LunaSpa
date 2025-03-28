@@ -35,9 +35,9 @@ const ProductsList: React.FC = () => {
 						// data={product}
 						name={product.name}
 						address={product.description}
-						img={product.images[0]}
+						img={product.images?.[0] ?? "/default-image.jpg"}
 						// category={product.quantity.toString()}
-						category={product.product_category.name}
+						category={product.product_category?.name ?? "Chưa có danh mục"}
 						star={product.price}
 						vote={product.discount_price}
 						ratingComponent={
