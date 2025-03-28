@@ -24,47 +24,29 @@ const Footer: React.FC = () => {
 						<h3 className="text-lg font-bold">Payment method</h3>
 						<div className="flex gap-4 mt-2">
 							<img
-								src="../../public/vnpay.png"
-								alt="VNPAY"
-								title="VNPAY"
+								src="../../visa.jpg"
+								alt="VISA"
+								title="VISA"
 								className="h-8"
 							/>
 							<img
-								src="../../public/momo.png"
-								alt="Momo"
-								title="MOMO"
-								className="h-8"
-							/>
-							<img
-								src="../../public/bank.png"
-								alt="Bank"
-								title="BANK"
+								src="../../mastercard.jpg"
+								alt="MASTERCARD"
+								title="MASTERCARD"
 								className="h-8"
 							/>
 						</div>
 						<div>
 							<h3 className="text-lg font-bold mt-8">Find us on social</h3>
 							<div className="flex gap-2 mt-2">
+								<img src="../../facebook.png" alt="Facebook" className="h-8" />
 								<img
-									src="../../public/facebook.png"
-									alt="Facebook"
-									className="h-8"
-								/>
-								<img
-									src="../../public/instagram.png"
+									src="../../instagram.png"
 									alt="Instagram"
 									className="h-8"
 								/>
-								<img
-									src="../../public/youtube.png"
-									alt="YouTube"
-									className="h-8"
-								/>
-								<img
-									src="../../public/tiktok.png"
-									alt="TikTok"
-									className="h-8"
-								/>
+								<img src="../../youtube.png" alt="YouTube" className="h-8" />
+								<img src="../../gittiktok.png" alt="TikTok" className="h-8" />
 							</div>
 						</div>
 					</div>

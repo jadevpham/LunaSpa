@@ -50,7 +50,7 @@ const ProductsByServiceList = ({ serviceId }: ProductsByServiceListProps) => {
 							key={product._id} // Đảm bảo key là duy nhất
 							name={product.name}
 							address={product.description}
-							img={product.images}
+							img={product.images?.[0]}
 							category={product.product_category?.name || "Unknown Category"} // Kiểm tra có category không
 							star={product.discount_price}
 							vote={product.discount_price}
