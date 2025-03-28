@@ -7,18 +7,19 @@ import { useAuth } from "./useAuth";
 const AuthRedirectHandler = () => {
 	const navigate = useNavigate();
 	const [params] = useSearchParams();
-	const { login } = useAuth();
+	const { login, logout } = useAuth();
 
 	const getUserInfo = async (access_token: string, refresh_token: string) => {
 		try {
 			const response = await axiosInstance.get("/accounts/me");
 			const userData = response.data.result.user_profile.account;
-
-			login(access_token, refresh_token, userData);
+			const user_profile_id = response.data.result.user_profile._id;
+			login(access_token, refresh_token, userData, user_profile_id);
 
 			navigate("/");
 		} catch (error) {
 			console.error("Error fetching user info:", error);
+			logout();
 			navigate("/auth");
 		}
 	};

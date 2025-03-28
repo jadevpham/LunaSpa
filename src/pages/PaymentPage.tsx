@@ -71,7 +71,7 @@ const PaymentPage: React.FC = () => {
 			try {
 				const orderResponse = await axiosInstance.post("/orders/products", {
 					branch_id: selectedBranch?._id,
-					items,
+					product_items: items,
 					payment_method: "stripe",
 					note: selectedPaymentMethod?.notes,
 				});

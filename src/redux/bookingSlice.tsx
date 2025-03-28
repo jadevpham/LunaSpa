@@ -6,6 +6,7 @@ interface Duration {
 	discount_price: number;
 	duration_in_minutes: number;
 	sub_description: string;
+	index: number;
 }
 
 type BookingState = {
@@ -30,6 +31,7 @@ type BookingState = {
 		view_count: number;
 		booking_count: number;
 		status: number;
+		durations: Duration[];
 		selectedDuration: Duration;
 		devices: {
 			name: string;

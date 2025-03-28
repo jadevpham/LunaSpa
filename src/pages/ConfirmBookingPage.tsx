@@ -19,6 +19,8 @@ const ConfirmBookingPage = () => {
 	);
 	const [bookingNotes, setBookingNotes] = useState("");
 	const [method, setMethod] = useState("");
+	const [discountCode, setDiscountCode] = useState("");
+
 	if (!selectedService) {
 		navigate("/book/service");
 		return null;
@@ -28,7 +30,6 @@ const ConfirmBookingPage = () => {
 		navigate("/book/select-time");
 		return null;
 	}
-
 	const handlePaymentChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		const selectedMethod = e.target.value;
 		setMethod(selectedMethod);
@@ -54,14 +55,14 @@ const ConfirmBookingPage = () => {
 			}),
 		);
 	};
-	// const handleDiscountApply = () => {
-	// 	const validCodes = ["DISCOUNT10", "SAVE20"];
-	// 	if (validCodes.includes(discountCode)) {
-	// 		toast.success("Discount code applied successfully!");
-	// 	} else {
-	// 		toast.error("Invalid discount code.");
-	// 	}
-	// };
+	const handleDiscountApply = () => {
+		const validCodes = ["DISCOUNT10", "SAVE20"];
+		if (validCodes.includes(discountCode)) {
+			toast.success("Discount code applied successfully!");
+		} else {
+			toast.error("Invalid discount code.");
+		}
+	};
 
 	return (
 		<div className="container mx-auto shadow-xl p-8 rounded-2xl bg-white">
@@ -83,7 +84,7 @@ const ConfirmBookingPage = () => {
 				</select>
 			</div>
 
-			{/* <div className="bg-gray-100 p-6 rounded-lg mb-4">
+			<div className="bg-gray-100 p-6 rounded-lg mb-4">
 				<h3 className="font-semibold text-lg mb-2">Discount Code</h3>
 				<div className="flex">
 					<input
@@ -100,7 +101,7 @@ const ConfirmBookingPage = () => {
 						Apply
 					</button>
 				</div>
-			</div> */}
+			</div>
 
 			<div className="bg-gray-100 p-6 rounded-lg">
 				<h3 className="font-semibold text-lg mb-2">Booking Notes</h3>

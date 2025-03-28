@@ -1,6 +1,5 @@
-import { useState, useEffect, Fragment } from "react";
+import { useState, useEffect, Fragment, useCallback } from "react";
 import { ColorPaletteProp } from "@mui/joy/styles";
-import Avatar from "@mui/joy/Avatar";
 import Box from "@mui/joy/Box";
 import Button from "@mui/joy/Button";
 import Chip from "@mui/joy/Chip";
@@ -19,11 +18,7 @@ import Sheet from "@mui/joy/Sheet";
 import Checkbox from "@mui/joy/Checkbox";
 import IconButton, { iconButtonClasses } from "@mui/joy/IconButton";
 import Typography from "@mui/joy/Typography";
-import Menu from "@mui/joy/Menu";
-import MenuButton from "@mui/joy/MenuButton";
-import MenuItem from "@mui/joy/MenuItem";
-import Dropdown from "@mui/joy/Dropdown";
-
+import { format } from "date-fns";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
@@ -32,8 +27,8 @@ import BlockIcon from "@mui/icons-material/Block";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
-import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
 import axiosInstance from "../../../axios/axiosInstance";
+import ViewDetailOrderModal from "./ViewDetailOrder";
 
 type Customer = {
 	_id: string;
@@ -103,7 +98,7 @@ function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 
 type Order = "asc" | "desc";
 
-function getComparator<Key extends keyof (typeof rows)[number]>(
+function getComparator<Key extends keyof OrderType>(
 	order: Order,
 	orderBy: Key,
 ): (
@@ -115,25 +110,6 @@ function getComparator<Key extends keyof (typeof rows)[number]>(
 		: (a, b) => -descendingComparator(a, b, orderBy);
 }
 
-function RowMenu() {
-	return (
-		<Dropdown>
-			<MenuButton
-				slots={{ root: IconButton }}
-				slotProps={{ root: { variant: "plain", color: "neutral", size: "sm" } }}
-			>
-				<MoreHorizRoundedIcon />
-			</MenuButton>
-			<Menu size="sm" sx={{ minWidth: 140 }}>
-				<MenuItem>Edit</MenuItem>
-				<MenuItem>Rename</MenuItem>
-				<MenuItem>Move</MenuItem>
-				<Divider />
-				<MenuItem color="danger">Delete</MenuItem>
-			</Menu>
-		</Dropdown>
-	);
-}
 export default function OrderTable() {
 	const [order, setOrder] = useState<Order>("desc");
 	const [selected, setSelected] = useState<readonly string[]>([]);
@@ -146,40 +122,152 @@ export default function OrderTable() {
 	const [itemsPerPage, setItemsPerPage] = useState(10);
 	const [totalPages, setTotalPages] = useState(1);
 	const [totalCount, setTotalCount] = useState(0);
+	const [status, setStatus] = useState("");
+	const [selectedOrder, setSelectedOrder] = useState<OrderType | null>(null);
+	const [isModalOpen, setIsModalOpen] = useState(false);
 
-	// const [selectedService, setSelectedService] = useState<OrderType | null>(
-	// 	null,
-	// );
-	// const [isModalOpen, setIsModalOpen] = useState(false);
+	const statusOptions = [
+		{ _id: "confirmed", name: "Confirmed" },
+		{ _id: "pending", name: "Pending" },
+		{ _id: "cancelled", name: "Cancelled" },
+	];
+
+	const handleViewDetail = (order: OrderType) => {
+		setSelectedOrder(order);
+		setIsModalOpen(true);
+	};
 
 	const getOrders = async () => {
 		const params = new URLSearchParams();
+
+		if (status) {
+			params.append("status", status);
+		}
 		if (typeof itemsPerPage === "number" && !isNaN(itemsPerPage)) {
 			params.append("limit", itemsPerPage.toString());
 		}
 		if (typeof currentPage === "number" && !isNaN(currentPage)) {
 			params.append("page", currentPage.toString());
 		}
-		if (searchTerm) {
-			params.append("search", searchTerm);
-		}
+
 		try {
-			const orderResponse = await axiosInstance.get("/orders");
-			console.log(orderResponse);
-			setSelectedCount(orderResponse.data.total_count);
+			const orderResponse = await axiosInstance.get(
+				`/orders?${params.toString()}`,
+			);
+			setRows(orderResponse.data.result.data);
 			setTotalCount(orderResponse.data.total_count);
 			setTotalPages(orderResponse.data.total_pages);
-			setRows(orderResponse.data.result.data);
-			console.log(rows);
 		} catch (error) {
 			console.error("Error fetching data:", error);
-			// Handle error (e.g., show a notification)
 		}
 	};
 
 	useEffect(() => {
 		getOrders();
-	}, [debouncedSearchTerm, currentPage, itemsPerPage]);
+	}, []);
+
+	useEffect(() => {
+		const handler = setTimeout(() => {
+			setDebouncedSearchTerm(searchTerm);
+		}, 200);
+
+		return () => {
+			clearTimeout(handler);
+		};
+	}, [searchTerm]);
+
+	useEffect(() => {
+		getOrders();
+	}, [debouncedSearchTerm, currentPage, itemsPerPage, status]);
+
+	const handlePrevPage = useCallback(() => {
+		if (currentPage > 1) {
+			setCurrentPage(currentPage - 1);
+		}
+	}, [currentPage]);
+
+	const handleNextPage = useCallback(() => {
+		if (currentPage < totalPages) {
+			setCurrentPage(currentPage + 1);
+		}
+	}, [currentPage, totalPages]);
+
+	const handleChangeRowsPerPage = useCallback(
+		(_event: unknown, newValue: number | null) => {
+			setItemsPerPage(parseInt(newValue!.toString(), 10));
+			setCurrentPage(1);
+		},
+		[],
+	);
+
+	const handleCheckboxChange = (
+		event: React.ChangeEvent<HTMLInputElement>,
+		rowId: string,
+	) => {
+		if (event.target.checked) {
+			setSelected((ids) => [...ids, rowId]);
+		} else {
+			setSelected((ids) => ids.filter((id) => id !== rowId));
+		}
+		setSelectedCount(selected.length + (event.target.checked ? 1 : -1));
+	};
+
+	const handleStatusChange = (_event: unknown, newValue: string | null) => {
+		setStatus(newValue || "");
+		if (newValue) {
+			setCurrentPage(1);
+		}
+		setSelected([]);
+		setSelectedCount(0);
+	};
+
+	const renderPagination = () => {
+		const maxPagesToShow = 5;
+		const pages = [];
+
+		if (totalPages <= maxPagesToShow) {
+			for (let i = 1; i <= totalPages; i++) {
+				pages.push(i);
+			}
+		} else {
+			if (currentPage <= 3) {
+				pages.push(1, 2, 3, 4, "...", totalPages);
+			} else if (currentPage >= totalPages - 2) {
+				pages.push(
+					1,
+					"...",
+					totalPages - 3,
+					totalPages - 2,
+					totalPages - 1,
+					totalPages,
+				);
+			} else {
+				pages.push(
+					1,
+					"...",
+					currentPage - 1,
+					currentPage,
+					currentPage + 1,
+					"...",
+					totalPages,
+				);
+			}
+		}
+
+		return pages.map((page, index) => (
+			<IconButton
+				key={index}
+				size="sm"
+				variant={currentPage === page ? "outlined" : "soft"}
+				color="neutral"
+				onClick={() => typeof page === "number" && setCurrentPage(page)}
+				disabled={typeof page !== "number"}
+			>
+				{page}
+			</IconButton>
+		));
+	};
+
 	const renderFilters = () => (
 		<Fragment>
 			<FormControl size="sm">
@@ -187,33 +275,16 @@ export default function OrderTable() {
 				<Select
 					size="sm"
 					placeholder="Filter by status"
+					onChange={handleStatusChange}
 					slotProps={{ button: { sx: { whiteSpace: "nowrap" } } }}
+					value={status}
 				>
-					<Option value="paid">Paid</Option>
-					<Option value="pending">Pending</Option>
-					<Option value="refunded">Refunded</Option>
-					<Option value="cancelled">Cancelled</Option>
-				</Select>
-			</FormControl>
-			<FormControl size="sm">
-				<FormLabel>Category</FormLabel>
-				<Select size="sm" placeholder="All">
-					<Option value="all">All</Option>
-					<Option value="refund">Refund</Option>
-					<Option value="purchase">Purchase</Option>
-					<Option value="debit">Debit</Option>
-				</Select>
-			</FormControl>
-			<FormControl size="sm">
-				<FormLabel>Customer</FormLabel>
-				<Select size="sm" placeholder="All">
-					<Option value="all">All</Option>
-					<Option value="olivia">Olivia Rhye</Option>
-					<Option value="steve">Steve Hampton</Option>
-					<Option value="ciaran">Ciaran Murray</Option>
-					<Option value="marina">Marina Macdonald</Option>
-					<Option value="charles">Charles Fulton</Option>
-					<Option value="jay">Jay Hoper</Option>
+					<Option value="">All</Option>
+					{statusOptions.map((s) => (
+						<Option key={s._id} value={s._id}>
+							{s.name}
+						</Option>
+					))}
 				</Select>
 			</FormControl>
 		</Fragment>
@@ -228,6 +299,7 @@ export default function OrderTable() {
 					size="sm"
 					placeholder="Search"
 					startDecorator={<SearchIcon />}
+					onChange={(e) => setSearchTerm(e.target.value)}
 					sx={{ flexGrow: 1 }}
 				/>
 				<IconButton
@@ -277,6 +349,11 @@ export default function OrderTable() {
 				</FormControl>
 				{renderFilters()}
 			</Box>
+			{searchTerm && (
+				<Typography level="body-sm">
+					Search result: {totalCount} found
+				</Typography>
+			)}
 			<Sheet
 				className="OrderTableContainer"
 				variant="outlined"
@@ -289,6 +366,11 @@ export default function OrderTable() {
 					minHeight: 0,
 				}}
 			>
+				{selectedCount > 0 && (
+					<Typography level="body-sm" sx={{ padding: 1 }}>
+						Selected: {selectedCount}
+					</Typography>
+				)}
 				<Table
 					aria-labelledby="tableTitle"
 					stickyHeader
@@ -327,6 +409,8 @@ export default function OrderTable() {
 									sx={{ verticalAlign: "text-bottom" }}
 								/>
 							</th>
+							<th style={{ width: 140, padding: "12px 6px" }}>Order Id</th>
+
 							<th style={{ width: 120, padding: "12px 6px" }}>
 								<Link
 									underline="none"
@@ -348,13 +432,12 @@ export default function OrderTable() {
 											: { "& svg": { transform: "rotate(180deg)" } },
 									]}
 								>
-									ID
+									Date
 								</Link>
 							</th>
-							<th style={{ width: 140, padding: "12px 6px" }}>Date</th>
 							<th style={{ width: 140, padding: "12px 6px" }}>Status</th>
 							<th style={{ width: 240, padding: "12px 6px" }}>Customer</th>
-							<th style={{ width: 140, padding: "12px 6px" }}>Total Price</th>
+							<th style={{ width: 140, padding: "12px 6px" }}>Action</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -365,13 +448,7 @@ export default function OrderTable() {
 										size="sm"
 										checked={selected.includes(row._id)}
 										color={selected.includes(row._id) ? "primary" : undefined}
-										onChange={(event) => {
-											setSelected((ids) =>
-												event.target.checked
-													? ids.concat(row._id)
-													: ids.filter((itemId) => itemId !== row._id),
-											);
-										}}
+										onChange={(event) => handleCheckboxChange(event, row._id)}
 										slotProps={{ checkbox: { sx: { textAlign: "left" } } }}
 										sx={{ verticalAlign: "text-bottom" }}
 									/>
@@ -380,7 +457,9 @@ export default function OrderTable() {
 									<Typography level="body-xs">{row._id}</Typography>
 								</td>
 								<td>
-									<Typography level="body-xs">{row.created_at}</Typography>
+									<Typography level="body-xs">
+										{format(new Date(row.created_at), "dd/MM/yyyy")}
+									</Typography>
 								</td>
 								<td>
 									<Chip
@@ -388,20 +467,20 @@ export default function OrderTable() {
 										size="sm"
 										startDecorator={
 											{
-												Paid: <CheckRoundedIcon />,
-												Refunded: <AutorenewRoundedIcon />,
-												Cancelled: <BlockIcon />,
+												confirmed: <CheckRoundedIcon />,
+												pending: <AutorenewRoundedIcon />,
+												cancelled: <BlockIcon />,
 											}[row.status]
 										}
 										color={
 											{
-												Paid: "success",
-												Refunded: "neutral",
-												Cancelled: "danger",
+												confirmed: "success",
+												pending: "neutral",
+												cancelled: "danger",
 											}[row.status] as ColorPaletteProp
 										}
 									>
-										{row.status}
+										{row.status.charAt(0).toUpperCase() + row.status.slice(1)}
 									</Chip>
 								</td>
 								<td>
@@ -418,10 +497,9 @@ export default function OrderTable() {
 								</td>
 								<td>
 									<Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-										<Link level="body-xs" component="button">
-											Download
-										</Link>
-										<RowMenu />
+										<Button onClick={() => handleViewDetail(row)}>
+											Detail
+										</Button>
 									</Box>
 								</td>
 							</tr>
@@ -439,38 +517,45 @@ export default function OrderTable() {
 						xs: "none",
 						md: "flex",
 					},
+					justifyContent: "center",
+					alignItems: "center",
 				}}
 			>
-				<Button
-					size="sm"
-					variant="outlined"
-					color="neutral"
-					startDecorator={<KeyboardArrowLeftIcon />}
-				>
-					Previous
-				</Button>
-
+				<Box sx={{ flex: 1.5 }} />
+				<KeyboardArrowLeftIcon
+					sx={{
+						cursor: "pointer",
+						fontSize: "2rem",
+					}}
+					onClick={handlePrevPage}
+				/>
+				{renderPagination()}
+				<KeyboardArrowRightIcon
+					sx={{
+						cursor: "pointer",
+						fontSize: "2rem",
+					}}
+					onClick={handleNextPage}
+				/>
 				<Box sx={{ flex: 1 }} />
-				{["1", "2", "3", "…", "8", "9", "10"].map((page) => (
-					<IconButton
-						key={page}
-						size="sm"
-						variant={Number(page) ? "outlined" : "plain"}
-						color="neutral"
-					>
-						{page}
-					</IconButton>
-				))}
-				<Box sx={{ flex: 1 }} />
-				<Button
-					size="sm"
-					variant="outlined"
-					color="neutral"
-					endDecorator={<KeyboardArrowRightIcon />}
-				>
-					Next
-				</Button>
+				<FormControl orientation="horizontal" size="sm">
+					<FormLabel>Rows per page:</FormLabel>
+					<Select onChange={handleChangeRowsPerPage} value={itemsPerPage}>
+						<Option value={5}>5</Option>
+						<Option value={10}>10</Option>
+						<Option value={25}>25</Option>
+						<Option value={50}>50</Option>
+					</Select>
+				</FormControl>
 			</Box>
+			<ViewDetailOrderModal
+				order={selectedOrder}
+				isOpen={isModalOpen}
+				onClose={() => {
+					console.log("Modal closed");
+					setIsModalOpen(false);
+				}}
+			/>
 		</Fragment>
 	);
 }

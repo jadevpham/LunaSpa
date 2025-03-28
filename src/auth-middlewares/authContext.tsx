@@ -119,6 +119,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 		localStorage.removeItem("refresh_token");
 		localStorage.removeItem("user");
 		localStorage.removeItem("user_profile_id");
+		console.log('logout')
 		setRole(null);
 		setIsAuthenticated(false);
 		setVerify(0);

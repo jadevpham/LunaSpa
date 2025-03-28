@@ -8,6 +8,7 @@ import { addProduct, setProducts } from "../redux/bookingSlice";
 import { toast } from "react-toastify";
 import CardList from "../templates/CardList";
 import CardItem from "../templates/CardItem";
+import axiosInstance from "../axios/axiosInstance";
 
 const BookingLayout = () => {
 	const navigate = useNavigate();
@@ -25,17 +26,42 @@ const BookingLayout = () => {
 		category_id: string;
 		star: number;
 		vote: number;
+		product_category?: {
+			_id: string;
+			name: string;
+		};
 	}
 
 	const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 	const [quantity, setQuantity] = useState(1);
-	const productsList = useSelector(
-		(state: RootState) => state.products.productsList,
-	);
+	const [productsList, setProductsList] = useState<Product[]>([]);
 	console.log(productsList);
 	const selectedProducts = useSelector(
 		(state: RootState) => state.booking.selectedProducts,
 	);
+	const selectedService = useSelector(
+		(state: RootState) => state.booking.selectedService,
+	);
+	const service_id = selectedService[0]?._id;
+	useEffect(() => {
+		const fetchProducts = async () => {
+			try {
+				if (!service_id) return;
+				const response = await axiosInstance.get(
+					`/service-products/recommended/${service_id}`,
+				);
+				const products = response.data.result.data.map(
+					(product) => product.product,
+				);
+				console.log(products);
+				// dispatch(setProducts(products));
+				setProductsList(products);
+			} catch (error) {
+				console.error("Error fetching products:", error);
+			}
+		};
+		fetchProducts();
+	}, [service_id]);
 
 	const handleAddProduct = (product: Product) => {
 		const existingProduct = selectedProducts?.find(
@@ -164,30 +190,86 @@ const BookingLayout = () => {
 				</div>
 
 				{/* Product List */}
-				<CardList
-					title="Recommended products"
-					items={productsList}
-					customClass="bg-white rounded-lg shadow-xl"
-					renderItem={(product) => (
-						<CardItem
-							key={product._id}
-							name={product.name}
-							address={product.price.toLocaleString("en-US")}
-							img={product.images[0]}
-							category={product.product_category.name}
-							star={product.price}
-							vote={product.price}
-							onClick={() => {
-								handleAddProduct({
-									...product,
-									category_id: product.product_category?._id || "",
-									star: 0, // Default value since 'star' is not part of ProductsItemType
-									vote: 0, // Default value since 'vote' is not part of ProductsItemType
-								});
-							}}
-						/>
-					)}
-				/>
+				{!service_id ? (
+					<div className="flex flex-col items-center justify-center p-8 border-t-2">
+						<img
+							src="../../public/box.png"
+							className="w-12"
+							alt="Please choose a service first"
+						></img>
+						<p className="mt-4 text-gray-500">
+							Please choose a service first for recommended products
+						</p>
+					</div>
+				) : (
+					<CardList
+						title="Recommended products"
+						items={productsList}
+						renderItem={(product) => {
+							const isAdded = selectedProducts?.some(
+								(item) => item._id === product._id,
+							);
+							return (
+								<div
+									className={`relative ${isAdded ? "border border-blue-500 rounded-md" : ""}`}
+								>
+									<CardItem
+										key={product._id}
+										name={product.name}
+										address={product.description}
+										img={product.images[0]}
+										category={product.product_category?.name || "Unknown"}
+										star={product.price}
+										vote={product.discount_price}
+										onClick={() => {
+											handleAddProduct({
+												...product,
+												category_id: product.product_category?._id || "",
+												star: 0,
+												vote: 0,
+											});
+										}}
+										ratingComponent={
+											<div className="flex items-center gap-4 text-sm my-2">
+												<span className="text-gray-500 line-through">
+													{new Intl.NumberFormat("vi-VN", {
+														style: "currency",
+														currency: "VND",
+													}).format(product.price)}
+												</span>
+												<span className="bg-yellow-200 text-red-500 font-semibold px-3 py-1 rounded-full">
+													{new Intl.NumberFormat("vi-VN", {
+														style: "currency",
+														currency: "VND",
+													}).format(product.discount_price)}
+												</span>
+											</div>
+										}
+									/>
+									{isAdded && (
+										<span className="absolute top-0 right-0 bg-blue-500 text-white text-xs px-2 py-1 rounded-sm">
+											Added
+										</span>
+									)}
+								</div>
+							);
+						}}
+					/>
+				)}
+
+				{/* Kiểm tra nếu không có service */}
+
+				{/* Kiểm tra nếu có service nhưng không có sản phẩm */}
+				{service_id && productsList.length === 0 && (
+					<div className="flex flex-col items-center justify-center p-8">
+						<img
+							src="../../public/box.png"
+							className="w-10"
+							alt="No products available"
+						></img>
+						<p className="mt-4 text-gray-500">No products available</p>
+					</div>
+				)}
 			</div>
 			{showModal && (
 				<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

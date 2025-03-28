@@ -1,7 +1,5 @@
 import { Box, Typography, Button } from "@mui/joy";
 import DownloadRoundedIcon from "@mui/icons-material/DownloadRounded";
-import UserTable from "../../../components/admin/Users/UserTable";
-import UserList from "../../../components/admin/Users/UserList";
 import CustomBreadcrumbs from "../../../components/admin/Breadcrumbs";
 import ProductTable from "../../../components/admin/Products/ProductTable";
 const ProductsManagement = () => {
@@ -28,7 +26,7 @@ const ProductsManagement = () => {
 				}}
 			>
 				<Typography level="h2" component="h1">
-					Users
+					Products
 				</Typography>
 				<Button
 					color="primary"

@@ -31,7 +31,8 @@ import { format } from "date-fns";
 import { Fragment, useEffect, useState, useCallback, useMemo } from "react";
 import { Avatar } from "@mui/joy";
 import axiosInstance from "../../../axios/axiosInstance";
-import EditServiceModal from "./EditServiceModal";
+import EditUserModal from "./EditUserModal";
+import { toast } from "react-toastify";
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 	if (b[orderBy] < a[orderBy]) {
@@ -45,49 +46,59 @@ function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 
 type Order = "asc" | "desc";
 
-function getComparator<Key extends keyof Service>(
+function getComparator<Key extends keyof Account>(
 	order: Order,
 	orderBy: Key,
-): (
-	a: { [key in Key]: number | string },
-	b: { [key in Key]: number | string },
-) => number {
+): (a: User, b: User) => number {
 	return order === "desc"
-		? (a, b) => descendingComparator(a, b, orderBy)
-		: (a, b) => -descendingComparator(a, b, orderBy);
+		? (a, b) => descendingComparator(a.account, b.account, orderBy)
+		: (a, b) => -descendingComparator(a.account, b.account, orderBy);
 }
 
-type Category = {
+type Role = {
+	role_id: string;
+	role_name: string;
+};
+type Account = {
 	_id: string;
 	name: string;
+	phone_number: string;
+	email: string;
+	address: string;
+	avatar: string;
+	roles: Role;
+	date_of_birth: string;
+	verify: number;
+	created_at: string;
+	updated_at: string;
 };
-
-type Service = {
+type Condition = {
 	_id: string;
 	name: string;
 	description: string;
-	images: string[];
-	service_category: {
-		name: string;
-		_id: string;
-	};
-	view_count: number;
-	booking_count: number;
-	status: number;
-	durations: {
-		duration_name: string;
-		price: number;
-		discount_price: number;
-		duration_in_minutes: number;
-		sub_description: string;
-	}[];
-	devices: {
-		name: string;
-		description: string;
-		status: number;
-	}[];
+	instructions: string;
 	created_at: string;
 	updated_at: string;
+};
+type User = {
+	account: Account;
+	conditions: Condition[];
+	_id: string;
+};
+
+const getVerifyStatus = (status: number): string => {
+	switch (status) {
+		case 0:
+			return "UNVERIFIED";
+		case 1:
+			return "VERIFIED";
+		case 2:
+			return "DELETED";
+		case 3:
+			return "BLOCKED";
+		default:
+			return "UNKNOWN";
+	}
 };
 
 export default function UserTable() {
@@ -95,34 +106,65 @@ export default function UserTable() {
 	const [selected, setSelected] = useState<readonly string[]>([]);
 	const [open, setOpen] = useState(false);
 
-	const [rows, setRows] = useState<Service[]>([]);
+	const [rows, setRows] = useState<User[]>([]);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
 	const [selectedCount, setSelectedCount] = useState(0);
-	const [categoryId, setCategoryId] = useState("");
-	const [categories, setCategories] = useState<Category[]>([]);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [itemsPerPage, setItemsPerPage] = useState(10);
 	const [totalPages, setTotalPages] = useState(1);
 	const [totalCount, setTotalCount] = useState(0);
 
-	const [selectedService, setSelectedService] = useState<Service | null>(null);
+	const [selectedUser, setSelectedUser] = useState<User | null>(null);
 	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+	const [userToDelete, setUserToDelete] = useState<User | null>(null);
+	const [selectedRole, setSelectedRole] = useState<string>("");
 
-	const handleEdit = (service: Service) => {
-		setSelectedService(service);
+	const handleEdit = (user: User) => {
+		setSelectedUser(user);
 		setIsModalOpen(true);
 	};
 
-	const handleSave = (updatedService: Service) => {
+	const handleSave = (updatedUser: User) => {
 		setRows((prevRows) =>
-			prevRows.map((row) =>
-				row._id === updatedService._id ? updatedService : row,
-			),
+			prevRows.map((row) => (row._id === updatedUser._id ? updatedUser : row)),
 		);
 		setIsModalOpen(false);
 	};
-	function RowMenu({ row }: { row: Service }) {
+
+	const handleDeleteClick = (user: User) => {
+		setUserToDelete(user);
+		setIsDeleteModalOpen(true);
+	};
+
+	const confirmDelete = () => {
+		if (userToDelete) {
+			axiosInstance
+				.delete(`/user-profiles/${userToDelete._id}`)
+				.then(() => {
+					setRows((prevRows) =>
+						prevRows.filter((row) => row._id !== userToDelete._id),
+					);
+					toast.success("user deleted successfully");
+				})
+				.catch((error) => {
+					console.error("Error deleting user:", error);
+					toast.error("Failed to delete user");
+				})
+				.finally(() => {
+					setIsDeleteModalOpen(false);
+					setUserToDelete(null);
+				});
+		}
+	};
+
+	const cancelDelete = () => {
+		setIsDeleteModalOpen(false);
+		setUserToDelete(null);
+	};
+
+	function RowMenu({ row }: { row: User }) {
 		// console.log(row);
 		return (
 			<Dropdown>
@@ -136,19 +178,16 @@ export default function UserTable() {
 				</MenuButton>
 				<Menu size="sm" sx={{ minWidth: 140 }}>
 					<MenuItem onClick={() => handleEdit(row)}>Edit</MenuItem>
-					<MenuItem>Rename</MenuItem>
-					<MenuItem>Move</MenuItem>
 					<Divider />
-					<MenuItem color="danger">Delete</MenuItem>
+					<MenuItem onClick={() => handleDeleteClick(row)} color="danger">
+						Delete
+					</MenuItem>
 				</Menu>
 			</Dropdown>
 		);
 	}
-	const getCategoriesAndServices = async () => {
+	const getUserProfile = async () => {
 		const params = new URLSearchParams();
-		if (categoryId) {
-			params.append("service_category_id", categoryId);
-		}
 		if (typeof itemsPerPage === "number" && !isNaN(itemsPerPage)) {
 			params.append("limit", itemsPerPage.toString());
 		}
@@ -158,15 +197,17 @@ export default function UserTable() {
 		if (searchTerm) {
 			params.append("search", searchTerm);
 		}
+		if (selectedRole) {
+			params.append("role", selectedRole);
+		}
 		try {
-			const [categoriesResponse, servicesResponse] = await Promise.all([
-				axiosInstance.get("/service-categories"),
-				axiosInstance.get(`/services?${params.toString()}`),
-			]);
-			setCategories(categoriesResponse.data.result.serviceCategories);
-			setTotalCount(servicesResponse.data.total_count);
-			setTotalPages(servicesResponse.data.total_pages);
-			setRows(servicesResponse.data.result);
+			const userResponse = await axiosInstance.get(
+				`/user-profiles?${params.toString()}`,
+			);
+			console.log(userResponse.data.result.data);
+			setTotalCount(userResponse.data.total_count);
+			setTotalPages(userResponse.data.total_pages);
+			setRows(userResponse.data.result.data);
 		} catch (error) {
 			console.error("Error fetching data:", error);
 			// Handle error (e.g., show a notification)
@@ -175,7 +216,7 @@ export default function UserTable() {
 
 	console.log(rows);
 	useEffect(() => {
-		getCategoriesAndServices();
+		getUserProfile();
 	}, []);
 
 	useEffect(() => {
@@ -189,14 +230,8 @@ export default function UserTable() {
 	}, [searchTerm]);
 
 	useEffect(() => {
-		console.log("Fetching services with:", {
-			categoryId,
-			itemsPerPage,
-			currentPage,
-			searchTerm,
-		});
-		getCategoriesAndServices();
-	}, [categoryId, itemsPerPage, currentPage, debouncedSearchTerm]);
+		getUserProfile();
+	}, [itemsPerPage, currentPage, debouncedSearchTerm, selectedRole]);
 
 	const handlePrevPage = useCallback(() => {
 		if (currentPage > 1) {
@@ -230,11 +265,8 @@ export default function UserTable() {
 		setSelectedCount(selected.length + (event.target.checked ? 1 : -1));
 	};
 
-	const handleCategoryChange = (_event: unknown, newValue: string | null) => {
-		setCategoryId(newValue || "");
-		if (newValue) {
-			getCategoriesAndServices();
-		}
+	const handleRoleChange = (_event: unknown, newValue: string | null) => {
+		setSelectedRole(newValue || "");
 	};
 
 	const renderPagination = () => {
@@ -292,47 +324,21 @@ export default function UserTable() {
 					size="sm"
 					placeholder="Filter by status"
 					slotProps={{ button: { sx: { whiteSpace: "nowrap" } } }}
-				>
-					<Option value="paid">Paid</Option>
-					<Option value="pending">Pending</Option>
-					<Option value="refunded">Refunded</Option>
-					<Option value="cancelled">Cancelled</Option>
-				</Select>
-			</FormControl>
-			<FormControl size="sm">
-				<FormLabel>Category</FormLabel>
-				<Select
-					size="sm"
-					placeholder="All"
-					slotProps={{ button: { sx: { whiteSpace: "nowrap" } } }}
-					onChange={handleCategoryChange}
-					value={categoryId}
+					onChange={handleRoleChange}
 				>
 					<Option value="">All</Option>
-					{categories.map((category) => (
-						<Option key={category._id} value={category._id}>
-							{category.name}
-						</Option>
-					))}
+					<Option value="Admin">Admin</Option>
+					<Option value="User">User</Option>
+					<Option value="Staff">Staff</Option>
+					<Option value="Receptionist">Receptionist</Option>
+					<Option value="Practitioner">Practitioner</Option>
 				</Select>
 			</FormControl>
-			{/* <FormControl size="sm">
-				<FormLabel>Customer</FormLabel>
-				<Select size="sm" placeholder="All">
-					<Option value="all">All</Option>
-					<Option value="olivia">Olivia Rhye</Option>
-					<Option value="steve">Steve Hampton</Option>
-					<Option value="ciaran">Ciaran Murray</Option>
-					<Option value="marina">Marina Macdonald</Option>
-					<Option value="charles">Charles Fulton</Option>
-					<Option value="jay">Jay Hoper</Option>
-				</Select>
-			</FormControl> */}
 		</Fragment>
 	);
 
 	const sortedRows = useMemo(() => {
-		return rows.sort(getComparator(order, "name"));
+		return rows.sort(getComparator(order, "created_at"));
 	}, [rows, order]);
 
 	return (
@@ -458,7 +464,12 @@ export default function UserTable() {
 								/>
 							</th>
 							<th style={{ width: 100, padding: "12px 6px" }}>Image</th>
-							<th style={{ width: 200, padding: "12px 6px" }}>
+							<th style={{ width: 180, padding: "12px 6px" }}>Name</th>
+							<th style={{ width: 180, padding: "12px 6px" }}>Email</th>
+							<th style={{ width: 130, padding: "12px 6px" }}>Phone number</th>
+							<th style={{ width: 100, padding: "12px 6px" }}>Role</th>
+							<th style={{ width: 100, padding: "12px 6px" }}>Status</th>
+							<th style={{ width: 140, padding: "12px 6px" }}>
 								<Link
 									underline="none"
 									color="primary"
@@ -479,13 +490,9 @@ export default function UserTable() {
 											: { "& svg": { transform: "rotate(180deg)" } },
 									]}
 								>
-									Name
+									Created at
 								</Link>
 							</th>
-							<th style={{ width: 140, padding: "12px 6px" }}>Durations</th>
-							<th style={{ width: 140, padding: "12px 6px" }}>Booking count</th>
-							<th style={{ width: 140, padding: "12px 6px" }}>View count</th>
-							<th style={{ width: 140, padding: "12px 6px" }}>Created at</th>
 							<th style={{ width: 140, padding: "12px 6px" }}>Updated at</th>
 							<th style={{ width: 140, padding: "12px 6px" }}>Actions </th>
 						</tr>
@@ -505,46 +512,45 @@ export default function UserTable() {
 								</td>
 								<td>
 									<Avatar
-										alt={row.name}
-										src={row.images[0]}
+										alt={row.account.name}
+										src={row.account.avatar}
 										sx={{ width: 70, height: 70 }}
 									/>
 								</td>
 								<td>
-									<Typography level="body-xs">{row.name}</Typography>
+									<Typography level="body-xs">{row.account.name}</Typography>
+								</td>
+								<td>
+									<Typography level="body-xs">{row.account.email}</Typography>
 								</td>
 								<td>
 									<Typography level="body-xs">
-										{row.durations
-											.map(
-												(duration) =>
-													`${duration.duration_name} - ${duration.price} VND`,
-											)
-											.join(", ")}
+										{row.account.phone_number}
 									</Typography>
 								</td>
 								<td>
-									<Typography level="body-xs">{row.booking_count}</Typography>
+									<Typography level="body-xs">
+										{row.account.roles[0].role_name}
+									</Typography>
 								</td>
 								<td>
-									<Typography level="body-xs">{row.view_count}</Typography>
+									<Typography level="body-xs">
+										{getVerifyStatus(row.account.verify)}
+									</Typography>
 								</td>
 
 								<td>
 									<Typography level="body-xs">
-										{format(new Date(row.created_at), "dd/MM/yyyy")}
+										{format(new Date(row.account.created_at), "dd/MM/yyyy")}
 									</Typography>
 								</td>
 								<td>
 									<Typography level="body-xs">
-										{format(new Date(row.updated_at), "dd/MM/yyyy")}
+										{format(new Date(row.account.updated_at), "dd/MM/yyyy")}
 									</Typography>
 								</td>
 								<td>
 									<Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-										<Link level="body-xs" component="button">
-											Download
-										</Link>
 										<RowMenu row={row} />
 									</Box>
 								</td>
@@ -594,15 +600,32 @@ export default function UserTable() {
 					</Select>
 				</FormControl>
 			</Box>
-			<EditServiceModal
-				service={selectedService}
+			<EditUserModal
+				user={selectedUser}
 				isOpen={isModalOpen}
 				onClose={() => {
-					console.log("Modal closed");
 					setIsModalOpen(false);
 				}}
 				onSave={handleSave}
 			/>
+
+			<Modal open={isDeleteModalOpen} onClose={cancelDelete}>
+				<ModalDialog>
+					<ModalClose />
+					<Typography level="h4">Confirm Deletion</Typography>
+					<Typography>
+						Are you sure you want to delete {userToDelete?.account.name}?
+					</Typography>
+					<div className="flex justify-end gap-2 mt-4">
+						<Button variant="plain" color="neutral" onClick={cancelDelete}>
+							Cancel
+						</Button>
+						<Button variant="solid" color="danger" onClick={confirmDelete}>
+							Delete
+						</Button>
+					</div>
+				</ModalDialog>
+			</Modal>
 		</Fragment>
 	);
 }

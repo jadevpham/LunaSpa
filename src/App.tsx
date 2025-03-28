@@ -50,6 +50,7 @@ import FavoritePage from "./pages/UserProfilePages/FavoritePage";
 import HistoryPage from "./pages/UserProfilePages/HistoryPage";
 import ProductsManagement from "./pages/AdminPages/Products/ProductsManagement";
 import BranchDetail from "./pages/BranchDetail";
+import CreateNewProduct from "./pages/AdminPages/Products/CreateNewProcduct";
 
 const RouteHandler = () => {
 	const location = useLocation();
@@ -102,7 +103,7 @@ const RouteHandler = () => {
 					</Route>
 					<Route path="products">
 						<Route path="product-management" element={<ProductsManagement />} />
-						{/* <Route path="create-product" element={<CreateNewBranch />} /> */}
+						<Route path="create-product" element={<CreateNewProduct />} />
 					</Route>
 				</Route>
 			</Route>
