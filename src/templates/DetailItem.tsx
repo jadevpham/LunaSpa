@@ -65,8 +65,6 @@ const TimeSlots = ({ slotTime }: { slotTime: string[] }) => {
 	);
 };
 
-
-
 const DetailItem: FC<DetailItemProps> = ({
 	title,
 	namePri,

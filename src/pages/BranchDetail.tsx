@@ -77,9 +77,9 @@ const BranchDetail: React.FC = () => {
 		const hours = String(date.getHours()).padStart(2, "0"); // Định dạng 2 chữ số
 		const minutes = String(date.getMinutes()).padStart(2, "0");
 		return `${hours}:${minutes}`;
-	  });
-	  console.log(slotTime)
-	  
+	});
+	console.log(slotTime);
+
 	return (
 		<>
 			<DetailItem
