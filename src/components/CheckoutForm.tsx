@@ -197,7 +197,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
 			>
 				{isProcessing ? (
 					<span className="flex items-center justify-center">
-						<div className="mr-2 w-5 h-5 border-3 border-white border-opacity-30 rounded-full border-t-white animate-spin"></div>
+						<div className="mr-2 w-5 h-5 border-[3px] border-white border-opacity-30 rounded-full border-t-white animate-spin"></div>
 						Processing...
 					</span>
 				) : (

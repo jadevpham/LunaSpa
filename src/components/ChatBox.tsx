@@ -11,6 +11,41 @@ export default function Chatbox() {
 	const [isOpen, setIsOpen] = useState(false);
 	// Sử dụng useRef để lưu thời gian gửi tin nhắn cuối cùng
 	const lastSentTime = useRef<number>(0);
+	const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+		const file = event.target.files?.[0];
+		if (file) {
+			const reader = new FileReader();
+			reader.onloadend = () => {
+				const newMessage: ChatMessage = {
+					role: "user",
+					content: reader.result as string, // Base64 image
+					type: "image", // Đánh dấu tin nhắn là hình ảnh
+				};
+				dispatch(addUserMessage(newMessage.content));
+				dispatch(sendMessage([...messages, newMessage]));
+			};
+			reader.readAsDataURL(file);
+		}
+	};
+
+	{
+		messages.map((msg, index) => (
+			<div
+				key={index}
+				className={`p-3 rounded-lg max-w-[80%] ${
+					msg.role === "user"
+						? "bg-blue-500 text-white self-end ml-auto"
+						: "bg-gray-200 text-black"
+				}`}
+			>
+				{msg.type === "image" ? (
+					<img src={msg.content} alt="sent" className="max-w-full rounded-lg" />
+				) : (
+					<p>{msg.content}</p>
+				)}
+			</div>
+		));
+	}
 
 	const handleSendMessage = () => {
 		if (!input.trim()) return;
@@ -39,42 +74,6 @@ export default function Chatbox() {
 	};
 
 	return (
-		// <div className="fixed bottom-5 right-5 w-80 bg-white shadow-lg rounded-lg border border-gray-300">
-		// 	<div className="p-4 border-b bg-blue-500 text-white rounded-t-lg">
-		// 		<h3 className="text-lg font-semibold">Chatbot Hỗ Trợ</h3>
-		// 	</div>
-		// 	<div className="p-3 h-64 overflow-y-auto space-y-2">
-		// 		{messages.map((msg, index) => (
-		// 			<div
-		// 				key={index}
-		// 				className={`p-2 rounded-lg max-w-[75%] ${
-		// 					msg.role === "user"
-		// 						? "bg-blue-500 text-white self-end ml-auto"
-		// 						: "bg-gray-200 text-black"
-		// 				}`}
-		// 			>
-		// 				<p>{msg.content}</p>
-		// 			</div>
-		// 		))}
-		// 		{loading && <p className="text-gray-500">Đang phản hồi...</p>}
-		// 	</div>
-		// 	<div className="flex p-2 border-t bg-gray-100 rounded-b-lg">
-		// 		<input
-		// 			className="flex-1 p-2 border rounded-l-lg outline-none"
-		// 			value={input}
-		// 			onChange={(e) => setInput(e.target.value)}
-		// 			onKeyDown={handleKeyDown} // 👈 Thêm sự kiện Enter
-		// 			placeholder="Nhập tin nhắn..."
-		// 		/>
-		// 		<button
-		// 			className="px-4 bg-blue-500 text-white rounded-r-lg disabled:bg-gray-400"
-		// 			onClick={handleSendMessage}
-		// 			disabled={loading}
-		// 		>
-		// 			Gửi
-		// 		</button>
-		// 	</div>
-		// </div>
 		<>
 			{/* Nút mở chatbox */}
 			<button
@@ -86,21 +85,23 @@ export default function Chatbox() {
 
 			{/* Chatbox */}
 			<div
-				className={`fixed bottom-16 right-5 w-80 bg-white shadow-xl rounded-lg border border-gray-300 transition-all ${
-					isOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10 pointer-events-none"
+				className={`fixed bottom-16 right-5 w-[450px] h-[550px] bg-white shadow-2xl rounded-lg border border-gray-300 transition-all z-50 ${
+					isOpen
+						? "opacity-100 translate-y-0"
+						: "opacity-0 translate-y-10 pointer-events-none"
 				}`}
 			>
 				<div className="p-4 border-b bg-blue-500 text-white rounded-t-lg flex justify-between items-center">
-					<h3 className="text-lg font-semibold">Chatbot Hỗ Trợ</h3>
+					<h3 className="text-lg font-semibold">Chatbot</h3>
 					<button onClick={() => setIsOpen(false)} className="text-white">
-						<X size={20} />
+						<X size={24} />
 					</button>
 				</div>
-				<div className="p-3 h-64 overflow-y-auto space-y-2">
+				<div className="p-4 h-[470px] overflow-y-auto space-y-3">
 					{messages.map((msg, index) => (
 						<div
 							key={index}
-							className={`p-2 rounded-lg max-w-[75%] ${
+							className={`p-3 rounded-lg max-w-[80%] ${
 								msg.role === "user"
 									? "bg-blue-500 text-white self-end ml-auto"
 									: "bg-gray-200 text-black"
@@ -109,18 +110,18 @@ export default function Chatbox() {
 							<p>{msg.content}</p>
 						</div>
 					))}
-					{loading && <p className="text-gray-500">Đang phản hồi...</p>}
+					{loading && <p className="text-gray-500">loading...</p>}
 				</div>
-				<div className="flex p-2 border-t bg-gray-100 rounded-b-lg">
+				<div className="flex p-3 border-t bg-gray-100 rounded-b-lg sticky bottom-0">
 					<input
-						className="flex-1 p-2 border rounded-l-lg outline-none"
+						className="flex-1 p-3 border rounded-l-lg outline-none"
 						value={input}
 						onChange={(e) => setInput(e.target.value)}
 						onKeyDown={handleKeyDown}
-						placeholder="Nhập tin nhắn..."
+						placeholder="Ask ChatGPT..."
 					/>
 					<button
-						className="px-4 bg-blue-500 text-white rounded-r-lg disabled:bg-gray-400"
+						className="px-5 bg-blue-500 text-white rounded-r-lg disabled:bg-gray-400"
 						onClick={handleSendMessage}
 						disabled={loading}
 					>

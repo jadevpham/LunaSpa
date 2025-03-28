@@ -4,7 +4,7 @@ import axios from "axios";
 
 // dùng Type để xđ kiểu dữ liệu của properties trong object trong initialState
 type BranchesItemType = {
-	id: string;
+	_id: string;
 	name: string;
 	description: string;
 	rating: number;
@@ -20,6 +20,25 @@ type BranchesItemType = {
 		email: string;
 		address: string;
 	};
+	services: {
+		_id: string;
+		name: string;
+		description: string;
+		images: string[];
+		booking_count: number;
+		view_count: number;
+		durations: {
+			duration_name: string;
+			price: number;
+			discount_price: number;
+			duration_in_minutes: number;
+		}[];
+		devices: {
+			_id: string;
+			name: string;
+			description: string;
+		}[];
+	}[];
 };
 
 type BranchesState = {

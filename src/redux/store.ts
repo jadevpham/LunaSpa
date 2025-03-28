@@ -10,6 +10,8 @@ import serviceDetailReducer from "./serviceDetailSlice";
 import productsByServiceReducer from "./productsByServiceSlice";
 import branchDetailReducer from "./branchDetailSlice";
 import chatReducer from "./chatSlice";
+import slotServiceReducer from "./slotServiceSlice";
+import reviewsReducer from "./reviewsSlice";
 export const store = configureStore({
 	reducer: {
 		// hàm này sẽ return state (trong redux thì state ~~~ reducer)
@@ -27,6 +29,8 @@ export const store = configureStore({
 		productsByService: productsByServiceReducer,
 		branchDetail: branchDetailReducer,
 		chat: chatReducer,
+		slotService: slotServiceReducer,
+		reviews: reviewsReducer,
 	},
 });
 // ✅ Export RootState (Kiểu của Redux Store)

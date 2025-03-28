@@ -1,10 +1,13 @@
 import Footer from "../components/Footer";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { RootState, AppDispatch } from "../redux/store";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { fetchBranchDetail } from "../redux/branchDetailSlice";
+import { fetchSlotService } from "../redux/slotServiceSlice";
+
 import DetailItem from "../templates/DetailItem";
+import ProductsByBranch from "../components/ProductsByBranch";
 console.log("🔥 Branchetail.tsx đã được import!"); // Kiểm tra import
 const BranchDetail: React.FC = () => {
 	console.log("BranchDetail.tsx loaded");
@@ -34,6 +37,34 @@ const BranchDetail: React.FC = () => {
 	if (loading) return <p>Đang tải dữ liệu...</p>;
 	if (error) return <p className="text-red-500">{error}</p>;
 
+	////
+	// const slotService = useSelector(
+	// 	(state: RootState) => state.slotService.slotServiceList,
+	// );
+	// console.log("Redux slotService state:", slotService);
+
+	// const loadingSlot = useSelector(
+	// 	(state: RootState) => state.slotService.loading,
+	// );
+	// const errorSlot = useSelector((state: RootState) => state.slotService.error);
+	// useEffect(() => {
+	// 	console.log("Slot Service Data:", slotService);
+	// 	if (!branchDetail?.services) return;
+
+	// 	branchDetail.services.forEach((service) => {
+	// 		if (service._id) {
+	// 			console.log("Fetching serviceID:", service._id);
+	// 			dispatch(fetchSlotService(service._id));
+	// 		}
+	// 	});
+	// }, [branchDetail?.services?.map((service) => service._id).join(","), dispatch]);
+	// useEffect(() => {
+	// 	dispatch(fetchSlotService());
+	// 	console.log("Slot Service Data:", slotService);
+	// }, [dispatch]);
+	// if (loading) return <p>Đang tải dữ liệu...</p>;
+	// if (error) return <p className="text-red-500">{error}</p>;
+
 	const today = new Date().toLocaleDateString("en-US", { weekday: "long" });
 	const highestBooking_countService =
 		branchDetail?.services && Array.isArray(branchDetail.services)
@@ -43,39 +74,55 @@ const BranchDetail: React.FC = () => {
 					branchDetail.services[0],
 				)
 			: null;
-	// const todayOpeningHours = highestRatedBranch?.opening_hours?.find(
-	// 	(day) => day.day === today,
-	// );
-	// const todayDay = todayOpeningHours?.day ?? "N/A";
-	// const todayOpening = todayOpeningHours?.open ?? "Closed";
-	// const todayClosing = todayOpeningHours?.close ?? "Closed";
+	const todayOpeningHours = branchDetail?.opening_hours?.find(
+		(day) => day.day === today,
+	);
+	const todayDay = todayOpeningHours?.day ?? "N/A";
+	const todayOpening = todayOpeningHours?.open ?? "Closed";
+	const todayClosing = todayOpeningHours?.close ?? "Closed";
+	const productList = branchDetail?.products || [];
 	return (
 		<>
-			{/* <DetailItem
+			<DetailItem
 				title="Services"
 				namePri={branchDetail?.name || "N/A"}
 				nameSec={branchDetail?.contact.address || "N/A"}
 				//sau thay bằng tên branch
 				nameSec2={branchDetail?.services?.map((service) => service.name) || []}
 				items={
-					branchDetail?.services?.map((service) => ({
-						id: service._id,
-						name: service.name,
-						address: service.description,
-					})) || []
-				}
-				items2={
-					branchDetail?.services?.flatMap((service) =>
-						service.opening_hours?.map((dayInfo) => ({
-							id: branch.id, // ID của branch
-							name: branch.name,
-							day: dayInfo.day, // Ngày trong tuần
-							open: dayInfo.open, // Giờ mở cửa
-							close: dayInfo.close, // Giờ đóng cửa
-							isOpen: dayInfo.day === todayDay,
-							isBold: dayInfo.day === todayDay, // Đánh dấu ngày hiện tại
-						})),
-					) ?? [] //Dùng `?? []` để đảm bảo `items2` luôn là mảng
+					branchDetail?.services?.map((service) => {
+						const minDuration = service.durations.reduce(
+							(min, duration) =>
+								duration.duration_in_minutes < min.duration_in_minutes
+									? duration
+									: min,
+							service.durations[0], // Giá trị khởi tạo là phần tử đầu tiên
+						);
+
+						const maxDuration = service.durations.reduce(
+							(max, duration) =>
+								duration.duration_in_minutes > max.duration_in_minutes
+									? duration
+									: max,
+							service.durations[0],
+						);
+						// Lấy thông tin từ slotService
+						// const slot = Array.isArray(slotService)
+						// ? slotService.find((slot) => slot.serviceId === service._id)
+						// : null;
+
+						return {
+							id: service._id,
+							name: service.name,
+							address: service.description,
+
+							durationMin: minDuration.duration_name || "", // ✅ Thêm tên của duration nhỏ nhất
+
+							durationMax: maxDuration.duration_name || "", // ✅ Thêm tên của duration lớn nhất
+							priceMin: minDuration.discount_price || 0, // ✅ Lấy giá thấp nhất tương ứng
+							// slot: slot
+						};
+					}) || []
 				}
 				nameSec3={highestBooking_countService?.name || "Không có dịch vụ nào"}
 				nameThir={
@@ -83,41 +130,62 @@ const BranchDetail: React.FC = () => {
 						?.flatMap(
 							(service) => service.devices?.map((device) => device.name) ?? [],
 						)
-						.join(", ") || "N/A"
+						.slice(0, 4) // ✅ Lấy tối đa 4 phần tử
+						.join("\n") +
+						(branchDetail?.services?.flatMap((service) => service.devices ?? [])
+							.length > 4
+							? "\n..."
+							: "") || // ✅ Nếu > 4 thì thêm "..."
+					"N/A"
 				}
 				priceMin={
-					highestBooking_countService?.durations && highestBooking_countService.durations.length > 0
-					? Math.min(...highestBooking_countService.durations.map((d) => d.discount_price))
-					: 0
+					highestBooking_countService?.durations &&
+					highestBooking_countService.durations.length > 0
+						? Math.min(
+								...highestBooking_countService.durations.map(
+									(d) => d.discount_price,
+								),
+							)
+						: 0
 				} // hiện tại duration mới chỉ có 1
+				priceMin1={Math.min(
+					...(branchDetail?.services?.flatMap((service) =>
+						service.durations.map((duration) => duration.discount_price),
+					) || [Infinity]),
+				)}
 				priceMax={
-					highestBooking_countService?.durations && highestBooking_countService.durations.length > 0
-					? Math.max(...highestBooking_countService.durations.map((d) => d.discount_price))
-					: 0
+					highestBooking_countService?.durations &&
+					highestBooking_countService.durations.length > 0
+						? Math.max(
+								...highestBooking_countService.durations.map(
+									(d) => d.discount_price,
+								),
+							)
+						: 0
 				}
 				durationsNameMin={
 					highestBooking_countService?.durations &&
 					highestBooking_countService.durations.length > 0
-					  ? highestBooking_countService.durations.reduce(
-						  (min, duration) =>
-							duration.duration_in_minutes < min.duration_in_minutes
-							  ? duration
-							  : min,
-							  highestBooking_countService.durations[0]
-						).duration_name
-					  : "N/A"
+						? highestBooking_countService.durations.reduce(
+								(min, duration) =>
+									duration.duration_in_minutes < min.duration_in_minutes
+										? duration
+										: min,
+								highestBooking_countService.durations[0],
+							).duration_name
+						: "N/A"
 				}
 				durationsNameMax={
 					highestBooking_countService?.durations &&
 					highestBooking_countService.durations.length > 0
-					  ? highestBooking_countService.durations.reduce(
-						  (max, duration) =>
-							duration.duration_in_minutes > max.duration_in_minutes
-							  ? duration
-							  : max,
-							  highestBooking_countService.durations[0]
-						).duration_name
-					  : "N/A"
+						? highestBooking_countService.durations.reduce(
+								(max, duration) =>
+									duration.duration_in_minutes > max.duration_in_minutes
+										? duration
+										: max,
+								highestBooking_countService.durations[0],
+							).duration_name
+						: "N/A"
 				}
 				address={branchDetail?.contact?.address ?? "N/A"} // sau thay bằng địa chị branch
 				image1={branchDetail?.images[0] || "default.jpg"}
@@ -126,8 +194,8 @@ const BranchDetail: React.FC = () => {
 				day={todayDay}
 				opening_hours={todayOpening} //sau thay bằng giờ của branch
 				close_hours={todayClosing}
-			/> */}
-			{/* // <ProductByService /> */}
+			/>
+			<ProductsByBranch productList={productList ?? []} />
 			<Footer />
 		</>
 	);
