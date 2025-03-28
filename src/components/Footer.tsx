@@ -39,26 +39,14 @@ const Footer: React.FC = () => {
 						<div>
 							<h3 className="text-lg font-bold mt-8">Find us on social</h3>
 							<div className="flex gap-2 mt-2">
-								<img
-									src="../../facebook.png"
-									alt="Facebook"
-									className="h-8"
-								/>
+								<img src="../../facebook.png" alt="Facebook" className="h-8" />
 								<img
 									src="../../instagram.png"
 									alt="Instagram"
 									className="h-8"
 								/>
-								<img
-									src="../../youtube.png"
-									alt="YouTube"
-									className="h-8"
-								/>
-								<img
-									src="../../gittiktok.png"
-									alt="TikTok"
-									className="h-8"
-								/>
+								<img src="../../youtube.png" alt="YouTube" className="h-8" />
+								<img src="../../gittiktok.png" alt="TikTok" className="h-8" />
 							</div>
 						</div>
 					</div>
