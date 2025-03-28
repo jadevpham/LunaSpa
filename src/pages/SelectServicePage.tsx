@@ -6,6 +6,7 @@ import { fetchProducts } from "../redux/productsSlice";
 import { toast } from "react-toastify";
 import LoadingAnimation from "../components/LoadingAnimation";
 import { fetchServices } from "../redux/servicesSlice";
+import { useParams } from "react-router-dom";
 
 interface Duration {
 	duration_name: string;
@@ -104,7 +105,8 @@ const SelectServicePage = () => {
 			setIsModalOpen(false);
 		}
 	};
-
+	// const { serviceId } = useParams(); // Lấy serviceId từ URL
+	// console.log("Received Service ID:", serviceId);
 	const handleRemoveService = (serviceId: string) => {
 		dispatch(removeService(serviceId));
 		toast.warn("Service removed successfully");

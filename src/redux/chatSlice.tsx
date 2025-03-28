@@ -5,6 +5,7 @@ import axios, { AxiosError } from "axios";
 export interface ChatMessage {
 	role: "user" | "assistant";
 	content: string;
+	type?: "text" | "image"; // ✅ Thêm type vào
 }
 
 // Kiểu dữ liệu cho state của chat
@@ -66,6 +67,9 @@ const chatSlice = createSlice({
 		addUserMessage: (state, action: PayloadAction<string>) => {
 			state.messages.push({ role: "user", content: action.payload });
 		},
+		// addUserMessage: (state, action: PayloadAction<ChatMessage>) => {
+		// 	state.messages.push(action.payload);
+		// }
 	},
 	extraReducers: (builder) => {
 		builder

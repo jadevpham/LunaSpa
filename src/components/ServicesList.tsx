@@ -45,7 +45,7 @@ const ServicesList: React.FC = () => {
 				items={servicesList}
 				renderItem={(service) => (
 					<CardItem
-						key={service.id}
+						key={service._id}
 						// data={service}
 						name={service.name}
 						address={service.description}

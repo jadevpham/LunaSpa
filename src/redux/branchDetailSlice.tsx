@@ -1,6 +1,20 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 
+export type ProductType = {
+	_id: string;
+	name: string;
+	description: string;
+	price: number;
+	discount_price: number;
+	images: string[];
+	product_category: {
+		_id: string;
+		name: string;
+		description: string;
+	};
+};
+
 type BranchDetailType = {
 	_id: string;
 	name: string;
@@ -44,19 +58,7 @@ type BranchDetailType = {
 			status: number;
 		}[];
 	}[];
-	products: {
-		_id: string;
-		name: string;
-		description: string;
-		price: number;
-		discount_price: number;
-		images: string[];
-		product_category: {
-			_id: string;
-			name: string;
-			description: string;
-		};
-	}[];
+	products: ProductType[];
 };
 type BranchesState = {
 	branch: BranchDetailType | null;

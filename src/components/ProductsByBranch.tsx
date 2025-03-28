@@ -6,38 +6,29 @@ import { RootState, AppDispatch } from "../redux/store"; // ✅ Import RootState
 import { useSelector, useDispatch } from "react-redux";
 import CardList from "../templates/CardList";
 import CardItem from "../templates/CardItem";
-const ProductsList: React.FC = () => {
-	const dispatch = useDispatch<AppDispatch>(); // ✅ Khai báo dispatch kiểu AppDispatch
+import { ProductType } from "../redux/branchDetailSlice";
 
-	// ✅ Lấy dữ liệu từ Redux Store
-	const productsList = useSelector(
-		(state: RootState) => state.products.productsList,
-	);
-	const loading = useSelector((state: RootState) => state.products.loading);
-	const error = useSelector((state: RootState) => state.products.error);
-
-	// ✅ Gọi API khi component mount
-	useEffect(() => {
-		dispatch(fetchProducts());
-	}, [dispatch]);
-
-	if (loading) return <p>Đang tải dữ liệu...</p>;
-	if (error) return <p className="text-red-500">{error}</p>;
-
+interface ProductsByBranchProps {
+	productList: ProductType[];
+}
+const ProductsByBranch: React.FC<ProductsByBranchProps> = ({ productList }) => {
 	return (
 		<>
 			<CardList
 				title="Products"
-				items={productsList}
+				items={productList}
+				customClass="bg-white rounded-lg shadow-xl"
 				renderItem={(product) => (
 					<CardItem
 						key={product._id}
-						// data={product}
 						name={product.name}
 						address={product.description}
 						img={product.images[0]}
-						// category={product.quantity.toString()}
-						category={product.product_category.name}
+						category={
+							product.product_category
+								? product.product_category.name
+								: "Unknown"
+						}
 						star={product.price}
 						vote={product.discount_price}
 						ratingComponent={
@@ -63,4 +54,4 @@ const ProductsList: React.FC = () => {
 	);
 };
 
-export default ProductsList;
+export default ProductsByBranch;

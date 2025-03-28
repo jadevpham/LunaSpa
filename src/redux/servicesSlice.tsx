@@ -47,8 +47,8 @@ export const fetchServices = createAsyncThunk(
 	async (_, { rejectWithValue }) => {
 		try {
 			const response = await axios.get("http://localhost:4000/services");
-			console.log(response.data.result);
-			return response.data.result; // API trả về danh sách services
+			console.log(response.data.result.data);
+			return response.data.result.data; // API trả về danh sách services
 		} catch (error: any) {
 			return rejectWithValue(error.response?.data || "Lỗi không xác định");
 		}
