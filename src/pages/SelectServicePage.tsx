@@ -143,7 +143,7 @@ const SelectServicePage = () => {
 									<div>
 										<h3 className="font-semibold">{service.name}</h3>
 										<p className="text-sm text-gray-500">
-											{t("Selected ServicesDuration:")} {service.selectedDuration.duration_in_minutes}{" "}
+											{t("Duration:")} {service.selectedDuration.duration_in_minutes}{" "}
 											{t("minutes")}
 										</p>
 										<div className="flex items-center gap-1">
@@ -272,7 +272,7 @@ const SelectServicePage = () => {
 											onChange={() => setSelectedDuration(duration)}
 											className="mr-2"
 										/>
-										{duration.duration_in_minutes} minutes - $
+										{duration.duration_in_minutes} {t("minutes")} - $
 										{duration.discount_price.toLocaleString("en-US")}
 										<span className="ml-1 text-gray-500 line-through text-sm">
 											{duration.price.toLocaleString("en-US")}
@@ -306,7 +306,7 @@ const SelectServicePage = () => {
 								: "bg-gray-200 text-gray-500 cursor-not-allowed"
 								} border py-2 px-4 rounded-lg w-full transition-all duration-300`}
 						>
-							Choose duration
+							{t("Choose duration")}
 						</button>
 					</div>
 				</div>

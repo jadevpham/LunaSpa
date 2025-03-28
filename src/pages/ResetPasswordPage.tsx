@@ -149,7 +149,7 @@ const ResetPasswordPage = () => {
 			{hasVerified && (
 				<div className="bg-white p-8 rounded-lg shadow-md w-96">
 					<h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
-						{t("TReset Passwordext")}
+						{t("Reset Password")}
 					</h1>
 					<p className="text-gray-600 text-center mb-6">
 						{t("Please enter your new password.")}

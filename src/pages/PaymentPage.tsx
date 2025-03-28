@@ -172,10 +172,10 @@ const PaymentPage: React.FC = () => {
 						selectedService.map((service) => (
 							<div key={service._id} className="mb-2 border-b pb-2">
 								<p className="text-lg font-medium">
-									{t("Text")}Name: <span className="font-normal">{service.name}</span>
+									{t("Name:")}<span className="font-normal">{service.name}</span>
 								</p>
 								<p className="text-lg font-medium">
-									{t("Text")}Price:{" "}
+									{t("Price:")}{" "}
 									<span className="font-normal">
 										{formatPrice(service.selectedDuration.discount_price)} -{" "}
 										{""}
