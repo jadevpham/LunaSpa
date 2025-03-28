@@ -49,7 +49,7 @@ const Header: React.FC = () => {
 		if (filterCriteria.serviceId) {
 			// ✅ Tìm serviceName từ serviceId nếu có
 			const selectedService = servicesList.find(
-				(service) => service.id === filterCriteria.serviceId,
+				(service) => service._id === filterCriteria.serviceId,
 			);
 			if (selectedService) {
 				setSelectedServicesName(selectedService.name);
@@ -82,17 +82,30 @@ const Header: React.FC = () => {
 	}, [dispatch]);
 
 	// ✅ Khi back từ trang Search về Home, giữ lại setSelectedBranchesName
+	// useEffect(() => {
+	// 	if (filterCriteria.branchId) {
+	// 		// ✅ Tìm serviceName từ serviceId nếu có
+	// 		const selectedBranch = branchesList.find(
+	// 			(branch) => branch.id === filterCriteria.branchId,
+	// 		);
+	// 		if (selectedBranch) {
+	// 			setSelectedBranchesName(selectedBranch.name);
+	// 		}
+	// 	} else {
+	// 		setSelectedBranchesName("All Branches"); // 🛠 Reset khi không có branchId
+	// 	}
+	// }, [filterCriteria.branchId, branchesList]);
+	//new
 	useEffect(() => {
-		if (filterCriteria.branchId) {
-			// ✅ Tìm serviceName từ serviceId nếu có
+		if (filterCriteria.branchId && branchesList.length > 0) {
 			const selectedBranch = branchesList.find(
-				(branch) => branch.id === filterCriteria.branchId,
+				(branch) => branch._id === filterCriteria.branchId,
 			);
 			if (selectedBranch) {
 				setSelectedBranchesName(selectedBranch.name);
 			}
 		} else {
-			setSelectedBranchesName("All Branches"); // 🛠 Reset khi không có branchId
+			setSelectedBranchesName("All Branches");
 		}
 	}, [filterCriteria.branchId, branchesList]);
 
@@ -117,10 +130,21 @@ const Header: React.FC = () => {
 		navigate("/");
 	};
 	// ✅ Khi chọn branches
+	// const handleSelectBranch = (branchId: string, branchName: string) => {
+	// 	setSelectedBranchesName(branchName); // ✅ Cập nhật UI dropdown
+	// 	dispatch(setFilterCriteria({ branchId })); // ❌ Không gửi selectedServicesName vào Redux
+	// 	setIsOpenBranches(false); // ✅ Đóng dropdown
+	// };
+	// new
 	const handleSelectBranch = (branchId: string, branchName: string) => {
-		setSelectedBranchesName(branchName); // ✅ Cập nhật UI dropdown
-		dispatch(setFilterCriteria({ branchId })); // ❌ Không gửi selectedServicesName vào Redux
-		setIsOpenBranches(false); // ✅ Đóng dropdown
+		console.log("Before update:", filterCriteria);
+
+		setSelectedBranchesName(branchName);
+		dispatch(setFilterCriteria({ ...filterCriteria, branchId }));
+
+		console.log("After update:", { ...filterCriteria, branchId });
+
+		setIsOpenBranches(false);
 	};
 
 	// III. For Date
@@ -327,6 +351,7 @@ const Header: React.FC = () => {
 			setEndTime(""); // Xóa giá trị nếu không có filter
 		}
 	}, [filterCriteria.date, filterCriteria.startTime, filterCriteria.endTime]);
+	console.log("Current filter criteria:", filterCriteria);
 
 	// For Search: Service, Branch, Date, Time
 	const handleSearch = () => {
@@ -340,7 +365,7 @@ const Header: React.FC = () => {
 		if (filterCriteria.date) queryParams.set("date", filterCriteria.date);
 		if (startTime) queryParams.set("startTime", startTime);
 		if (endTime) queryParams.set("endTime", endTime);
-
+		console.log("Navigating to:", `/search?${queryParams.toString()}`);
 		// ✅ Chuyển hướng với query mới
 		navigate(`/search?${queryParams.toString()}`);
 	};
@@ -454,7 +479,8 @@ const Header: React.FC = () => {
 					{/* Tiêu đề chính */}
 					<h1 className="text-5xl md:text-6xl font-bold leading-tight">
 						{t("Book local beauty and")}
-						<br />" wellness services"
+						<br />
+						wellness services
 					</h1>
 					{/* Thanh tìm kiếm */}
 					<div className="max-w-4xl mx-auto mt-8">
@@ -475,10 +501,10 @@ const Header: React.FC = () => {
 										<ul>
 											{servicesList.map((service) => (
 												<li
-													key={service.id}
+													key={service._id}
 													className="flex items-center text-left gap-3 p-3 hover:bg-gray-100 rounded-lg cursor-pointer"
 													onClick={() =>
-														handleSelectService(service.id, service.name)
+														handleSelectService(service._id, service.name)
 													}
 												>
 													<span>{service.name}</span>
@@ -505,10 +531,10 @@ const Header: React.FC = () => {
 										<ul>
 											{branchesList.map((branch) => (
 												<li
-													key={branch.id}
+													key={branch._id}
 													className="flex items-center text-left gap-3 p-3 hover:bg-gray-100 rounded-lg cursor-pointer"
 													onClick={() =>
-														handleSelectBranch(branch.id, branch.name)
+														handleSelectBranch(branch._id, branch.name)
 													}
 												>
 													<span>{branch.name}</span>

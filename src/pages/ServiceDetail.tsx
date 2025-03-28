@@ -1,4 +1,4 @@
-import ProductByService from "../components/ProductsByService";
+import ProductsByService from "../components/ProductsByService";
 import Footer from "../components/Footer";
 import React, { useEffect } from "react";
 import { RootState, AppDispatch } from "../redux/store";
@@ -6,6 +6,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { fetchServiceDetail } from "../redux/serviceDetailSlice";
 import DetailItem from "../templates/DetailItem";
+import ProductsByServiceList from "../components/ProductsByService";
 console.log("🔥 ServiceDetail.tsx đã được import!"); // Kiểm tra import
 const ServiceDetail: React.FC = () => {
 	console.log("ServiceDetail.tsx loaded");
@@ -51,9 +52,6 @@ const ServiceDetail: React.FC = () => {
 	const todayDay = todayOpeningHours?.day ?? "N/A";
 	const todayOpening = todayOpeningHours?.open ?? "Closed";
 	const todayClosing = todayOpeningHours?.close ?? "Closed";
-
-	// Opening Time
-
 	return (
 		<>
 			<DetailItem
@@ -74,6 +72,9 @@ const ServiceDetail: React.FC = () => {
 						id: branch.id,
 						name: branch.name,
 						address: branch.contact.address,
+						durationMin: "",
+						durationMax: "",
+						priceMin: 0,
 					})) || []
 				}
 				items2={
@@ -100,6 +101,7 @@ const ServiceDetail: React.FC = () => {
 							).discount_price
 						: 0
 				} // hiện tại duration mới chỉ có 1
+				priceMin1={0}
 				priceMax={
 					serviceDetail?.durations?.length
 						? serviceDetail.durations.reduce((max, d) =>
@@ -129,7 +131,7 @@ const ServiceDetail: React.FC = () => {
 				opening_hours={todayOpening} //sau thay bằng giờ của branch
 				close_hours={todayClosing}
 			/>
-			{/* // <ProductByService /> */}
+			<ProductsByServiceList serviceId={serviceId} />
 			<Footer />
 		</>
 	);

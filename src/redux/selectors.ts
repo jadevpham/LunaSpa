@@ -14,7 +14,7 @@ export const selectFilteredBranches = (state: RootState) => {
 
 	// Lọc danh sách nếu có branchId
 	return state.branches.branchesList.filter(
-		(branch) => !branchId || branch.id === branchId,
+		(branch) => !branchId || branch._id === branchId,
 	);
 };
 
@@ -26,6 +26,6 @@ export const selectFilteredServices = (state: RootState) => {
 
 	// Lọc danh sách nếu có branchId
 	return state.services.servicesList.filter(
-		(service) => !serviceId || service.id === serviceId,
+		(service) => !serviceId || service._id === serviceId,
 	);
 };
