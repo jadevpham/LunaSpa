@@ -39,14 +39,16 @@ type DetailItemProps = {
 	day: string;
 	opening_hours: string;
 	close_hours: string;
+	slotTime: string[];
 };
 
-const TimeSlots = () => {
-	const times = ["11:45", "12:00", "12:45"];
+const TimeSlots = ({ slotTime }: { slotTime: string[] }) => {
+	const visibleSlots = slotTime.slice(0, 4); // Chỉ lấy 4 slot đầu tiên
+	const hasMore = slotTime.length > 4; // Kiểm tra xem có nhiều hơn 4 slot không
 
 	return (
 		<div className="flex space-x-2 mt-2">
-			{times.map((time, index) => (
+			{visibleSlots.map((time, index) => (
 				<button
 					key={index}
 					className="px-4 py-2 border border-blue-300 text-blue-500 rounded-lg hover:bg-blue-100 transition"
@@ -54,9 +56,11 @@ const TimeSlots = () => {
 					{time}
 				</button>
 			))}
-			{/* <button className="px-3 py-2 border border-blue-300 text-blue-500 rounded-lg">
-				:
-			</button> */}
+			{hasMore && (
+				<button className="px-4 py-2 border border-blue-300 text-blue-500 rounded-lg hover:bg-blue-100">
+					:
+				</button>
+			)}
 		</div>
 	);
 };
@@ -82,6 +86,7 @@ const DetailItem: FC<DetailItemProps> = ({
 	day,
 	opening_hours,
 	close_hours,
+	slotTime,
 }) => {
 	const [selectedItem, setSelectedItem] = useState<string | null>(null);
 	const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -267,7 +272,7 @@ const DetailItem: FC<DetailItemProps> = ({
 
 													{title === "Services" && selectedItem === item.id && (
 														<>
-															<TimeSlots />
+															<TimeSlots slotTime={slotTime} />
 														</>
 													)}
 												</div>

@@ -29,10 +29,8 @@ export const fetchSlotService = createAsyncThunk(
 	"slotService/fetchSlotService",
 	async (_, { rejectWithValue }) => {
 		try {
-			const response = await axios.get(
-				"http://localhost:4000/staff-slots/available/service/68cd7a001e84f38f7341a01e?isHours=true",
-			);
-			console.log("slotService: ", response.data.result.data);
+			const response = await axios.get("http://localhost:4000/staff-slots/");
+			console.log("slotServicenew: ", response.data.result.data);
 			return response.data.result.data; // API trả về danh sách services
 		} catch (error: any) {
 			console.error("API Error:", error.response?.data);

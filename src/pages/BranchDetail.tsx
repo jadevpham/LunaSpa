@@ -15,10 +15,9 @@ const BranchDetail: React.FC = () => {
 	const location = useLocation();
 	console.log("📍useLocation():", location); // Kiểm tra location
 	const params = new URLSearchParams(location.search);
-	const branchId = params.get("id"); // 🔹 Lấy serviceId từ query string (?id=xyz)
+	const branchId = params.get("id") ?? ""; // 🔹 Lấy serviceId từ query string (?id=xyz)
 	console.log("BranchDetail.tsx loaded"); // Kiểm tra xem file có render không
 	console.log("Branch ID từ query:", branchId); // Kiểm tra serviceId
-	// const navigate = useNavigate();
 	// Lấy dữ liệu từ Redux Store
 	const branchDetail = useSelector(
 		(state: RootState) => state.branchDetail.branch,
@@ -28,42 +27,34 @@ const BranchDetail: React.FC = () => {
 
 	// Gọi API khi component mount
 	useEffect(() => {
-		if (!branchId) return;
-
-		console.log("Fetching branch detail for ID:", branchId);
-		dispatch(fetchBranchDetail(branchId)); //Dispatch action lấy dữ liệu
-	}, [branchId, dispatch]);
+		if (!branchDetail && branchId) {
+			console.log("Fetching branch detail for ID:", branchId);
+			dispatch(fetchBranchDetail(branchId));
+		}
+	}, [branchId, branchDetail, dispatch]);
 
 	if (loading) return <p>Đang tải dữ liệu...</p>;
 	if (error) return <p className="text-red-500">{error}</p>;
 
 	////
-	// const slotService = useSelector(
-	// 	(state: RootState) => state.slotService.slotServiceList,
-	// );
-	// console.log("Redux slotService state:", slotService);
+	const slotService = useSelector(
+		(state: RootState) => state.slotService.slotServiceList,
+	);
+	console.log("Redux slotService state:", slotService);
 
-	// const loadingSlot = useSelector(
-	// 	(state: RootState) => state.slotService.loading,
-	// );
-	// const errorSlot = useSelector((state: RootState) => state.slotService.error);
-	// useEffect(() => {
-	// 	console.log("Slot Service Data:", slotService);
-	// 	if (!branchDetail?.services) return;
+	const loadingSlot = useSelector(
+		(state: RootState) => state.slotService.loading,
+	);
+	const errorSlot = useSelector((state: RootState) => state.slotService.error);
+	useEffect(() => {
+		if (slotService.length === 0) {
+			console.log("Slot Service Data BranchDetail.tsx:", slotService);
+			dispatch(fetchSlotService());
+		}
+	}, [dispatch, slotService]);
 
-	// 	branchDetail.services.forEach((service) => {
-	// 		if (service._id) {
-	// 			console.log("Fetching serviceID:", service._id);
-	// 			dispatch(fetchSlotService(service._id));
-	// 		}
-	// 	});
-	// }, [branchDetail?.services?.map((service) => service._id).join(","), dispatch]);
-	// useEffect(() => {
-	// 	dispatch(fetchSlotService());
-	// 	console.log("Slot Service Data:", slotService);
-	// }, [dispatch]);
-	// if (loading) return <p>Đang tải dữ liệu...</p>;
-	// if (error) return <p className="text-red-500">{error}</p>;
+	if (loadingSlot) return <p>Đang tải dữ liệu...</p>;
+	if (errorSlot) return <p className="text-red-500">{errorSlot}</p>;
 
 	const today = new Date().toLocaleDateString("en-US", { weekday: "long" });
 	const highestBooking_countService =
@@ -81,6 +72,14 @@ const BranchDetail: React.FC = () => {
 	const todayOpening = todayOpeningHours?.open ?? "Closed";
 	const todayClosing = todayOpeningHours?.close ?? "Closed";
 	const productList = branchDetail?.products || [];
+	const slotTime = slotService?.map((slot) => {
+		const date = new Date(slot.start_time);
+		const hours = String(date.getHours()).padStart(2, "0"); // Định dạng 2 chữ số
+		const minutes = String(date.getMinutes()).padStart(2, "0");
+		return `${hours}:${minutes}`;
+	});
+	console.log(slotTime);
+
 	return (
 		<>
 			<DetailItem
@@ -194,6 +193,7 @@ const BranchDetail: React.FC = () => {
 				day={todayDay}
 				opening_hours={todayOpening} //sau thay bằng giờ của branch
 				close_hours={todayClosing}
+				slotTime={slotTime}
 			/>
 			<ProductsByBranch productList={productList ?? []} />
 			<Footer />
